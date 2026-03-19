@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: aether-backend
+    env: node
+    plan: free
+    branch: main
+    buildCommand: pnpm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_VERSION
+        value: ~18
