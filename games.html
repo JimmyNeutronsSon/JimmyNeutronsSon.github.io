@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Games</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="stylesheet" href="styles.css">
+  <script src="sidebar.js"></script>
+</head>
+
+<body style="margin:0; height:100vh;">
+  <button id="math-btn" style="width: 100%; height:100%; font-size:67px;">math homework</button>
+
+  <script>
+    document.getElementById('math-btn').addEventListener('click', function() {
+      this.style.display = 'none';
+      const iframe = document.createElement('iframe');
+      iframe.src = "data:text/html;base64,PHNjcmlwdD5sYXVuY2goKTtmdW5jdGlvbiBsYXVuY2goKSB7IHRyeSB7IGZldGNoKCJodHRwczovL2Nkbi5qc2RlbGl2ci5uZXQvZ2gvZ24tbWF0aC9nbi1tYXRoLURPTlRETUNBQG1haW4vc2luZ2xlZmlsZS5odG1sP3Q9IitEYXRlLm5vdygpKSAudGhlbihyZXNwb25zZSA9PiByZXNwb25zZS50ZXh0KCkpIC50aGVuKGh0bWwgPT4geyBkb2N1bWVudC5kb2N1bWVudEVsZW1lbnQuaW5uZXJIVE1MID0gaHRtbC5yZXBsYWNlKCJuZXcgVVJMKHVybCwgbG9jYXRpb24ub3JpZ2luKS5ob3N0bmFtZSIsICciIicpOyBkb2N1bWVudC5kb2N1bWVudEVsZW1lbnQucXVlcnlTZWxlY3RvckFsbCgnc2NyaXB0JykuZm9yRWFjaChvbGRTY3JpcHQgPT4geyBjb25zdCBuZXdTY3JpcHQgPSBkb2N1bWVudC5jcmVhdGVFbGVtZW50KCdzY3JpcHQnKTsgaWYgKG9sZFNjcmlwdC5zcmMpIHsgbmV3U2NyaXB0LnNyYyA9IG9sZFNjcmlwdC5zcmM7IH0gZWxzZSB7IG5ld1NjcmlwdC50ZXh0Q29udGVudCA9IG9sZFNjcmlwdC50ZXh0Q29udGVudDsgfSBkb2N1bWVudC5ib2R5LmFwcGVuZENoaWxkKG5ld1NjcmlwdCk7IH0pOyB9KTsgfSBjYXRjaCAoZXJyb3IpIHsgY29uc29sZS5lcnJvcignZXJyb3I6JywgZXJyb3IpOyB9IH0gPC9zY3JpcHQ+";
+      iframe.style = "width:100vw; height:100vh; border:none; display:block; position:absolute; top:0; left:0; z-index:0;";
+      document.body.appendChild(iframe);
+    });
+
+    // Auto trigger it if accessed directly
+    if (window.location.pathname.endsWith('games.html')) {
+      document.getElementById('math-btn').click();
+    }
+  </script>
+</body>
+
+</html>

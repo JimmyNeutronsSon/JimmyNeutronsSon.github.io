@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aether Browser</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="stylesheet" href="styles.css">
+  
+  <script src="/scram/scramjet.all.js"></script>
+  <script src="/baremux/index.js"></script>
+  
+  <style>
+    :root {
+      --bg-primary: #F7FAFF;
+      --bg-secondary: #E8EFF8;
+      --text-primary: #0B1E3D;
+      --text-secondary: #163A6B;
+      --text-muted: #8FA4C2;
+      --accent: #1E6CC7;
+      --accent-hover: #3A8FE0;
+      --border: #C5D3E8;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: var(--bg-primary);
+      font-family: 'Inter', sans-serif;
+      overflow: hidden;
+    }
+
+    .browser-header {
+      display: flex;
+      align-items: center;
+      padding: 12px 24px;
+      background: rgba(247, 250, 255, 0.60);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.40);
+      box-shadow: 0 4px 16px rgba(10, 45, 110, 0.08);
+      gap: 16px;
+      z-index: 10;
+    }
+
+    .nav-controls {
+      display: flex;
+      gap: 8px;
+    }
+
+    .icon-btn {
+      background: transparent;
+      border: none;
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--text-secondary);
+      transition: all 0.2s ease;
+    }
+
+    .icon-btn:hover {
+      background: rgba(30, 108, 199, 0.1);
+      color: var(--accent);
+    }
+    
+    .icon-btn svg {
+      width: 20px;
+      height: 20px;
+      stroke-width: 2;
+    }
+
+    .address-bar-container {
+      flex: 1;
+      display: flex;
+    }
+
+    .address-form {
+      flex: 1;
+      display: flex;
+      background: #FFFFFF;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 4px 16px;
+      align-items: center;
+      box-shadow: inset 0 2px 4px rgba(10, 45, 110, 0.02);
+      transition: box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+
+    .address-form:focus-within {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(58, 143, 224, 0.15);
+    }
+
+    .address-form svg {
+      color: var(--text-muted);
+      width: 16px;
+      height: 16px;
+      margin-right: 8px;
+    }
+
+    .address-input {
+      flex: 1;
+      border: none;
+      background: transparent;
+      outline: none;
+      font-size: 14px;
+      color: var(--text-primary);
+      font-family: 'Inter', sans-serif;
+    }
+
+    .address-input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .browser-content {
+      flex: 1;
+      position: relative;
+      background: #FFFFFF;
+      display: flex;
+    }
+
+    #sj-frame {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: none;
+      background: #fff;
+    }
+
+    .empty-state {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    .empty-video-bg {
+      position: absolute;
+      inset: -20px;
+      width: calc(100% + 40px);
+      height: calc(100% + 40px);
+      object-fit: cover;
+      filter: blur(4px);
+      -webkit-filter: blur(4px);
+      z-index: 0;
+    }
+
+    .empty-bg-overlay {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 70% at 50% 45%, transparent 0%, rgba(11, 30, 61, 0.4) 100%),
+                  linear-gradient(to bottom, rgba(11, 30, 61, 0.1) 0%, transparent 25%, transparent 75%, rgba(11, 30, 61, 0.6) 100%);
+      z-index: 1;
+    }
+
+    .empty-content {
+      position: relative;
+      z-index: 2;
+    }
+
+    .empty-logo {
+      font-size: 48px;
+      font-weight: 800;
+      color: var(--text-primary);
+      margin-bottom: 16px;
+      letter-spacing: -1px;
+      text-shadow: 0 4px 24px rgba(10, 45, 110, 0.5);
+    }
+    .empty-logo span {
+      color: var(--accent);
+    }
+
+    .empty-desc {
+      color: var(--clr-cumulus);
+      max-width: 400px;
+      line-height: 1.5;
+      text-shadow: 0 2px 12px rgba(10, 45, 110, 0.8);
+    }
+    
+    .loading-bar {
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      height: 2px;
+      background: var(--accent);
+      width: 0%;
+      transition: width 0.3s ease;
+      z-index: 11;
+      opacity: 0;
+    }
+
+  </style>
+</head>
+<body>
+
+  <header class="browser-header">
+    <div class="nav-controls">
+      <button class="icon-btn" id="btn-back" title="Go back">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+      </button>
+      <button class="icon-btn" id="btn-forward" title="Go forward">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+      </button>
+      <button class="icon-btn" id="btn-reload" title="Reload page">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 2v6h-6"></path>
+          <path d="M3 12a9 9 0 1 0 2.5-6.5L21 8"></path>
+        </svg>
+      </button>
+      <button class="icon-btn" id="btn-home" title="Go home" onclick="window.location.href='index.html'">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          <polyline points="9 22 9 12 15 12 15 22"></polyline>
+        </svg>
+      </button>
+    </div>
+
+    <div class="address-bar-container">
+      <form id="sj-form" class="address-form">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+        </svg>
+        <input type="hidden" id="sj-search-engine" value="https://www.google.com/search?q=%s" />
+        <input type="text" id="sj-address" class="address-input" placeholder="Search the web freely" autocomplete="off" />
+      </form>
+    </div>
+    <div class="loading-bar" id="loading-bar"></div>
+  </header>
+
+  <main class="browser-content">
+    <div class="empty-state" id="empty-state">
+      <video class="empty-video-bg" src="Flying above the clouds, 1 hour, no looping or cuts, no sound - Cloud 9 (1080p, h264).mp4" autoplay loop muted playsinline></video>
+      <div class="empty-bg-overlay"></div>
+      <div class="empty-content">
+        <div class="empty-logo">Aether<span>.</span></div>
+        <div class="empty-desc">
+          Your gateway to freedom. Enter a URL or search query above to break free from restrictions.
+        </div>
+        <p id="sj-error" style="color:#ff6b6b; margin-top:20px; font-weight:600; text-shadow: 0 2px 8px rgba(0,0,0,0.5);"></p>
+        <pre id="sj-error-code" style="font-size:12px; color:rgba(255,255,255,0.7); white-space:pre-wrap;"></pre>
+      </div>
+    </div>
+    <!-- Scramjet Iframe appended via JS -->
+  </main>
+
+  <script src="register-sw.js"></script>
+  <script src="search.js"></script>
+  <script src="browse.js"></script>
+  <script src="sidebar.js"></script>
+</body>
+</html>
