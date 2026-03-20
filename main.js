@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ── Cycle Landing Phrases ─────────────────────────
   const phrases = [
-    "Welkin f*cks iboss",
+    "Atharva Joshi was here",
     "An RHMS original",
     "Where's Mr. Rivera?",
     "Made by a monkey",
@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
   ];
   let currentPhraseIndex = 0;
   const heroSub = document.getElementById('hero-sub');
-  
+
   if (heroSub && heroSub.classList.contains('landing-phrases')) {
     setInterval(() => {
       heroSub.style.opacity = '0';
