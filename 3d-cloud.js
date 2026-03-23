@@ -41,12 +41,12 @@ function init() {
     const loader = new OBJLoader();
     loader.load('/cloud.obj', (originalObj) => {
         console.log('Original cloud loaded. Creating field...');
-        
+
         // Center the original model
         const box = new THREE.Box3().setFromObject(originalObj);
         const center = box.getCenter(new THREE.Vector3());
         originalObj.position.sub(center);
-        
+
         const size = box.getSize(new THREE.Vector3());
         const maxDim = Math.max(size.x, size.y, size.z);
         const baseScale = 600 / maxDim;
@@ -63,7 +63,7 @@ function init() {
         const cloudCount = 15;
         for (let i = 0; i < cloudCount; i++) {
             const cloudClone = originalObj.clone();
-            
+
             // Apply material to meshes
             cloudClone.traverse((child) => {
                 if (child.isMesh) {
@@ -75,7 +75,7 @@ function init() {
             const spreadingX = 3500;
             const spreadingY = 2000;
             const spreadingZ = 2500;
-            
+
             cloudClone.position.set(
                 (Math.random() - 0.5) * spreadingX,
                 (Math.random() - 0.5) * spreadingY,
@@ -101,7 +101,7 @@ function init() {
             cloudField.add(cloudClone);
             clouds.push(cloudClone);
         }
-        
+
     }, (xhr) => {
         console.log((xhr.loaded / xhr.total * 100) + '% loaded');
     }, (error) => {
