@@ -3,13 +3,29 @@ importScripts("/scram/scramjet.all.js");
 const { ScramjetServiceWorker } = $scramjetLoadWorker();
 const scramjet = new ScramjetServiceWorker();
 
+const BYPASS_HOSTS = [
+	"vidking.net",
+	"videasy.net",
+	"users.videasy.net",
+];
+
+const BYPASS_PATHS = [
+	"/proxy",
+	"/baremux",
+	"/libcurl",
+	"/scram",
+];
+
 async function handleRequest(event) {
 	const url = new URL(event.request.url);
-	
-	// Skip proxying for our own assets directly
-	if (url.pathname.startsWith("/proxy") || 
-        url.pathname.endsWith(".obj") || 
-        url.pathname.includes("3d-cloud.js")) {
+
+	if (BYPASS_HOSTS.some(h => url.hostname.includes(h))) {
+		return fetch(event.request);
+	}
+	if (BYPASS_PATHS.some(p => url.pathname.startsWith(p))) {
+		return fetch(event.request);
+	}
+	if (url.pathname.endsWith(".obj") || url.pathname.includes("3d-cloud.js")) {
 		return fetch(event.request);
 	}
 
@@ -17,7 +33,7 @@ async function handleRequest(event) {
 	if (scramjet.route(event)) {
 		return scramjet.fetch(event);
 	}
-	
+
 	try {
 		return await fetch(event.request);
 	} catch (err) {

@@ -280,21 +280,47 @@ fastify.register(fastifyStatic, {
 // ── Music Proxy Route ───────────────────────────
 // To bypass COEP/CORS specifically for Saavn resources
 fastify.get("/proxy", async (request, reply) => {
-  const url = request.query.url;
-  if (!url) return reply.code(400).send("No URL provided");
-  
-  try {
-    const res = await fetch(url);
-    const contentType = res.headers.get("content-type");
-    const data = await res.arrayBuffer();
-    
-    reply.type(contentType)
-         .header("Access-Control-Allow-Origin", "*")
-         .header("Cross-Origin-Resource-Policy", "cross-origin")
-         .send(Buffer.from(data));
-  } catch (err) {
-    reply.code(500).send("Proxy error");
-  }
+	const url = request.query.url;
+	if (!url) return reply.code(400).send("No URL provided");
+
+	try {
+		const res = await fetch(url);
+		const contentType = res.headers.get("content-type");
+		const data = await res.arrayBuffer();
+
+		reply.type(contentType)
+			.header("Access-Control-Allow-Origin", "*")
+			.header("Cross-Origin-Resource-Policy", "cross-origin")
+			.send(Buffer.from(data));
+	} catch (err) {
+		reply.code(500).send("Proxy error");
+	}
+});
+
+fastify.get("/proxy/vidking", async (request, reply) => {
+	const { id, type, season, episode } = request.query;
+	if (!id) return reply.code(400).send("No id provided");
+
+	const url = type === "tv"
+		? `https://www.vidking.net/embed/tv/${id}/${season || 1}/${episode || 1}?color=1E6CC7&autoPlay=true`
+		: `https://www.vidking.net/embed/movie/${id}?color=1E6CC7&autoPlay=true`;
+
+	const res = await fetch(url, {
+		headers: {
+			'User-Agent': 'Mozilla/5.0',
+			'Referer': 'https://www.vidking.net/'
+		}
+	});
+
+	const ct = res.headers.get("content-type") || "text/html";
+	const data = await res.arrayBuffer();
+
+	return reply
+		.type(ct)
+		.header("Access-Control-Allow-Origin", "*")
+		.header("Cross-Origin-Resource-Policy", "cross-origin")
+		.header("Cross-Origin-Embedder-Policy", "unsafe-none")
+		.send(Buffer.from(data));
 });
 
 fastify.setNotFoundHandler((res, reply) => {
@@ -316,8 +342,7 @@ fastify.server.on("listening", () => {
 	console.log(`\thttp://localhost:${address.port}`);
 	console.log(`\thttp://${hostname()}:${address.port}`);
 	console.log(
-		`\thttp://${
-			address.family === "IPv6" ? `[${address.address}]` : address.address
+		`\thttp://${address.family === "IPv6" ? `[${address.address}]` : address.address
 		}:${address.port}`
 	);
 });
