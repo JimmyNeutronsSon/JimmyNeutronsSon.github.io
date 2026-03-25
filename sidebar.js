@@ -139,6 +139,8 @@ window.initSidebar = function () {
           <a href="games.html" class="sidebar-link">Games</a>
           <a href="retro-bowl.html" class="sidebar-link">Retro Bowl</a>
           <a href="movies.html" class="sidebar-link">Movies</a>
+          
+          <a href="Soundboard.html" class="sidebar-link">Soundboard/a>
           <a href="#" class="sidebar-link" id="music-toggle">Music</a>
         </nav>
       </aside>
