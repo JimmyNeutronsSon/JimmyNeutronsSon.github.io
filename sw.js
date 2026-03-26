@@ -37,7 +37,16 @@ async function handleRequest(event) {
 
 	await scramjet.loadConfig();
 	if (scramjet.route(event)) {
-		return scramjet.fetch(event);
+		const res = await scramjet.fetch(event);
+		if (!res) return new Response("Error", { status: 500 });
+		const headers = new Headers(res.headers);
+		headers.set("Cross-Origin-Embedder-Policy", "require-corp");
+		headers.set("Cross-Origin-Resource-Policy", "cross-origin");
+		return new Response(res.body, {
+			status: res.status,
+			statusText: res.statusText,
+			headers: headers
+		});
 	}
 
 	try {
