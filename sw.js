@@ -17,9 +17,9 @@ const BYPASS_HOSTS = [
 
 const BYPASS_PATHS = [
 	"/proxy",
-	"/baremux",
-	"/libcurl",
-	"/scram",
+	"/baremux/",
+	"/libcurl/",
+	"/scram/",
 ];
 
 async function handleRequest(event) {
