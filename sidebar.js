@@ -130,15 +130,16 @@ window.initSidebar = function () {
       </div>
       <aside id="glass-sidebar" class="glass-sidebar">
         <div class="sidebar-header">
-          <a href="index.html" class="logo">Welkin<span class="logo-square"></span></a>
+          <a href="/index.html" class="logo">Welkin<span class="logo-square"></span></a>
           <button id="sidebar-close" class="sidebar-close">&times;</button>
         </div>
         <nav class="sidebar-nav">
-          <a href="index.html" class="sidebar-link">Home</a>
-          <a href="browse.html" class="sidebar-link">Browse</a>
-          <a href="games.html" class="sidebar-link">Games</a>
-          <a href="retro-bowl.html" class="sidebar-link">Retro Bowl</a>
-          <a href="movies.html" class="sidebar-link">Movies</a>
+          <a href="/index.html" class="sidebar-link">Home</a>
+          <a href="/browse.html" class="sidebar-link">Browse</a>
+          <a href="/games.html" class="sidebar-link">Games</a>
+          <a href="/retro-bowl.html" class="sidebar-link">Retro Bowl</a>
+          <a href="/movies.html" class="sidebar-link">Movies</a>
+          <a href="/Soundboard/Soundboard.html" class="sidebar-link">Soundboard</a>
           <a href="#" class="sidebar-link" id="music-toggle">Music</a>
         </nav>
       </aside>
