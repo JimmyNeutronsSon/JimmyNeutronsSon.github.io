@@ -280,19 +280,21 @@ fastify.register(fastifyStatic, {
 // ── Music Proxy Route ───────────────────────────
 // To bypass COEP/CORS specifically for Saavn resources
 fastify.get("/proxy", async (request, reply) => {
-	const url = request.query.url;
-	if (!url) return reply.code(400).send("No URL provided");
-	try {
-		const res = await fetch(url);
-		const contentType = res.headers.get("content-type");
-		const data = await res.arrayBuffer();
-		reply.type(contentType)
-			.header("Access-Control-Allow-Origin", "*")
-			.header("Cross-Origin-Resource-Policy", "cross-origin")
-			.send(Buffer.from(data));
-	} catch (err) {
-		reply.code(500).send("Proxy error");
-	}
+  const url = request.query.url;
+  if (!url) return reply.code(400).send("No URL provided");
+  
+  try {
+    const res = await fetch(url);
+    const contentType = res.headers.get("content-type");
+    const data = await res.arrayBuffer();
+    
+    reply.type(contentType)
+         .header("Access-Control-Allow-Origin", "*")
+         .header("Cross-Origin-Resource-Policy", "cross-origin")
+         .send(Buffer.from(data));
+  } catch (err) {
+    reply.code(500).send("Proxy error");
+  }
 });
 
 fastify.setNotFoundHandler((res, reply) => {
@@ -301,32 +303,67 @@ fastify.setNotFoundHandler((res, reply) => {
 
 fastify.server.on("listening", () => {
 	const address = fastify.server.address();
-	if (!process.env.TMDB_API_KEY) console.warn("TMDB_API_KEY is not set.");
-	console.log(`Listening on http://localhost:${address.port}`);
+
+	if (!process.env.TMDB_API_KEY) {
+		console.warn(
+			"TMDB_API_KEY is not set — add it to .env (project root). Movies API: https://developer.themoviedb.org/",
+		);
+	}
+
+	// by default we are listening on 0.0.0.0 (every interface)
+	// we just need to list a few
+	console.log("Listening on:");
+	console.log(`\thttp://localhost:${address.port}`);
+	console.log(`\thttp://${hostname()}:${address.port}`);
+	console.log(
+		`\thttp://${
+			address.family === "IPv6" ? `[${address.address}]` : address.address
+		}:${address.port}`
+	);
 });
 
 process.on("SIGINT", shutdown);
 process.on("SIGTERM", shutdown);
 
 function shutdown() {
+	console.log("SIGTERM signal received: closing HTTP server");
 	fastify.close();
 	process.exit(0);
 }
 
 const envPort = parseInt(process.env.PORT || "", 10);
-const startPort = Number.isFinite(envPort) && envPort > 0 ? envPort : 8080;
+const startPort =
+	Number.isFinite(envPort) && envPort > 0 ? envPort : 5000;
+const PORT_ATTEMPTS = 20;
+
 async function startServer() {
-	for (let i = 0; i < 20; i++) {
+	let lastErr;
+	for (let i = 0; i < PORT_ATTEMPTS; i++) {
 		const port = startPort + i;
 		try {
 			await fastify.listen({ port, host: "0.0.0.0" });
+			if (i > 0) {
+				console.warn(
+					`Port ${startPort} was in use (EADDRINUSE). Listening on ${port} instead.`,
+				);
+				console.warn(`Open: http://localhost:${port}/movies.html`);
+			}
 			return;
 		} catch (err) {
+			lastErr = err;
 			if (err && err.code === "EADDRINUSE") continue;
 			throw err;
 		}
 	}
+	console.error(
+		"Could not bind after",
+		PORT_ATTEMPTS,
+		"attempts starting at",
+		startPort,
+	);
+	throw lastErr;
 }
+
 startServer().catch((err) => {
 	console.error(err);
 	process.exit(1);

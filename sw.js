@@ -5,8 +5,14 @@ const scramjet = new ScramjetServiceWorker();
 
 const BYPASS_HOSTS = [
 	"vidking.net",
+	"www.vidking.net",
 	"videasy.net",
+	"db.videasy.net",
+	"api.videasy.net",
+	"player.videasy.net",
 	"users.videasy.net",
+	"api.themoviedb.org",
+	"image.tmdb.org",
 ];
 
 const BYPASS_PATHS = [

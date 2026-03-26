@@ -2,10 +2,12 @@
   const PLAYER_COLOR = "1E6CC7";
 
   function vidkingMovieUrl(id) {
-    return `https://www.vidking.net/embed/movie/${id}?color=${PLAYER_COLOR}&autoPlay=true`;
+    const url = `https://www.vidking.net/embed/movie/${id}?color=${PLAYER_COLOR}&autoPlay=true`;
+    return `/scramjet/${encodeURIComponent(url)}`;
   }
   function vidkingTvUrl(id, season, episode) {
-    return `https://www.vidking.net/embed/tv/${id}/${season}/${episode}?color=${PLAYER_COLOR}&autoPlay=true`;
+    const url = `https://www.vidking.net/embed/tv/${id}/${season}/${episode}?color=${PLAYER_COLOR}&autoPlay=true`;
+    return `/scramjet/${encodeURIComponent(url)}`;
   }
 
   function imgUrl(path, size) {
