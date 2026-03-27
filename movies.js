@@ -33,15 +33,6 @@
 
   const PLAYER_COLOR = "1E6CC7";
 
-  function vidkingMovieUrl(id) {
-    const url = `https://www.vidking.net/embed/movie/${id}?color=${PLAYER_COLOR}&autoPlay=true`;
-    return `/scramjet/${encodeURIComponent(url)}`;
-  }
-  function vidkingTvUrl(id, season, episode) {
-    const url = `https://www.vidking.net/embed/tv/${id}/${season}/${episode}?color=${PLAYER_COLOR}&autoPlay=true`;
-    return `/scramjet/${encodeURIComponent(url)}`;
-  }
-
   function imgUrl(path, size) {
     if (!path) return "";
     const s = size || "w500";
@@ -96,8 +87,10 @@
     detailPlay: $("#detail-play"),
     playerModal: $("#player-modal"),
     playerTitle: $("#player-title"),
-    playerFrame: $("#vidking-frame"),
+    playerFrameWrap: $(".movies-player-frame"),
   };
+
+  let activePlayerFrame = null;
 
   let genreById = new Map();
   let heroItems = [];
@@ -271,15 +264,38 @@
 
   function openPlayer(type, id, title) {
     els.playerTitle.textContent = title;
-    els.playerFrame.src =
-      type === "tv" ? vidkingTvUrl(id, 1, 1) : vidkingMovieUrl(id);
+    
+    if (activePlayerFrame) {
+      activePlayerFrame.frame.remove();
+      activePlayerFrame = null;
+    }
+    els.playerFrameWrap.innerHTML = "";
+    
+    const frame = scramjet.createFrame();
+    frame.frame.id = "vidking-frame";
+    frame.frame.title = "Video player";
+    frame.frame.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen";
+    frame.frame.setAttribute("allowfullscreen", "true");
+    frame.frame.setAttribute("webkitallowfullscreen", "true");
+    frame.frame.setAttribute("mozallowfullscreen", "true");
+    els.playerFrameWrap.appendChild(frame.frame);
+    
+    const url = type === "tv" ? `https://www.vidking.net/embed/tv/${id}/1/1?color=${PLAYER_COLOR}&autoPlay=true` : `https://www.vidking.net/embed/movie/${id}?color=${PLAYER_COLOR}&autoPlay=true`;
+    
+    frame.go(url);
+    activePlayerFrame = frame;
+
     els.playerModal.hidden = false;
     document.body.style.overflow = "hidden";
   }
 
   function closePlayer() {
     els.playerModal.hidden = true;
-    els.playerFrame.src = "";
+    if (activePlayerFrame) {
+      activePlayerFrame.frame.remove();
+      activePlayerFrame = null;
+    }
+    els.playerFrameWrap.innerHTML = "";
     document.body.style.overflow = "";
   }
 
