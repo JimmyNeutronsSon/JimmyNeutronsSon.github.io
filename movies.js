@@ -1,4 +1,14 @@
 (function () {
+  const { ScramjetController } = $scramjetLoadController();
+  const scramjet = new ScramjetController({
+    files: {
+        wasm: "/scram/scramjet.wasm.wasm",
+        all: "/scram/scramjet.all.js",
+        sync: "/scram/scramjet.sync.js",
+    },
+  });
+  scramjet.init();
+
   const PLAYER_COLOR = "1E6CC7";
 
   function vidkingMovieUrl(id) {
