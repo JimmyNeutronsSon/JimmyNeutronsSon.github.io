@@ -1,4 +1,12 @@
-(function () {
+(async function () {
+  try {
+    if (typeof registerSW === "function") {
+      await registerSW();
+    }
+  } catch(e) {
+    console.warn("SW not registered", e);
+  }
+
   const { ScramjetController } = $scramjetLoadController();
   const scramjet = new ScramjetController({
     files: {
@@ -8,6 +16,20 @@
     },
   });
   scramjet.init();
+
+  const connection = new BareMux.BareMuxConnection("/baremux/worker.js");
+  let wispUrl =
+      (location.protocol === "https:" ? "wss" : "ws") +
+      "://" +
+      location.host +
+      "/wisp/";
+
+  if ((await connection.getTransport()) !== "/libcurl/index.mjs") {
+      await connection.setTransport("/libcurl/index.mjs", [{
+          wisp: wispUrl,
+          wasm: "/libcurl/libcurl.wasm"
+      }]);
+  }
 
   const PLAYER_COLOR = "1E6CC7";
 
