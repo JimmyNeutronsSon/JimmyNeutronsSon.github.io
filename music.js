@@ -316,8 +316,14 @@
       plDetailContent.querySelectorAll(".pl-track").forEach((tr) => {
         tr.onclick = (e) => {
           if (e.target.classList.contains("pl-track-rm")) return;
-          currentSongs = pl.songs.map((s) => s._raw);
-          playSong(parseInt(tr.getAttribute("data-idx")));
+          const idx = parseInt(tr.getAttribute("data-idx"));
+          currentSongs = pl.songs.map((s) => s._raw || s);
+          if (currentSongs[idx]) {
+            playSong(idx);
+          } else {
+            currentSongs = pl.songs;
+            playSong(idx);
+          }
         };
       });
     }
