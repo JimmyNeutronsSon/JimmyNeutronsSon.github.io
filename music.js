@@ -35,7 +35,11 @@
         currentSongs = state.songs;
         currentIndex = state.currentIndex || 0;
         audio.src = state.src;
-        audio.currentTime = state.currentTime || 0;
+
+        audio.addEventListener("loadedmetadata", function onMeta() {
+          audio.currentTime = state.currentTime || 0;
+          audio.removeEventListener("loadedmetadata", onMeta);
+        });
 
         const song = currentSongs[currentIndex];
         if (song) {
