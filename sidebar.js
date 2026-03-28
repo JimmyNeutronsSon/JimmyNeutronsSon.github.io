@@ -1,5 +1,5 @@
 window.initSidebar = function () {
-  if (document.getElementById('glass-sidebar')) return;
+  if (document.getElementById("glass-sidebar")) return;
 
   const sidebarCSS = `
     .sidebar-trigger {
@@ -118,7 +118,7 @@ window.initSidebar = function () {
       pointer-events: auto;
     }
     `;
-  const style = document.createElement('style');
+  const style = document.createElement("style");
   style.textContent = sidebarCSS;
   document.head.appendChild(style);
 
@@ -147,28 +147,29 @@ window.initSidebar = function () {
       <div id="sidebar-overlay" class="sidebar-overlay"></div>
     `;
 
-  document.documentElement.insertAdjacentHTML('beforeend', sidebarHTML);
+  document.documentElement.insertAdjacentHTML("beforeend", sidebarHTML);
 
-  const sidebar = document.getElementById('glass-sidebar');
-  const trigger = document.getElementById('sidebar-trigger');
-  const closeBtn = document.getElementById('sidebar-close');
-  const overlay = document.getElementById('sidebar-overlay');
-  const musicToggle = document.getElementById('music-toggle');
+  const sidebar = document.getElementById("glass-sidebar");
+  const trigger = document.getElementById("sidebar-trigger");
+  const closeBtn = document.getElementById("sidebar-close");
+  const overlay = document.getElementById("sidebar-overlay");
+  const musicToggle = document.getElementById("music-toggle");
 
   const closeSidebar = () => {
-    sidebar.classList.remove('open');
-    overlay.classList.remove('open');
+    sidebar.classList.remove("open");
+    overlay.classList.remove("open");
   };
+  window.closeSidebar = closeSidebar;
 
-  trigger.addEventListener('click', () => {
-    sidebar.classList.add('open');
-    overlay.classList.add('open');
+  trigger.addEventListener("click", () => {
+    sidebar.classList.add("open");
+    overlay.classList.add("open");
   });
-  closeBtn.addEventListener('click', closeSidebar);
-  overlay.addEventListener('click', closeSidebar);
+  closeBtn.addEventListener("click", closeSidebar);
+  overlay.addEventListener("click", closeSidebar);
 
   if (musicToggle) {
-    musicToggle.addEventListener('click', (e) => {
+    musicToggle.addEventListener("click", (e) => {
       e.preventDefault();
       if (window.toggleMusic) window.toggleMusic();
       closeSidebar();
@@ -176,21 +177,27 @@ window.initSidebar = function () {
   }
 };
 
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', window.initSidebar);
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", window.initSidebar);
 } else {
   window.initSidebar();
 }
 
-document.addEventListener('click', (e) => {
-  const link = e.target.closest('a');
-  if (!link || link.id === 'music-toggle') return;
-  const href = link.getAttribute('href');
-  if (!href || href.startsWith('http') || link.getAttribute('target') === '_blank' || href.startsWith('#')) return;
+document.addEventListener("click", (e) => {
+  const link = e.target.closest("a");
+  if (!link || link.id === "music-toggle") return;
+  const href = link.getAttribute("href");
+  if (
+    !href ||
+    href.startsWith("http") ||
+    link.getAttribute("target") === "_blank" ||
+    href.startsWith("#")
+  )
+    return;
 
   e.preventDefault();
-  document.body.classList.remove('page-transition-enter');
-  document.body.classList.add('page-transition-exit');
+  document.body.classList.remove("page-transition-enter");
+  document.body.classList.add("page-transition-exit");
 
   setTimeout(() => {
     window.location.href = href;

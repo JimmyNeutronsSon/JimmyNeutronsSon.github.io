@@ -1,20 +1,26 @@
 // Welkin Music Player Essentials
-(function() {
-    const MUSIC_API = "https://jiosaavn-api-privatecvc2.vercel.app";
-    let currentSongs = [];
-    let currentIndex = -1;
-    let audio = new Audio();
-    audio.crossOrigin = "anonymous";
-    
-    let playlists = JSON.parse(localStorage.getItem('welkin_playlists')) || [
-        { id: 'default1', name: 'Big TV', desc: 'Enjoy vivid emotions with this stunning music album. Each track is a story.', image: '', songs: [] }
-    ];
+(function () {
+  const MUSIC_API = "https://jiosaavn-api-privatecvc2.vercel.app";
+  let currentSongs = [];
+  let currentIndex = -1;
+  let audio = new Audio();
+  audio.crossOrigin = "anonymous";
 
-    function savePlaylists() {
-        localStorage.setItem('welkin_playlists', JSON.stringify(playlists));
-    }
+  let playlists = JSON.parse(localStorage.getItem("welkin_playlists")) || [
+    {
+      id: "default1",
+      name: "Big TV",
+      desc: "Enjoy vivid emotions with this stunning music album. Each track is a story.",
+      image: "",
+      songs: [],
+    },
+  ];
 
-    const playerHTML = `
+  function savePlaylists() {
+    localStorage.setItem("welkin_playlists", JSON.stringify(playlists));
+  }
+
+  const playerHTML = `
         <div id="music-overlay" class="music-player-overlay">
             <div class="music-player-card">
                 <div class="music-close-btn" id="music-close">&times;</div>
@@ -74,7 +80,7 @@
         </div>
     `;
 
-    const sidebarWidgetHTML = `
+  const sidebarWidgetHTML = `
         <div class="sidebar-widget-inner" id="sidebar-widget-inner">
             <div class="sw-details">
                 <div class="sw-title" id="sw-title">Welkin Music</div>
@@ -106,115 +112,180 @@
         </div>
     `;
 
-    document.addEventListener('DOMContentLoaded', () => {
-        document.body.insertAdjacentHTML('beforeend', playerHTML);
-        
-        const swContainer = document.getElementById('sidebar-music-widget');
-        if (swContainer) {
-            swContainer.innerHTML = sidebarWidgetHTML;
-            swContainer.style.display = 'block';
+  function initSidebarWidget() {
+    const swContainer = document.getElementById("sidebar-music-widget");
+    if (swContainer && !swContainer.querySelector(".sidebar-widget-inner")) {
+      swContainer.innerHTML = sidebarWidgetHTML;
+      swContainer.style.display = "block";
+      attachSidebarWidgetListeners();
+    }
+  }
+
+  const observer = new MutationObserver(() => {
+    initSidebarWidget();
+  });
+  if (document.documentElement) {
+    observer.observe(document.documentElement, {
+      childList: true,
+      subtree: true,
+    });
+    initSidebarWidget();
+  }
+
+  function attachSidebarWidgetListeners() {
+    const swExpand = document.getElementById("sw-expand");
+    if (swExpand) {
+      swExpand.onclick = () => {
+        if (window.closeSidebar) window.closeSidebar();
+        document.getElementById("music-overlay")?.classList.add("open");
+      };
+    }
+
+    const swPlayPause = document.getElementById("sw-playpause");
+    const swNext = document.getElementById("sw-next");
+    const swPrev = document.getElementById("sw-prev");
+    const swVol = document.getElementById("sw-vol");
+    const swProgressBg = document.getElementById("sw-progress-bg");
+
+    if (swPlayPause) {
+      swPlayPause.onclick = () => {
+        if (!audio.src) return;
+        if (audio.paused) {
+          audio.play();
+          window.__updateSwPlayIcon(true);
+        } else {
+          audio.pause();
+          window.__updateSwPlayIcon(false);
         }
+      };
+    }
+    if (swNext) {
+      swNext.onclick = () => {
+        if (currentIndex < currentSongs.length - 1) {
+          window.__playSong(currentIndex + 1);
+        }
+      };
+    }
+    if (swPrev) {
+      swPrev.onclick = () => {
+        if (currentIndex > 0) {
+          window.__playSong(currentIndex - 1);
+        }
+      };
+    }
 
-        const overlay = document.getElementById('music-overlay');
-        const searchInput = document.getElementById('music-search');
-        const resultsList = document.getElementById('music-results-list');
-        const playPauseBtn = document.getElementById('music-play-pause');
-        const playIcon = document.getElementById('play-icon');
-        const pauseIcon = document.getElementById('pause-icon');
-        const nextBtn = document.getElementById('music-next');
-        const prevBtn = document.getElementById('music-prev');
-        const progressBar = document.getElementById('progress-bar');
-        const progressCurrent = document.getElementById('progress-current');
-        const timeCurrent = document.getElementById('time-current');
-        const timeTotal = document.getElementById('time-total');
-        const currentCover = document.getElementById('current-cover');
-        const currentTitle = document.getElementById('current-title');
-        const currentArtist = document.getElementById('current-artist');
+    if (swVol) {
+      swVol.oninput = (e) => {
+        audio.volume = e.target.value;
+      };
+    }
 
-        // Sidebar widget elements
-        const swTitle = document.getElementById('sw-title');
-        const swArtist = document.getElementById('sw-artist');
-        const swPlayPause = document.getElementById('sw-playpause');
-        const swPlayIcon = document.getElementById('sw-play-icon');
-        const swPauseIcon = document.getElementById('sw-pause-icon');
-        const swProgressBg = document.getElementById('sw-progress-bg');
-        const swProgressFill = document.getElementById('sw-progress-fill');
-        const swTime = document.getElementById('sw-time-el');
-        const swTimeTotal = document.getElementById('sw-time-total-el');
-        const swVol = document.getElementById('sw-vol');
+    if (swProgressBg) {
+      swProgressBg.onclick = (e) => {
+        const width = swProgressBg.clientWidth;
+        const clickX = e.offsetX;
+        if (audio.duration)
+          audio.currentTime = (clickX / width) * audio.duration;
+      };
+    }
+  }
 
-        const tabSearch = document.getElementById('tab-search');
-        const tabPlaylists = document.getElementById('tab-playlists');
-        const viewSearch = document.getElementById('view-search');
-        const viewPlaylists = document.getElementById('view-playlists');
+  document.addEventListener("DOMContentLoaded", () => {
+    document.body.insertAdjacentHTML("beforeend", playerHTML);
 
-        tabSearch.onclick = () => {
-            tabSearch.classList.add('active');
-            tabPlaylists.classList.remove('active');
-            viewSearch.classList.add('active');
-            viewPlaylists.classList.remove('active');
-        };
-        tabPlaylists.onclick = () => {
-            tabPlaylists.classList.add('active');
-            tabSearch.classList.remove('active');
-            viewPlaylists.classList.add('active');
-            viewSearch.classList.remove('active');
-            renderPlaylistsList();
-        };
+    const overlay = document.getElementById("music-overlay");
+    const searchInput = document.getElementById("music-search");
+    const resultsList = document.getElementById("music-results-list");
+    const playPauseBtn = document.getElementById("music-play-pause");
+    const playIcon = document.getElementById("play-icon");
+    const pauseIcon = document.getElementById("pause-icon");
+    const nextBtn = document.getElementById("music-next");
+    const prevBtn = document.getElementById("music-prev");
+    const progressBar = document.getElementById("progress-bar");
+    const progressCurrent = document.getElementById("progress-current");
+    const timeCurrent = document.getElementById("time-current");
+    const timeTotal = document.getElementById("time-total");
+    const currentCover = document.getElementById("current-cover");
+    const currentTitle = document.getElementById("current-title");
+    const currentArtist = document.getElementById("current-artist");
 
-        const plListC = document.getElementById('playlists-list-container');
-        const plDetailC = document.getElementById('playlist-detail-container');
-        const plList = document.getElementById('playlists-list');
-        const plDetailContent = document.getElementById('playlist-detail-content');
-        
-        document.getElementById('back-to-playlists').onclick = () => {
-            plDetailC.style.display = 'none';
-            plListC.style.display = 'block';
-            renderPlaylistsList();
-        };
+    const tabSearch = document.getElementById("tab-search");
+    const tabPlaylists = document.getElementById("tab-playlists");
+    const viewSearch = document.getElementById("view-search");
+    const viewPlaylists = document.getElementById("view-playlists");
 
-        document.getElementById('create-playlist-btn').onclick = () => {
-            const name = prompt("Enter playlist name:");
-            if (name && name.trim()) {
-                playlists.push({
-                    id: 'pl_' + Date.now(),
-                    name: name.trim(),
-                    desc: 'Created by you',
-                    image: '',
-                    songs: []
-                });
-                savePlaylists();
-                renderPlaylistsList();
-            }
-        };
+    tabSearch.onclick = () => {
+      tabSearch.classList.add("active");
+      tabPlaylists.classList.remove("active");
+      viewSearch.classList.add("active");
+      viewPlaylists.classList.remove("active");
+    };
+    tabPlaylists.onclick = () => {
+      tabPlaylists.classList.add("active");
+      tabSearch.classList.remove("active");
+      viewPlaylists.classList.add("active");
+      viewSearch.classList.remove("active");
+      renderPlaylistsList();
+    };
 
-        function renderPlaylistsList() {
-            plList.innerHTML = '';
-            if (playlists.length === 0) {
-                plList.innerHTML = '<div style="color:var(--text-muted); text-align:center; padding:20px;">No playlists yet</div>';
-                return;
-            }
-            playlists.forEach(pl => {
-                const item = document.createElement('div');
-                item.className = 'music-item';
-                const img = pl.image ? wrapUrl(pl.image) : 'https://placehold.co/50x50/1e6cc7/ffffff?text=PL';
-                item.innerHTML = `
+    const plListC = document.getElementById("playlists-list-container");
+    const plDetailC = document.getElementById("playlist-detail-container");
+    const plList = document.getElementById("playlists-list");
+    const plDetailContent = document.getElementById("playlist-detail-content");
+
+    document.getElementById("back-to-playlists").onclick = () => {
+      plDetailC.style.display = "none";
+      plListC.style.display = "block";
+      renderPlaylistsList();
+    };
+
+    document.getElementById("create-playlist-btn").onclick = () => {
+      const name = prompt("Enter playlist name:");
+      if (name && name.trim()) {
+        playlists.push({
+          id: "pl_" + Date.now(),
+          name: name.trim(),
+          desc: "Created by you",
+          image: "",
+          songs: [],
+        });
+        savePlaylists();
+        renderPlaylistsList();
+      }
+    };
+
+    function renderPlaylistsList() {
+      plList.innerHTML = "";
+      if (playlists.length === 0) {
+        plList.innerHTML =
+          '<div style="color:var(--text-muted); text-align:center; padding:20px;">No playlists yet</div>';
+        return;
+      }
+      playlists.forEach((pl) => {
+        const item = document.createElement("div");
+        item.className = "music-item";
+        const img = pl.image
+          ? wrapUrl(pl.image)
+          : "https://placehold.co/50x50/1e6cc7/ffffff?text=PL";
+        item.innerHTML = `
                     <img class="music-item-img" src="${img}" alt="" crossorigin="anonymous">
                     <div class="music-item-info">
                         <div class="music-item-title">${cleanHtml(pl.name)}</div>
                         <div class="music-item-subtitle">${pl.songs.length} songs</div>
                     </div>
                 `;
-                item.onclick = () => showPlaylistDetail(pl);
-                plList.appendChild(item);
-            });
-        }
+        item.onclick = () => showPlaylistDetail(pl);
+        plList.appendChild(item);
+      });
+    }
 
-        function showPlaylistDetail(pl) {
-            plListC.style.display = 'none';
-            plDetailC.style.display = 'block';
-            const cover = pl.image ? wrapUrl(pl.image) : 'https://placehold.co/200x200/1e6cc7/ffffff?text=PL';
-            let html = `
+    function showPlaylistDetail(pl) {
+      plListC.style.display = "none";
+      plDetailC.style.display = "block";
+      const cover = pl.image
+        ? wrapUrl(pl.image)
+        : "https://placehold.co/200x200/1e6cc7/ffffff?text=PL";
+      let html = `
                 <div class="pl-header">
                     <img src="${cover}" class="pl-cover" crossorigin="anonymous">
                     <div class="pl-info">
@@ -229,11 +300,12 @@
                 </div>
                 <div class="pl-tracklist">
             `;
-            if (pl.songs.length === 0) {
-                html += '<div style="color:var(--text-muted); text-align:center; padding:20px;">Empty Playlist</div>';
-            } else {
-                pl.songs.forEach((s, idx) => {
-                    html += `
+      if (pl.songs.length === 0) {
+        html +=
+          '<div style="color:var(--text-muted); text-align:center; padding:20px;">Empty Playlist</div>';
+      } else {
+        pl.songs.forEach((s, idx) => {
+          html += `
                         <div class="pl-track" data-idx="${idx}">
                             <img class="pl-track-img" src="${wrapUrl(s.cover)}" crossorigin="anonymous">
                             <div class="pl-track-info">
@@ -244,80 +316,82 @@
                             <div class="pl-track-rm" data-idx="${idx}">&times;</div>
                         </div>
                     `;
-                });
-            }
-            html += '</div>';
-            plDetailContent.innerHTML = html;
-            
-            plDetailContent.querySelectorAll('.pl-track-rm').forEach(rm => {
-                rm.onclick = (e) => {
-                    e.stopPropagation();
-                    const i = parseInt(rm.getAttribute('data-idx'));
-                    pl.songs.splice(i, 1);
-                    savePlaylists();
-                    showPlaylistDetail(pl);
-                }
-            });
+        });
+      }
+      html += "</div>";
+      plDetailContent.innerHTML = html;
 
-            plDetailContent.querySelectorAll('.pl-track').forEach(tr => {
-                tr.onclick = (e) => {
-                    if (e.target.classList.contains('pl-track-rm')) return;
-                    currentSongs = pl.songs.map(s => s._raw);
-                    playSong(parseInt(tr.getAttribute('data-idx')));
-                }
-            });
-        }
-
-        window.toggleMusic = function() {
-            overlay.classList.add('open');
+      plDetailContent.querySelectorAll(".pl-track-rm").forEach((rm) => {
+        rm.onclick = (e) => {
+          e.stopPropagation();
+          const i = parseInt(rm.getAttribute("data-idx"));
+          pl.songs.splice(i, 1);
+          savePlaylists();
+          showPlaylistDetail(pl);
         };
+      });
 
-        if (document.getElementById('sw-expand')) {
-            document.getElementById('sw-expand').onclick = () => overlay.classList.add('open');
+      plDetailContent.querySelectorAll(".pl-track").forEach((tr) => {
+        tr.onclick = (e) => {
+          if (e.target.classList.contains("pl-track-rm")) return;
+          currentSongs = pl.songs.map((s) => s._raw);
+          playSong(parseInt(tr.getAttribute("data-idx")));
+        };
+      });
+    }
+
+    window.toggleMusic = function () {
+      overlay.classList.add("open");
+    };
+
+    document.addEventListener("click", (e) => {
+      if (e.target.id === "music-close" || e.target === overlay) {
+        overlay.classList.remove("open");
+      }
+    });
+
+    let searchTimeout;
+    searchInput.addEventListener("input", () => {
+      clearTimeout(searchTimeout);
+      const query = searchInput.value.trim();
+      if (query.length < 2) return;
+
+      searchTimeout = setTimeout(async () => {
+        resultsList.innerHTML =
+          '<div style="text-align:center; padding: 20px; opacity: 0.5;">Searching...</div>';
+        try {
+          const searchUrl = `${MUSIC_API}/search/songs?query=${encodeURIComponent(query)}&limit=20`;
+          const res = await fetch(wrapUrl(searchUrl));
+          const data = await res.json();
+          if (data.status === "SUCCESS" && data.data.results) {
+            renderSearchList(data.data.results);
+          }
+        } catch (err) {
+          resultsList.innerHTML =
+            '<div style="text-align:center; padding: 20px; color: #ff6b6b;">Error fetching songs</div>';
         }
+      }, 500);
+    });
 
-        document.addEventListener('click', (e) => {
-            if (e.target.id === 'music-close' || e.target === overlay) {
-                overlay.classList.remove('open');
-            }
-        });
+    let popupActive = null;
+    document.addEventListener("click", (e) => {
+      if (
+        popupActive &&
+        !e.target.closest(".music-add-popup") &&
+        !e.target.closest(".music-item-add")
+      ) {
+        popupActive.remove();
+        popupActive = null;
+      }
+    });
 
-        let searchTimeout;
-        searchInput.addEventListener('input', () => {
-            clearTimeout(searchTimeout);
-            const query = searchInput.value.trim();
-            if (query.length < 2) return;
-
-            searchTimeout = setTimeout(async () => {
-                resultsList.innerHTML = '<div style="text-align:center; padding: 20px; opacity: 0.5;">Searching...</div>';
-                try {
-                    const searchUrl = `${MUSIC_API}/search/songs?query=${encodeURIComponent(query)}&limit=20`;
-                    const res = await fetch(wrapUrl(searchUrl));
-                    const data = await res.json();
-                    if (data.status === 'SUCCESS' && data.data.results) {
-                        renderSearchList(data.data.results);
-                    }
-                } catch (err) {
-                    resultsList.innerHTML = '<div style="text-align:center; padding: 20px; color: #ff6b6b;">Error fetching songs</div>';
-                }
-            }, 500);
-        });
-
-        let popupActive = null;
-        document.addEventListener('click', (e) => {
-            if (popupActive && !e.target.closest('.music-add-popup') && !e.target.closest('.music-item-add')) {
-                popupActive.remove();
-                popupActive = null;
-            }
-        });
-
-        function renderSearchList(songs) {
-            resultsList.innerHTML = '';
-            songs.forEach((song, index) => {
-                const item = document.createElement('div');
-                item.className = 'music-item';
-                const imgUrl = wrapUrl(song.image[1].link);
-                item.innerHTML = `
+    function renderSearchList(songs) {
+      resultsList.innerHTML = "";
+      songs.forEach((song, index) => {
+        const item = document.createElement("div");
+        item.className = "music-item";
+        const imgUrl = wrapUrl(song.image[1].link);
+        item.innerHTML = `
                     <div style="flex:1; display:flex; align-items:center; gap:16px;" onclick="window.playSearchSong(event, ${index})">
                         <img class="music-item-img" src="${imgUrl}" alt="" crossorigin="anonymous">
                         <div class="music-item-info">
@@ -327,191 +401,198 @@
                     </div>
                     <button class="music-item-add" data-str="${encodeURIComponent(JSON.stringify(song))}">+</button>
                 `;
-                resultsList.appendChild(item);
-            });
-            window.__searchSongs = songs;
+        resultsList.appendChild(item);
+      });
+      window.__searchSongs = songs;
 
-            document.querySelectorAll('.music-item-add').forEach(btn => {
-                btn.onclick = (e) => {
-                    e.stopPropagation();
-                    if (popupActive) popupActive.remove();
-                    const popup = document.createElement('div');
-                    popup.className = 'music-add-popup';
-                    let phtml = '<div style="font-size:12px; margin-bottom:8px; color:var(--text-muted)">Add to playlist:</div>';
-                    playlists.forEach(pl => {
-                        phtml += `<div class="pl-option" data-plid="${pl.id}">${cleanHtml(pl.name)}</div>`;
-                    });
-                    popup.innerHTML = phtml;
-                    btn.parentElement.appendChild(popup);
-                    popupActive = popup;
-                    
-                    popup.querySelectorAll('.pl-option').forEach(opt => {
-                        opt.onclick = () => {
-                            const plid = opt.getAttribute('data-plid');
-                            const pl = playlists.find(p => p.id === plid);
-                            const song = JSON.parse(decodeURIComponent(btn.getAttribute('data-str')));
-                            if (pl && song) {
-                                if (pl.songs.length === 0) pl.image = song.image[2]?.link || song.image[1]?.link;
-                                pl.songs.push({
-                                    id: song.id,
-                                    name: song.name,
-                                    artist: song.primaryArtists,
-                                    cover: song.image[1].link,
-                                    duration: formatTime(song.duration || 0),
-                                    _raw: song
-                                });
-                                savePlaylists();
-                                popup.remove();
-                                popupActive = null;
-                            }
-                        };
-                    });
-                };
-            });
-        }
+      document.querySelectorAll(".music-item-add").forEach((btn) => {
+        btn.onclick = (e) => {
+          e.stopPropagation();
+          if (popupActive) popupActive.remove();
+          const popup = document.createElement("div");
+          popup.className = "music-add-popup";
+          let phtml =
+            '<div style="font-size:12px; margin-bottom:8px; color:var(--text-muted)">Add to playlist:</div>';
+          playlists.forEach((pl) => {
+            phtml += `<div class="pl-option" data-plid="${pl.id}">${cleanHtml(pl.name)}</div>`;
+          });
+          popup.innerHTML = phtml;
+          btn.parentElement.appendChild(popup);
+          popupActive = popup;
 
-        window.playSearchSong = (e, idx) => {
-            currentSongs = window.__searchSongs || []; 
-            playSong(idx);
-        };
-
-        function playSong(index) {
-            if (!currentSongs || index < 0 || index >= currentSongs.length) return;
-            currentIndex = index;
-            const song = currentSongs[index];
-
-            const name = cleanHtml(song.name || song._raw?.name);
-            const artist = cleanHtml(song.primaryArtists || song._raw?.primaryArtists || song.artist);
-            const imgObjs = song.image || song._raw?.image;
-            
-            currentTitle.textContent = name;
-            currentArtist.textContent = artist;
-            
-            if (swTitle) swTitle.textContent = name;
-            if (swArtist) swArtist.innerHTML = artist + ' <svg width="12" height="12" viewBox="0 0 24 24" fill="var(--text-muted)"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path></svg>';
-            
-            if(imgObjs && imgObjs.length > 0) {
-                let link = imgObjs[2]?.link || imgObjs[1]?.link || imgObjs[0]?.link;
-                const coverUrl = wrapUrl(link);
-                currentCover.innerHTML = `<img src="${coverUrl}" alt="" crossorigin="anonymous">`;
-            }
-            
-            const raw = song._raw || song;
-            let originalUrl = "";
-            if (raw.downloadUrl && raw.downloadUrl.length > 0) {
-                 originalUrl = raw.downloadUrl[4]?.link || raw.downloadUrl[3]?.link || raw.downloadUrl[2]?.link || raw.downloadUrl[0]?.link;
-            }
-            
-            audio.src = wrapUrl(originalUrl);
-            audio.play();
-            
-            updatePlayIcon(true);
-        }
-
-        function updatePlayIcon(isPlaying) {
-            if (isPlaying) {
-                playIcon.style.display = 'none';
-                pauseIcon.style.display = 'block';
-                if(swPlayIcon) swPlayIcon.style.display = 'none';
-                if(swPauseIcon) swPauseIcon.style.display = 'block';
-            } else {
-                playIcon.style.display = 'block';
-                pauseIcon.style.display = 'none';
-                if(swPlayIcon) swPlayIcon.style.display = 'block';
-                if(swPauseIcon) swPauseIcon.style.display = 'none';
-            }
-        }
-
-        function wrapUrl(url) {
-            if (!url) return "";
-            return `/proxy?url=${encodeURIComponent(url)}`;
-        }
-
-        const handlePlayPause = () => {
-            if (!audio.src) return;
-            if (audio.paused) {
-                audio.play();
-                updatePlayIcon(true);
-            } else {
-                audio.pause();
-                updatePlayIcon(false);
-            }
-        };
-
-        const handleNext = () => {
-            if (currentIndex < currentSongs.length - 1) {
-                playSong(currentIndex + 1);
-            }
-        };
-
-        const handlePrev = () => {
-            if (currentIndex > 0) {
-                playSong(currentIndex - 1);
-            }
-        };
-
-        playPauseBtn.onclick = handlePlayPause;
-        nextBtn.onclick = handleNext;
-        prevBtn.onclick = handlePrev;
-        
-        if (swPlayPause) swPlayPause.onclick = handlePlayPause;
-        if (document.getElementById('sw-next')) document.getElementById('sw-next').onclick = handleNext;
-        if (document.getElementById('sw-prev')) document.getElementById('sw-prev').onclick = handlePrev;
-        
-        if (swVol) {
-            swVol.oninput = (e) => {
-                audio.volume = e.target.value;
+          popup.querySelectorAll(".pl-option").forEach((opt) => {
+            opt.onclick = () => {
+              const plid = opt.getAttribute("data-plid");
+              const pl = playlists.find((p) => p.id === plid);
+              const song = JSON.parse(
+                decodeURIComponent(btn.getAttribute("data-str")),
+              );
+              if (pl && song) {
+                if (pl.songs.length === 0)
+                  pl.image = song.image[2]?.link || song.image[1]?.link;
+                pl.songs.push({
+                  id: song.id,
+                  name: song.name,
+                  artist: song.primaryArtists,
+                  cover: song.image[1].link,
+                  duration: formatTime(song.duration || 0),
+                  _raw: song,
+                });
+                savePlaylists();
+                popup.remove();
+                popupActive = null;
+              }
             };
-        }
-
-        audio.ontimeupdate = () => {
-            const progress = (audio.currentTime / audio.duration) * 100 || 0;
-            progressCurrent.style.width = `${progress}%`;
-            timeCurrent.textContent = formatTime(audio.currentTime);
-            timeTotal.textContent = formatTime(audio.duration || 0);
-            
-            if (swProgressFill) swProgressFill.style.width = `${progress}%`;
-            if (swTime) swTime.textContent = formatTime(audio.currentTime);
-            if (swTimeTotal) {
-                const rem = (audio.duration || 0) - audio.currentTime;
-                swTimeTotal.textContent = "-" + formatTime(rem > 0 ? rem : 0);
-            }
+          });
         };
+      });
+    }
 
-        progressBar.onclick = (e) => {
-            const width = progressBar.clientWidth;
-            const clickX = e.offsetX;
-            const duration = audio.duration;
-            audio.currentTime = (clickX / width) * duration;
-        };
-        
-        if (swProgressBg) {
-            swProgressBg.onclick = (e) => {
-                const width = swProgressBg.clientWidth;
-                const clickX = e.offsetX;
-                if(audio.duration) audio.currentTime = (clickX / width) * audio.duration;
-            };
-        }
+    window.playSearchSong = (e, idx) => {
+      currentSongs = window.__searchSongs || [];
+      playSong(idx);
+    };
 
-        audio.onended = () => {
-            if (currentIndex < currentSongs.length - 1) {
-                playSong(currentIndex + 1);
-            } else {
-                updatePlayIcon(false);
-            }
-        };
+    function playSong(index) {
+      if (!currentSongs || index < 0 || index >= currentSongs.length) return;
+      currentIndex = index;
+      const song = currentSongs[index];
 
-        function formatTime(seconds) {
-            const min = Math.floor(seconds / 60) || 0;
-            const sec = Math.floor(seconds % 60) || 0;
-            return `${min}:${sec < 10 ? '0' : ''}${sec}`;
-        }
+      const name = cleanHtml(song.name || song._raw?.name);
+      const artist = cleanHtml(
+        song.primaryArtists || song._raw?.primaryArtists || song.artist,
+      );
+      const imgObjs = song.image || song._raw?.image;
 
-        function cleanHtml(str) {
-            if(!str) return "";
-            const div = document.createElement('div');
-            div.innerHTML = str;
-            return div.textContent || div.innerText || "";
-        }
-    });
+      currentTitle.textContent = name;
+      currentArtist.textContent = artist;
+
+      const swTitleEl = document.getElementById("sw-title");
+      const swArtistEl = document.getElementById("sw-artist");
+      if (swTitleEl) swTitleEl.textContent = name;
+      if (swArtistEl)
+        swArtistEl.innerHTML =
+          artist +
+          ' <svg width="12" height="12" viewBox="0 0 24 24" fill="var(--text-muted)"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path></svg>';
+
+      if (imgObjs && imgObjs.length > 0) {
+        let link = imgObjs[2]?.link || imgObjs[1]?.link || imgObjs[0]?.link;
+        const coverUrl = wrapUrl(link);
+        currentCover.innerHTML = `<img src="${coverUrl}" alt="" crossorigin="anonymous">`;
+      }
+
+      const raw = song._raw || song;
+      let originalUrl = "";
+      if (raw.downloadUrl && raw.downloadUrl.length > 0) {
+        originalUrl =
+          raw.downloadUrl[4]?.link ||
+          raw.downloadUrl[3]?.link ||
+          raw.downloadUrl[2]?.link ||
+          raw.downloadUrl[0]?.link;
+      }
+
+      audio.src = wrapUrl(originalUrl);
+      audio.play();
+
+      updatePlayIcon(true);
+    }
+
+    function updatePlayIcon(isPlaying) {
+      if (isPlaying) {
+        playIcon.style.display = "none";
+        pauseIcon.style.display = "block";
+        const swPlayIconEl = document.getElementById("sw-play-icon");
+        const swPauseIconEl = document.getElementById("sw-pause-icon");
+        if (swPlayIconEl) swPlayIconEl.style.display = "none";
+        if (swPauseIconEl) swPauseIconEl.style.display = "block";
+      } else {
+        playIcon.style.display = "block";
+        pauseIcon.style.display = "none";
+        const swPlayIconEl = document.getElementById("sw-play-icon");
+        const swPauseIconEl = document.getElementById("sw-pause-icon");
+        if (swPlayIconEl) swPlayIconEl.style.display = "block";
+        if (swPauseIconEl) swPauseIconEl.style.display = "none";
+      }
+    }
+
+    window.__playSong = playSong;
+    window.__updateSwPlayIcon = updatePlayIcon;
+
+    function wrapUrl(url) {
+      if (!url) return "";
+      return `/proxy?url=${encodeURIComponent(url)}`;
+    }
+
+    const handlePlayPause = () => {
+      if (!audio.src) return;
+      if (audio.paused) {
+        audio.play();
+        updatePlayIcon(true);
+      } else {
+        audio.pause();
+        updatePlayIcon(false);
+      }
+    };
+
+    const handleNext = () => {
+      if (currentIndex < currentSongs.length - 1) {
+        playSong(currentIndex + 1);
+      }
+    };
+
+    const handlePrev = () => {
+      if (currentIndex > 0) {
+        playSong(currentIndex - 1);
+      }
+    };
+
+    playPauseBtn.onclick = handlePlayPause;
+    nextBtn.onclick = handleNext;
+    prevBtn.onclick = handlePrev;
+
+    audio.ontimeupdate = () => {
+      const progress = (audio.currentTime / audio.duration) * 100 || 0;
+      progressCurrent.style.width = `${progress}%`;
+      timeCurrent.textContent = formatTime(audio.currentTime);
+      timeTotal.textContent = formatTime(audio.duration || 0);
+
+      const swProgressFillEl = document.getElementById("sw-progress-fill");
+      const swTimeEl = document.getElementById("sw-time-el");
+      const swTimeTotalEl = document.getElementById("sw-time-total-el");
+      if (swProgressFillEl) swProgressFillEl.style.width = `${progress}%`;
+      if (swTimeEl) swTimeEl.textContent = formatTime(audio.currentTime);
+      if (swTimeTotalEl) {
+        const rem = (audio.duration || 0) - audio.currentTime;
+        swTimeTotalEl.textContent = "-" + formatTime(rem > 0 ? rem : 0);
+      }
+    };
+
+    progressBar.onclick = (e) => {
+      const width = progressBar.clientWidth;
+      const clickX = e.offsetX;
+      const duration = audio.duration;
+      audio.currentTime = (clickX / width) * duration;
+    };
+
+    audio.onended = () => {
+      if (currentIndex < currentSongs.length - 1) {
+        playSong(currentIndex + 1);
+      } else {
+        updatePlayIcon(false);
+      }
+    };
+
+    function formatTime(seconds) {
+      const min = Math.floor(seconds / 60) || 0;
+      const sec = Math.floor(seconds % 60) || 0;
+      return `${min}:${sec < 10 ? "0" : ""}${sec}`;
+    }
+
+    function cleanHtml(str) {
+      if (!str) return "";
+      const div = document.createElement("div");
+      div.innerHTML = str;
+      return div.textContent || div.innerText || "";
+    }
+  });
 })();
