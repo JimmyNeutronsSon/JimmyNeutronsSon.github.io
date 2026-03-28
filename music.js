@@ -6,7 +6,7 @@
   let audio = new Audio();
   audio.crossOrigin = "anonymous";
 
-  window.saveMusicState = function() {
+  function saveMusicState() {
     if (!audio.src) return;
     const state = {
       currentIndex: currentIndex,
@@ -22,12 +22,12 @@
       })),
     };
     sessionStorage.setItem("welkin_music_state", JSON.stringify(state));
-    console.log("Music state saved:", state.src.substring(0, 50));
-  };
+  }
+
+  window.saveMusicState = saveMusicState;
 
   function restoreMusicState() {
     const saved = sessionStorage.getItem("welkin_music_state");
-    console.log("Music state restore attempt, saved:", saved ? "yes" : "no");
     if (!saved) return;
     try {
       const state = JSON.parse(saved);
@@ -70,49 +70,26 @@
         }
 
         if (!state.paused) {
-          audio.play().then(() => {
-            const playIcon = document.getElementById("play-icon");
-            const pauseIcon = document.getElementById("pause-icon");
-            const swPlayIconEl = document.getElementById("sw-play-icon");
-            const swPauseIconEl = document.getElementById("sw-pause-icon");
-            if (playIcon) playIcon.style.display = "none";
-            if (pauseIcon) pauseIcon.style.display = "block";
-            if (swPlayIconEl) swPlayIconEl.style.display = "none";
-            if (swPauseIconEl) swPauseIconEl.style.display = "block";
-          }).catch(() => {});
-        }
-        
-        const progressCurrent = document.getElementById("progress-current");
-        const timeCurrent = document.getElementById("time-current");
-        const timeTotal = document.getElementById("time-total");
-        if (audio.duration) {
-          const progress = (audio.currentTime / audio.duration) * 100 || 0;
-          if (progressCurrent) progressCurrent.style.width = `${progress}%`;
-          if (timeCurrent) timeCurrent.textContent = formatTime(audio.currentTime);
-          if (timeTotal) timeTotal.textContent = formatTime(audio.duration);
-        }
-        
-        const swProgressFillEl = document.getElementById("sw-progress-fill");
-        const swTimeEl = document.getElementById("sw-time-el");
-        const swTimeTotalEl = document.getElementById("sw-time-total-el");
-        if (swProgressFillEl && audio.duration) {
-          const progress = (audio.currentTime / audio.duration) * 100 || 0;
-          swProgressFillEl.style.width = `${progress}%`;
-          if (swTimeEl) swTimeEl.textContent = formatTime(audio.currentTime);
-          if (swTimeTotalEl) {
-            const rem = audio.duration - audio.currentTime;
-            swTimeTotalEl.textContent = "-" + formatTime(rem > 0 ? rem : 0);
-          }
+          audio
+            .play()
+            .then(() => {
+              updatePlayIconOnRestore();
+            })
+            .catch(() => {});
         }
       }
-    } catch (e) {
-      console.log("Music restore failed:", e);
-    }
+    } catch (e) {}
   }
-      }
-    } catch (e) {
-      console.log("Music restore failed:", e);
-    }
+
+  function updatePlayIconOnRestore() {
+    const playIcon = document.getElementById("play-icon");
+    const pauseIcon = document.getElementById("pause-icon");
+    const swPlayIconEl = document.getElementById("sw-play-icon");
+    const swPauseIconEl = document.getElementById("sw-pause-icon");
+    if (playIcon) playIcon.style.display = "none";
+    if (pauseIcon) pauseIcon.style.display = "block";
+    if (swPlayIconEl) swPlayIconEl.style.display = "none";
+    if (swPauseIconEl) swPauseIconEl.style.display = "block";
   }
 
   function updatePlayerUI() {
