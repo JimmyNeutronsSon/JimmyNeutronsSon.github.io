@@ -308,7 +308,10 @@
 
   document.addEventListener("DOMContentLoaded", () => {
     document.body.insertAdjacentHTML("beforeend", playerHTML);
-    setTimeout(restoreMusicState, 100);
+    if (!window.__spaNavigation) {
+      setTimeout(restoreMusicState, 100);
+    }
+    window.__spaNavigation = false;
 
     const overlay = document.getElementById("music-overlay");
     const searchInput = document.getElementById("music-search");

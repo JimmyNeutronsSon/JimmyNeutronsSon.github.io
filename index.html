@@ -1,84 +1,151 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Notes</title>
-  <meta name="description"
-    content="Welkin is dedicated to giving you the best experience at school. Surf the web freely and play games without restrictions.">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
-    rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
-  <script type="importmap">
-    {
-      "imports": {
-        "three": "/lib/three.module.js",
-        "three/examples/jsm/loaders/OBJLoader.js": "/lib/OBJLoader.js"
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Notes</title>
+    <meta
+      name="description"
+      content="Welkin is dedicated to giving you the best experience at school. Surf the web freely and play games without restrictions."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "/lib/three.module.js",
+          "three/examples/jsm/loaders/OBJLoader.js": "/lib/OBJLoader.js"
+        }
       }
-    }
-  </script>
-</head>
+    </script>
+  </head>
 
-<body>
-  <!-- ═══════════════════════════════════════════════ -->
-  <!-- HERO SECTION                                    -->
-  <!-- ═══════════════════════════════════════════════ -->
-  <section class="hero" id="hero">
-    <!-- New Local Video Background -->
-    <div class="hero-bg" id="canvas-container">
-      <!-- 3D Cloud Canvas injected here -->
+  <body>
+    <div id="spa-content">
+      <!-- ═══════════════════════════════════════════════ -->
+      <!-- HERO SECTION                                    -->
+      <!-- ═══════════════════════════════════════════════ -->
+      <section class="hero" id="hero">
+        <!-- New Local Video Background -->
+        <div class="hero-bg" id="canvas-container">
+          <!-- 3D Cloud Canvas injected here -->
+        </div>
+
+        <div class="hero-content">
+          <div class="hero-badge" id="hero-badge">
+            <span class="badge-dot"></span>
+            Introducing Welkin
+          </div>
+
+          <h1 class="hero-heading" id="hero-heading">Welkin.</h1>
+
+          <p
+            class="hero-sub landing-phrases"
+            id="hero-sub"
+            style="transition: opacity 0.5s ease; min-height: 2em"
+          >
+            Welkin f*cks iboss
+          </p>
+
+          <div class="hero-ctas" id="hero-ctas">
+            <a
+              href="browse.html"
+              class="btn btn-primary spa-link"
+              id="btn-surf"
+            >
+              <svg
+                class="btn-icon"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <line x1="7" y1="17" x2="17" y2="7" />
+                <polyline points="7 7 17 7 17 17" />
+              </svg>
+              Surf the Web
+            </a>
+            <a href="games.html" class="btn btn-outline spa-link" id="btn-games"
+              >Play Games</a
+            >
+          </div>
+        </div>
+
+        <!-- Scroll indicator -->
+        <div class="scroll-indicator" id="scroll-indicator">
+          <div class="scroll-line"></div>
+        </div>
+      </section>
+
+      <!-- Footer -->
+      <footer id="footer">
+        <div class="footer-inner">
+          <span class="footer-logo">Welkin<span class="logo-dot">.</span></span>
+          <span class="footer-copy"
+            >&copy; 2026 Welkin. All rights reserved.</span
+          >
+        </div>
+      </footer>
     </div>
 
-    <div class="hero-content">
-      <div class="hero-badge" id="hero-badge">
-        <span class="badge-dot"></span>
-        Introducing Welkin
-      </div>
+    <script>
+      window.SPA_ROUTES = {
+        "browse.html": "browse",
+        "games.html": "games",
+        "movies.html": "movies",
+        "retro-bowl.html": "retro-bowl",
+      };
 
-      <h1 class="hero-heading" id="hero-heading">
-        Welkin.
-      </h1>
+      window.loadPage = async function (pageUrl) {
+        window.__spaNavigation = true;
+        const contentDiv = document.getElementById("spa-content");
+        try {
+          const response = await fetch(pageUrl);
+          const html = await response.text();
 
-      <p class="hero-sub landing-phrases" id="hero-sub" style="transition: opacity 0.5s ease; min-height: 2em;">
-        Welkin f*cks iboss
-      </p>
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(html, "text/html");
 
-      <div class="hero-ctas" id="hero-ctas">
-        <a href="browse.html" class="btn btn-primary" id="btn-surf">
-          <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-            stroke-linecap="round" stroke-linejoin="round">
-            <line x1="7" y1="17" x2="17" y2="7" />
-            <polyline points="7 7 17 7 17 17" />
-          </svg>
-          Surf the Web
-        </a>
-        <a href="games.html" class="btn btn-outline" id="btn-games">Play Games</a>
-      </div>
-    </div>
+          const newBody = doc.body;
+          let newContent = newBody.innerHTML;
 
-    <!-- Scroll indicator -->
-    <div class="scroll-indicator" id="scroll-indicator">
-      <div class="scroll-line"></div>
-    </div>
-  </section>
+          const scripts = [];
+          newBody.querySelectorAll("script").forEach((script) => {
+            if (script.src) {
+              scripts.push(script.src);
+            } else {
+              scripts.push({ inline: script.textContent });
+            }
+          });
 
+          contentDiv.innerHTML = newContent;
 
+          scripts.forEach((src) => {
+            if (typeof src === "string") {
+              const script = document.createElement("script");
+              script.src = src;
+              document.body.appendChild(script);
+            }
+          });
 
-  <!-- Footer -->
-  <footer id="footer">
-    <div class="footer-inner">
-      <span class="footer-logo">Welkin<span class="logo-dot">.</span></span>
-      <span class="footer-copy">&copy; 2026 Welkin. All rights reserved.</span>
-    </div>
-  </footer>
+          history.pushState({}, "", pageUrl);
+        } catch (e) {
+          console.error("Failed to load page:", e);
+          window.location.href = pageUrl;
+        }
+      };
+    </script>
 
-  <script type="module" src="3d-cloud.js"></script>
-  <script src="main.js"></script>
-  <script src="music.js"></script>
-  <script src="sidebar.js"></script>
-</body>
-
+    <script type="module" src="3d-cloud.js"></script>
+    <script src="main.js"></script>
+    <script src="music.js"></script>
+    <script src="sidebar.js"></script>
+  </body>
 </html>
