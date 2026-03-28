@@ -60,7 +60,7 @@ window.initSidebar = function () {
       font-size: 28px;
       font-weight: 800; /* Extra Bold */
       letter-spacing: -1px; /* Tighter tracking like image */
-      color: #0B1E3D !important;
+      color: #0B1E3D;
       text-decoration: none;
       display: flex;
       align-items: baseline;
