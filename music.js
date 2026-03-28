@@ -8,6 +8,7 @@
 
   function saveMusicState() {
     if (!audio.src) return;
+    console.log("Saving music state, time:", audio.currentTime);
     const state = {
       currentIndex: currentIndex,
       currentTime: audio.currentTime,
@@ -28,9 +29,11 @@
 
   function restoreMusicState() {
     const saved = sessionStorage.getItem("welkin_music_state");
+    console.log("Restore called, saved exists:", !!saved);
     if (!saved) return;
     try {
       const state = JSON.parse(saved);
+      console.log("Restoring state, time:", state.currentTime);
       if (state.songs && state.songs.length > 0 && state.src) {
         currentSongs = state.songs;
         currentIndex = state.currentIndex || 0;
