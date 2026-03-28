@@ -282,24 +282,7 @@
     function showPlaylistDetail(pl) {
       plListC.style.display = "none";
       plDetailC.style.display = "block";
-      const cover = pl.image
-        ? wrapUrl(pl.image)
-        : "https://placehold.co/200x200/1e6cc7/ffffff?text=PL";
-      let html = `
-                <div class="pl-header">
-                    <img src="${cover}" class="pl-cover" crossorigin="anonymous">
-                    <div class="pl-info">
-                        <div class="pl-type">CURATED ALBUM</div>
-                        <div class="pl-title">${cleanHtml(pl.name)}</div>
-                        <div class="pl-desc">${cleanHtml(pl.desc)}</div>
-                        <div class="pl-meta">
-                            <div class="pl-like">&hearts;</div>
-                            <span>100 Likes &bull; ${pl.songs.length} Songs</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="pl-tracklist">
-            `;
+      let html = `<div class="pl-title" style="font-size:18px; font-weight:600; margin-bottom:16px;">${cleanHtml(pl.name)}</div>`;
       if (pl.songs.length === 0) {
         html +=
           '<div style="color:var(--text-muted); text-align:center; padding:20px;">Empty Playlist</div>';
@@ -318,7 +301,6 @@
                     `;
         });
       }
-      html += "</div>";
       plDetailContent.innerHTML = html;
 
       plDetailContent.querySelectorAll(".pl-track-rm").forEach((rm) => {
