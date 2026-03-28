@@ -6,6 +6,142 @@
   let audio = new Audio();
   audio.crossOrigin = "anonymous";
 
+  function saveMusicState() {
+    const state = {
+      currentIndex: currentIndex,
+      currentTime: audio.currentTime,
+      paused: audio.paused,
+      src: audio.src,
+      songs: currentSongs.map((s) => ({
+        name: s.name || s._raw?.name,
+        artist: s.primaryArtists || s._raw?.primaryArtists || s.artist,
+        image: s.image || s._raw?.image,
+        downloadUrl: s.downloadUrl || s._raw?.downloadUrl,
+        _raw: s._raw || s,
+      })),
+    };
+    sessionStorage.setItem("welkin_music_state", JSON.stringify(state));
+  }
+
+  function restoreMusicState() {
+    const saved = sessionStorage.getItem("welkin_music_state");
+    if (!saved) return;
+    try {
+      const state = JSON.parse(saved);
+      if (state.songs && state.songs.length > 0 && state.src) {
+        currentSongs = state.songs;
+        currentIndex = state.currentIndex || 0;
+        audio.src = state.src;
+        audio.currentTime = state.currentTime || 0;
+
+        const song = currentSongs[currentIndex];
+        if (song) {
+          const name = song.name || song._raw?.name || song.title || "Unknown";
+          const artist =
+            song.primaryArtists ||
+            song._raw?.primaryArtists ||
+            song.artist ||
+            "Unknown Artist";
+
+          const currentTitle = document.getElementById("current-title");
+          const currentArtist = document.getElementById("current-artist");
+          const swTitleEl = document.getElementById("sw-title");
+          const swArtistEl = document.getElementById("sw-artist");
+
+          if (currentTitle) currentTitle.textContent = name;
+          if (currentArtist) currentArtist.textContent = artist;
+          if (swTitleEl) swTitleEl.textContent = name;
+          if (swArtistEl)
+            swArtistEl.innerHTML =
+              artist +
+              ' <svg width="12" height="12" viewBox="0 0 24 24" fill="var(--text-muted)"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path></svg>';
+
+          const imgObjs = song.image || song._raw?.image;
+          const currentCover = document.getElementById("current-cover");
+          if (imgObjs && imgObjs.length > 0 && currentCover) {
+            let link = imgObjs[2]?.link || imgObjs[1]?.link || imgObjs[0]?.link;
+            if (link) {
+              currentCover.innerHTML = `<img src="/proxy?url=${encodeURIComponent(link)}" alt="" crossorigin="anonymous">`;
+            }
+          }
+        }
+
+        if (!state.paused) {
+          audio.play().then(() => {
+            const playIcon = document.getElementById("play-icon");
+            const pauseIcon = document.getElementById("pause-icon");
+            const swPlayIconEl = document.getElementById("sw-play-icon");
+            const swPauseIconEl = document.getElementById("sw-pause-icon");
+            if (playIcon) playIcon.style.display = "none";
+            if (pauseIcon) pauseIcon.style.display = "block";
+            if (swPlayIconEl) swPlayIconEl.style.display = "none";
+            if (swPauseIconEl) swPauseIconEl.style.display = "block";
+          }).catch(() => {});
+        }
+        
+        const progressCurrent = document.getElementById("progress-current");
+        const timeCurrent = document.getElementById("time-current");
+        const timeTotal = document.getElementById("time-total");
+        if (audio.duration) {
+          const progress = (audio.currentTime / audio.duration) * 100 || 0;
+          if (progressCurrent) progressCurrent.style.width = `${progress}%`;
+          if (timeCurrent) timeCurrent.textContent = formatTime(audio.currentTime);
+          if (timeTotal) timeTotal.textContent = formatTime(audio.duration);
+        }
+        
+        const swProgressFillEl = document.getElementById("sw-progress-fill");
+        const swTimeEl = document.getElementById("sw-time-el");
+        const swTimeTotalEl = document.getElementById("sw-time-total-el");
+        if (swProgressFillEl && audio.duration) {
+          const progress = (audio.currentTime / audio.duration) * 100 || 0;
+          swProgressFillEl.style.width = `${progress}%`;
+          if (swTimeEl) swTimeEl.textContent = formatTime(audio.currentTime);
+          if (swTimeTotalEl) {
+            const rem = audio.duration - audio.currentTime;
+            swTimeTotalEl.textContent = "-" + formatTime(rem > 0 ? rem : 0);
+          }
+        }
+      }
+    } catch (e) {
+      console.log("Music restore failed:", e);
+    }
+  }
+      }
+    } catch (e) {
+      console.log("Music restore failed:", e);
+    }
+  }
+
+  function updatePlayerUI() {
+    const song = currentSongs[currentIndex];
+    if (!song) return;
+
+    const name = cleanHtml(song.name || song._raw?.name || song.title);
+    const artist = cleanHtml(
+      song.primaryArtists || song._raw?.primaryArtists || song.artist,
+    );
+
+    const currentTitle = document.getElementById("current-title");
+    const currentArtist = document.getElementById("current-artist");
+    const swTitleEl = document.getElementById("sw-title");
+    const swArtistEl = document.getElementById("sw-artist");
+
+    if (currentTitle) currentTitle.textContent = name;
+    if (currentArtist) currentArtist.textContent = artist;
+    if (swTitleEl) swTitleEl.textContent = name;
+    if (swArtistEl)
+      swArtistEl.innerHTML =
+        artist +
+        ' <svg width="12" height="12" viewBox="0 0 24 24" fill="var(--text-muted)"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path></svg>';
+
+    const imgObjs = song.image || song._raw?.image;
+    const currentCover = document.getElementById("current-cover");
+    if (imgObjs && imgObjs.length > 0 && currentCover) {
+      let link = imgObjs[2]?.link || imgObjs[1]?.link || imgObjs[0]?.link;
+      currentCover.innerHTML = `<img src="${wrapUrl(link)}" alt="" crossorigin="anonymous">`;
+    }
+  }
+
   let playlists = JSON.parse(localStorage.getItem("welkin_playlists")) || [
     {
       id: "default1",
@@ -192,6 +328,7 @@
 
   document.addEventListener("DOMContentLoaded", () => {
     document.body.insertAdjacentHTML("beforeend", playerHTML);
+    restoreMusicState();
 
     const overlay = document.getElementById("music-overlay");
     const searchInput = document.getElementById("music-search");
@@ -483,6 +620,7 @@
       audio.play();
 
       updatePlayIcon(true);
+      saveMusicState();
     }
 
     function updatePlayIcon(isPlaying) {
@@ -520,6 +658,7 @@
         audio.pause();
         updatePlayIcon(false);
       }
+      saveMusicState();
     };
 
     const handleNext = () => {
@@ -555,11 +694,18 @@
       }
     };
 
+    setInterval(() => {
+      if (audio.src && !audio.paused) {
+        saveMusicState();
+      }
+    }, 5000);
+
     progressBar.onclick = (e) => {
       const width = progressBar.clientWidth;
       const clickX = e.offsetX;
       const duration = audio.duration;
       audio.currentTime = (clickX / width) * duration;
+      saveMusicState();
     };
 
     audio.onended = () => {
@@ -568,7 +714,12 @@
       } else {
         updatePlayIcon(false);
       }
+      saveMusicState();
     };
+
+    window.addEventListener("beforeunload", () => {
+      saveMusicState();
+    });
 
     function formatTime(seconds) {
       const min = Math.floor(seconds / 60) || 0;
