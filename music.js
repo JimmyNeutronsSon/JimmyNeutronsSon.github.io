@@ -6,7 +6,8 @@
   let audio = new Audio();
   audio.crossOrigin = "anonymous";
 
-  function saveMusicState() {
+  window.saveMusicState = function() {
+    if (!audio.src) return;
     const state = {
       currentIndex: currentIndex,
       currentTime: audio.currentTime,
@@ -21,10 +22,12 @@
       })),
     };
     sessionStorage.setItem("welkin_music_state", JSON.stringify(state));
-  }
+    console.log("Music state saved:", state.src.substring(0, 50));
+  };
 
   function restoreMusicState() {
     const saved = sessionStorage.getItem("welkin_music_state");
+    console.log("Music state restore attempt, saved:", saved ? "yes" : "no");
     if (!saved) return;
     try {
       const state = JSON.parse(saved);
