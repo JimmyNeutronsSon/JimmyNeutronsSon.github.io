@@ -195,16 +195,13 @@ document.addEventListener("click", (e) => {
   )
     return;
 
-  if (href.endsWith(".html") && window.loadPage) {
-    e.preventDefault();
-    if (window.closeSidebar) window.closeSidebar();
-    window.loadPage(href);
-    return;
-  }
-
   e.preventDefault();
   document.body.classList.remove("page-transition-enter");
   document.body.classList.add("page-transition-exit");
+
+  if (window.saveMusicState) {
+    window.saveMusicState();
+  }
 
   setTimeout(() => {
     window.location.href = href;
