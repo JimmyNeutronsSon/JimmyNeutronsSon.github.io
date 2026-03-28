@@ -308,7 +308,7 @@
 
   document.addEventListener("DOMContentLoaded", () => {
     document.body.insertAdjacentHTML("beforeend", playerHTML);
-    restoreMusicState();
+    setTimeout(restoreMusicState, 100);
 
     const overlay = document.getElementById("music-overlay");
     const searchInput = document.getElementById("music-search");

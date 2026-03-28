@@ -199,6 +199,10 @@ document.addEventListener("click", (e) => {
   document.body.classList.remove("page-transition-enter");
   document.body.classList.add("page-transition-exit");
 
+  if (window.saveMusicState) {
+    window.saveMusicState();
+  }
+
   setTimeout(() => {
     window.location.href = href;
   }, 700);
