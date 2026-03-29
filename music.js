@@ -6,6 +6,19 @@
   let audio = new Audio();
   audio.crossOrigin = "anonymous";
 
+  function formatTime(seconds) {
+    const min = Math.floor(seconds / 60) || 0;
+    const sec = Math.floor(seconds % 60) || 0;
+    return `${min}:${sec < 10 ? "0" : ""}${sec}`;
+  }
+
+  function cleanHtml(str) {
+    if (!str) return "";
+    const div = document.createElement("div");
+    div.innerHTML = str;
+    return div.textContent || div.innerText || "";
+  }
+
   function saveMusicState() {
     if (!audio.src) return;
     const state = {
@@ -723,18 +736,5 @@
     window.addEventListener("beforeunload", () => {
       saveMusicState();
     });
-
-    function formatTime(seconds) {
-      const min = Math.floor(seconds / 60) || 0;
-      const sec = Math.floor(seconds % 60) || 0;
-      return `${min}:${sec < 10 ? "0" : ""}${sec}`;
-    }
-
-    function cleanHtml(str) {
-      if (!str) return "";
-      const div = document.createElement("div");
-      div.innerHTML = str;
-      return div.textContent || div.innerText || "";
-    }
   });
 })();
