@@ -13,8 +13,8 @@ window.initSidebar = function () {
       border: 1px solid rgba(255, 255, 255, 0.3);
       border-left: none;
       border-radius: 0 12px 12px 0;
-      width: 33px;
-      height: 45px;
+      width: 34px;
+      height: 47px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -26,14 +26,14 @@ window.initSidebar = function () {
     }
     .sidebar-trigger:hover {
       background: rgba(255, 255, 255, 0.4) !important;
-      width: 38px;
+      width: 40px;
     }
     .glass-sidebar {
       position: fixed !important;
       top: 0;
-      left: -240px;
+      left: -246px;
       bottom: 0;
-      width: 210px;
+      width: 218px;
       background: rgba(255, 255, 255, 0.2) !important;
       backdrop-filter: blur(32px);
       -webkit-backdrop-filter: blur(32px);
@@ -49,7 +49,7 @@ window.initSidebar = function () {
       box-shadow: 16px 0 48px rgba(10, 45, 110, 0.2) !important;
     }
     .sidebar-header {
-      padding: 18px;
+      padding: 19px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -57,7 +57,7 @@ window.initSidebar = function () {
     }
     /* Updated Title Font per Image */
     .sidebar-header .logo {
-      font-size: 21px;
+      font-size: 22px;
       font-weight: 800;
       letter-spacing: -1px;
       color: #0B1E3D;
@@ -76,25 +76,25 @@ window.initSidebar = function () {
     .sidebar-close {
       background: transparent;
       border: none;
-      font-size: 21px;
+      font-size: 22px;
       color: #8FA4C2;
       cursor: pointer;
       outline: none;
     }
     .sidebar-nav {
-      padding: 24px 12px;
+      padding: 25px 13px;
       display: flex;
       flex-direction: column;
-      gap: 15px;
+      gap: 16px;
     }
     .sidebar-link {
       display: flex;
       align-items: center;
-      padding: 10px 12px;
+      padding: 11px 13px;
       text-decoration: none;
       color: #163A6B;
       font-weight: 600;
-      font-size: 12px;
+      font-size: 13px;
       border-radius: 9px;
       transition: all 0.2s;
     }
