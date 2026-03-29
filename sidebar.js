@@ -49,7 +49,7 @@ window.initSidebar = function () {
       box-shadow: 16px 0 48px rgba(10, 45, 110, 0.2) !important;
     }
     .sidebar-header {
-      padding: 24px;
+      padding: 12px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -57,7 +57,7 @@ window.initSidebar = function () {
     }
     /* Updated Title Font per Image */
     .sidebar-header .logo {
-      font-size: 28px;
+      font-size: 20px;
       font-weight: 800; /* Extra Bold */
       letter-spacing: -1px; /* Tighter tracking like image */
       color: #0B1E3D;
@@ -68,34 +68,34 @@ window.initSidebar = function () {
     /* Blue Square instead of Dot */
     .sidebar-header .logo-square {
       display: inline-block;
-      width: 8px;
-      height: 8px;
+      width: 6px;
+      height: 6px;
       background-color: #3A8FE0;
       margin-left: 2px;
     }
     .sidebar-close {
       background: transparent;
       border: none;
-      font-size: 28px;
+      font-size: 20px;
       color: #8FA4C2;
       cursor: pointer;
       outline: none;
     }
     .sidebar-nav {
-      padding: 32px 16px;
+      padding: 12px 12px;
       display: flex;
       flex-direction: column;
-      gap: 20px; /* Large spacing preserved */
+      gap: 8px;
     }
     .sidebar-link {
       display: flex;
       align-items: center;
-      padding: 14px 16px;
+      padding: 8px 10px;
       text-decoration: none;
       color: #163A6B;
       font-weight: 600;
-      font-size: 16px;
-      border-radius: 12px;
+      font-size: 13px;
+      border-radius: 8px;
       transition: all 0.2s;
     }
     .sidebar-link:hover {
@@ -138,7 +138,6 @@ window.initSidebar = function () {
           <a href="/browse.html" class="sidebar-link">Browse</a>
           <a href="/games.html" class="sidebar-link">Games</a>
           <a href="/retro-bowl.html" class="sidebar-link">Retro Bowl</a>
-          <a href="/movies.html" class="sidebar-link">Movies</a>
           <a href="/Soundboard/Soundboard.html" class="sidebar-link">Soundboard</a>
           <a href="#" class="sidebar-link" id="music-toggle">Music</a>
         </nav>
