@@ -207,16 +207,16 @@
         <div class="sidebar-widget-inner" id="sidebar-widget-inner">
             <div class="sw-details">
                 <div class="sw-title" id="sw-title">Welkin Music</div>
-                <div class="sw-artist" id="sw-artist">Select a song</div>
+                <div class="sw-artist" id="sw-artist">Select a song <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path></svg></div>
             </div>
             
             <div class="sw-controls">
-                <button class="sw-btn" id="sw-prev"><svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><polygon points="19 20 9 12 19 4 19 20"></polygon><line x1="5" y1="19" x2="5" y2="5"></line></svg></button>
+                <button class="sw-btn" id="sw-prev"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="19 20 9 12 19 4 19 20"></polygon><line x1="5" y1="19" x2="5" y2="5"></line></svg></button>
                 <button class="sw-btn sw-play" id="sw-playpause">
-                    <svg id="sw-play-icon" width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
-                    <svg id="sw-pause-icon" style="display:none" width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+                    <svg id="sw-play-icon" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                    <svg id="sw-pause-icon" style="display:none" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
                 </button>
-                <button class="sw-btn" id="sw-next"><svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 4 15 12 5 20 5 4"></polygon><line x1="19" y1="5" x2="19" y2="19"></line></svg></button>
+                <button class="sw-btn" id="sw-next"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 4 15 12 5 20 5 4"></polygon><line x1="19" y1="5" x2="19" y2="19"></line></svg></button>
             </div>
             
             <div class="sw-progress-wrap">
@@ -225,6 +225,12 @@
                     <div class="sw-progress-fill" id="sw-progress-fill"></div>
                 </div>
                 <span class="sw-time" id="sw-time-total-el">-0:00</span>
+            </div>
+            
+            <div class="sw-right-controls">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+                <input type="range" class="sw-vol" id="sw-vol" min="0" max="1" step="0.01" value="1">
+                <button class="sw-expand" id="sw-expand"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"></path></svg></button>
             </div>
         </div>
     `;
