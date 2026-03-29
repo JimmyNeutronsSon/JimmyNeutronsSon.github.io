@@ -29,60 +29,61 @@
 
   function restoreMusicState() {
     const saved = sessionStorage.getItem("welkin_music_state");
-    console.log("Restore called, saved exists:", !!saved);
     if (!saved) return;
     try {
       const state = JSON.parse(saved);
-      console.log("Restoring state, time:", state.currentTime);
       if (state.songs && state.songs.length > 0 && state.src) {
         currentSongs = state.songs;
         currentIndex = state.currentIndex || 0;
+
+        // Update UI immediately
+        updatePlayerUI();
+
+        // Set source and restore playback
         audio.src = state.src;
 
-        audio.addEventListener("loadedmetadata", function onMeta() {
+        const restore = () => {
           audio.currentTime = state.currentTime || 0;
-          audio.removeEventListener("loadedmetadata", onMeta);
-        });
-
-        const song = currentSongs[currentIndex];
-        if (song) {
-          const name = song.name || song._raw?.name || song.title || "Unknown";
-          const artist =
-            song.primaryArtists ||
-            song._raw?.primaryArtists ||
-            song.artist ||
-            "Unknown Artist";
-
-          const currentTitle = document.getElementById("current-title");
-          const currentArtist = document.getElementById("current-artist");
-          const swTitleEl = document.getElementById("sw-title");
-          const swArtistEl = document.getElementById("sw-artist");
-
-          if (currentTitle) currentTitle.textContent = name;
-          if (currentArtist) currentArtist.textContent = artist;
-          if (swTitleEl) swTitleEl.textContent = name;
-          if (swArtistEl)
-            swArtistEl.innerHTML =
-              artist +
-              ' <svg width="12" height="12" viewBox="0 0 24 24" fill="var(--text-muted)"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path></svg>';
-
-          const imgObjs = song.image || song._raw?.image;
-          const currentCover = document.getElementById("current-cover");
-          if (imgObjs && imgObjs.length > 0 && currentCover) {
-            let link = imgObjs[2]?.link || imgObjs[1]?.link || imgObjs[0]?.link;
-            if (link) {
-              currentCover.innerHTML = `<img src="/proxy?url=${encodeURIComponent(link)}" alt="" crossorigin="anonymous">`;
-            }
+          if (!state.paused) {
+            audio
+              .play()
+              .then(() => {
+                updatePlayIconOnRestore();
+              })
+              .catch(() => {});
           }
-        }
+          // Also update progress display
+          const progressCurrent = document.getElementById("progress-current");
+          const timeCurrent = document.getElementById("time-current");
+          const timeTotal = document.getElementById("time-total");
+          if (progressCurrent && audio.duration) {
+            const progress = (audio.currentTime / audio.duration) * 100;
+            progressCurrent.style.width = `${progress}%`;
+          }
+          if (timeCurrent)
+            timeCurrent.textContent = formatTime(audio.currentTime);
+          if (timeTotal)
+            timeTotal.textContent = formatTime(audio.duration || 0);
 
-        if (!state.paused) {
-          audio
-            .play()
-            .then(() => {
-              updatePlayIconOnRestore();
-            })
-            .catch(() => {});
+          // Update sidebar widget progress
+          const swProgressFillEl = document.getElementById("sw-progress-fill");
+          const swTimeEl = document.getElementById("sw-time-el");
+          const swTimeTotalEl = document.getElementById("sw-time-total-el");
+          if (swProgressFillEl && audio.duration) {
+            const progress = (audio.currentTime / audio.duration) * 100;
+            swProgressFillEl.style.width = `${progress}%`;
+          }
+          if (swTimeEl) swTimeEl.textContent = formatTime(audio.currentTime);
+          if (swTimeTotalEl) {
+            const rem = audio.duration - audio.currentTime;
+            swTimeTotalEl.textContent = "-" + formatTime(rem > 0 ? rem : 0);
+          }
+        };
+
+        if (audio.readyState >= 1) {
+          restore();
+        } else {
+          audio.addEventListener("loadedmetadata", restore, { once: true });
         }
       }
     } catch (e) {}
