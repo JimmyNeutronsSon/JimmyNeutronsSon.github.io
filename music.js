@@ -64,42 +64,6 @@
             const progress = (audio.currentTime / audio.duration) * 100;
             progressCurrent.style.width = `${progress}%`;
           }
-          if (timeCurrent) timeCurrent.textContent = formatTime(audio.currentTime);
-          if (timeTotal) timeTotal.textContent = formatTime(audio.duration || 0);
-
-          // Update sidebar widget progress
-          const swProgressFillEl = document.getElementById("sw-progress-fill");
-          const swTimeEl = document.getElementById("sw-time-el");
-          const swTimeTotalEl = document.getElementById("sw-time-total-el");
-          if (swProgressFillEl && audio.duration) {
-            const progress = (audio.currentTime / audio.duration) * 100;
-            swProgressFillEl.style.width = `${progress}%`;
-          }
-          if (swTimeEl) swTimeEl.textContent = formatTime(audio.currentTime);
-          if (swTimeTotalEl) {
-            const rem = audio.duration - audio.currentTime;
-            swTimeTotalEl.textContent = "-" + formatTime(rem > 0 ? rem : 0);
-          }
-        };
-
-        if (audio.readyState >= 1) {
-          restore();
-        } else {
-          audio.addEventListener("loadedmetadata", restore, { once: true });
-        }
-      }
-    } catch (e) {
-      console.error("Music restore error:", e);
-    }
-  }
-          // Also update progress display
-          const progressCurrent = document.getElementById("progress-current");
-          const timeCurrent = document.getElementById("time-current");
-          const timeTotal = document.getElementById("time-total");
-          if (progressCurrent && audio.duration) {
-            const progress = (audio.currentTime / audio.duration) * 100;
-            progressCurrent.style.width = `${progress}%`;
-          }
           if (timeCurrent)
             timeCurrent.textContent = formatTime(audio.currentTime);
           if (timeTotal)
@@ -126,7 +90,9 @@
           audio.addEventListener("loadedmetadata", restore, { once: true });
         }
       }
-    } catch (e) {}
+    } catch (e) {
+      console.error("Music restore error:", e);
+    }
   }
 
   function updatePlayIconOnRestore() {
