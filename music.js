@@ -256,6 +256,15 @@
   }
 
   function attachSidebarWidgetListeners() {
+    const musicToggle = document.getElementById("music-toggle");
+    if (musicToggle) {
+      musicToggle.addEventListener("click", (e) => {
+        e.preventDefault();
+        if (window.toggleMusic) window.toggleMusic();
+        if (window.closeSidebar) window.closeSidebar();
+      });
+    }
+
     const swExpand = document.getElementById("sw-expand");
     if (swExpand) {
       swExpand.onclick = () => {
