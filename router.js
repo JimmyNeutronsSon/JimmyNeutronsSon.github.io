@@ -140,18 +140,28 @@
   }
 
   function handleLinkClick(e) {
-    const link = e.target.closest("a");
+    const link = e.target.closest('a');
     if (!link) return;
-
-    const href = link.getAttribute("href");
-    if (
-      !href ||
-      href.startsWith("http") ||
-      link.getAttribute("target") === "_blank" ||
-      href.startsWith("#")
-    ) {
+    
+    let href = link.getAttribute('href');
+    if (!href || href.startsWith('http') || link.getAttribute('target') === '_blank' || href.startsWith('#')) {
       return;
     }
+    
+    // Normalize to absolute path
+    if (!href.startsWith('/')) {
+      href = '/' + href;
+    }
+    
+    // Check if it's an internal page link
+    if (routes[href]) {
+      e.preventDefault();
+      if (window.saveMusicState) {
+        window.saveMusicState();
+      }
+      loadPage(routes[href]);
+    }
+  }
 
     // Check if it's an internal page link
     if (routes[href]) {
