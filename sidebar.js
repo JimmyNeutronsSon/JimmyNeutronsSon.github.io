@@ -12,9 +12,9 @@ window.initSidebar = function () {
       -webkit-backdrop-filter: blur(24px);
       border: 1px solid rgba(255, 255, 255, 0.3);
       border-left: none;
-      border-radius: 0 12px 12px 0;
-      width: 34px;
-      height: 47px;
+      border-radius: 0 14px 14px 0;
+      width: 37px;
+      height: 51px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -26,14 +26,14 @@ window.initSidebar = function () {
     }
     .sidebar-trigger:hover {
       background: rgba(255, 255, 255, 0.4) !important;
-      width: 40px;
+      width: 43px;
     }
     .glass-sidebar {
       position: fixed !important;
       top: 0;
-      left: -246px;
+      left: -258px;
       bottom: 0;
-      width: 218px;
+      width: 238px;
       background: rgba(255, 255, 255, 0.2) !important;
       backdrop-filter: blur(32px);
       -webkit-backdrop-filter: blur(32px);
@@ -49,7 +49,7 @@ window.initSidebar = function () {
       box-shadow: 16px 0 48px rgba(10, 45, 110, 0.2) !important;
     }
     .sidebar-header {
-      padding: 19px;
+      padding: 20px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -57,7 +57,7 @@ window.initSidebar = function () {
     }
     /* Updated Title Font per Image */
     .sidebar-header .logo {
-      font-size: 22px;
+      font-size: 24px;
       font-weight: 800;
       letter-spacing: -1px;
       color: #0B1E3D;
@@ -68,34 +68,34 @@ window.initSidebar = function () {
     /* Blue Square instead of Dot */
     .sidebar-header .logo-square {
       display: inline-block;
-      width: 6px;
-      height: 6px;
+      width: 7px;
+      height: 7px;
       background-color: #3A8FE0;
       margin-left: 2px;
     }
     .sidebar-close {
       background: transparent;
       border: none;
-      font-size: 22px;
+      font-size: 24px;
       color: #8FA4C2;
       cursor: pointer;
       outline: none;
     }
     .sidebar-nav {
-      padding: 25px 13px;
+      padding: 27px 14px;
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 17px;
     }
     .sidebar-link {
       display: flex;
       align-items: center;
-      padding: 11px 13px;
+      padding: 12px 14px;
       text-decoration: none;
       color: #163A6B;
       font-weight: 600;
-      font-size: 13px;
-      border-radius: 9px;
+      font-size: 14px;
+      border-radius: 10px;
       transition: all 0.2s;
     }
     .sidebar-link:hover {
