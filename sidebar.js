@@ -183,27 +183,4 @@ if (document.readyState === "loading") {
   window.initSidebar();
 }
 
-document.addEventListener("click", (e) => {
-  const link = e.target.closest("a");
-  if (!link || link.id === "music-toggle") return;
-  const href = link.getAttribute("href");
-  if (
-    !href ||
-    href.startsWith("http") ||
-    link.getAttribute("target") === "_blank" ||
-    href.startsWith("#")
-  )
-    return;
-
-  e.preventDefault();
-  document.body.classList.remove("page-transition-enter");
-  document.body.classList.add("page-transition-exit");
-
-  if (window.saveMusicState) {
-    window.saveMusicState();
-  }
-
-  setTimeout(() => {
-    window.location.href = href;
-  }, 700);
-});
+// Navigation is handled by router.js for SPA
