@@ -40,6 +40,11 @@
 
   window.saveMusicState = saveMusicState;
 
+  function wrapUrl(url) {
+    if (!url) return "";
+    return `/proxy?url=${encodeURIComponent(url)}`;
+  }
+
   function restoreMusicState() {
     const saved = sessionStorage.getItem("welkin_music_state");
     if (!saved) return;
@@ -659,11 +664,6 @@
 
     window.__playSong = playSong;
     window.__updateSwPlayIcon = updatePlayIcon;
-
-    function wrapUrl(url) {
-      if (!url) return "";
-      return `/proxy?url=${encodeURIComponent(url)}`;
-    }
 
     const handlePlayPause = () => {
       if (!audio.src) return;
