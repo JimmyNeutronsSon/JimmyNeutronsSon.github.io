@@ -7,9 +7,10 @@
     "/games.html": "/games.html",
     "/movies.html": "/movies.html",
     "/retro-bowl.html": "/retro-bowl.html",
-    "/Soundboard/Soundboard.html": "/Soundboard/Soundboard.html",
+    "/Soundboard/Soundboard.html": "/Soundboard/Soundboard.html"
   };
 
+  console.log('Router initialized with routes:', Object.keys(routes));
   let currentPage = null;
 
   async function loadPage(url, pushState = true) {
@@ -17,42 +18,62 @@
       const response = await fetch(url);
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const html = await response.text();
-
+      
       const parser = new DOMParser();
-      const doc = parser.parseFromString(html, "text/html");
-
+      const doc = parser.parseFromString(html, 'text/html');
+      
       // Update document title
       document.title = doc.title;
-
-      // Copy page-specific styles from head
-      const headStyles = doc.head.querySelectorAll(
-        'style, link[rel="stylesheet"]',
-      );
-      headStyles.forEach((styleEl) => {
-        // Check if already exists by href or content
-        if (styleEl.tagName === "LINK") {
-          const href = styleEl.getAttribute("href");
-          if (href) {
-            const exists = document.head.querySelector(`link[href="${href}"]`);
-            if (!exists) {
-              const newLink = document.createElement("link");
-              newLink.rel = "stylesheet";
-              newLink.href = href;
-              document.head.appendChild(newLink);
-            }
-          }
-        } else if (styleEl.tagName === "STYLE") {
-          // Avoid duplicate inline styles by checking content (simple check)
-          const exists = Array.from(
-            document.head.querySelectorAll("style"),
-          ).some((s) => s.textContent.trim() === styleEl.textContent.trim());
-          if (!exists) {
-            const newStyle = document.createElement("style");
-            newStyle.textContent = styleEl.textContent;
-            document.head.appendChild(newStyle);
-          }
-        }
-      });
+      
+      // Get the main content element from the fetched page.
+      // Different pages have different structures, so we'll try to identify
+      // the main content area.
+      let mainContent;
+      
+      // For home page (index.html), we want the hero and footer
+      if (url === '/index.html' || url === '/') {
+        // Use the body's innerHTML but remove scripts we don't want
+        mainContent = doc.body.innerHTML;
+      } else {
+        // For other pages, use body content
+        mainContent = doc.body.innerHTML;
+      }
+      
+      // Replace main content area
+      const contentEl = document.getElementById('spa-content');
+      if (contentEl) {
+        // Clear and set new content
+        contentEl.innerHTML = mainContent;
+      }
+      
+      // Reinitialize page-specific features if needed
+      if (url === '/browse.html' && typeof window.initBrowse === 'function') {
+        window.initBrowse();
+      } else if (url === '/games.html' && typeof window.initGames === 'function') {
+        window.initGames();
+      } else if (url === '/movies.html' && typeof window.initMovies === 'function') {
+        window.initMovies();
+      }
+      
+      // Close sidebar if open
+      const sidebar = document.getElementById('glass-sidebar');
+      const overlay = document.getElementById('sidebar-overlay');
+      if (sidebar && sidebar.classList.contains('open')) {
+        sidebar.classList.remove('open');
+        if (overlay) overlay.classList.remove('open');
+      }
+      
+      if (pushState) {
+        history.pushState({ url }, '', url);
+      }
+      
+      currentPage = url;
+      console.log('Loaded page:', url);
+    } catch (error) {
+      console.error('Failed to load page:', error);
+      window.location.href = url;
+    }
+  }
 
       // Get body content
       const bodyContent = doc.body.innerHTML;
@@ -144,6 +165,8 @@
     if (!link) return;
     
     let href = link.getAttribute('href');
+    console.log('Link clicked:', href);
+    
     if (!href || href.startsWith('http') || link.getAttribute('target') === '_blank' || href.startsWith('#')) {
       return;
     }
@@ -153,8 +176,11 @@
       href = '/' + href;
     }
     
+    console.log('Normalized href:', href, 'Routes match:', routes[href]);
+    
     // Check if it's an internal page link
     if (routes[href]) {
+      console.log('SPA navigating to:', href);
       e.preventDefault();
       if (window.saveMusicState) {
         window.saveMusicState();
