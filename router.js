@@ -25,8 +25,20 @@
       // Update document title
       document.title = doc.title;
 
-      // Get body content
-      const bodyContent = doc.body.innerHTML;
+      // Get body content (excluding persistent scripts)
+      const bodyClone = doc.body.cloneNode(true);
+
+      // Remove persistent scripts from the clone (these are already loaded globally)
+      const persistent = ["music.js", "sidebar.js", "router.js"];
+      bodyClone.querySelectorAll("script").forEach((script) => {
+        if (script.src) {
+          if (persistent.some((p) => script.src.includes(p))) {
+            script.remove();
+          }
+        }
+      });
+
+      const bodyContent = bodyClone.innerHTML;
 
       // Replace main content area
       const contentEl = document.getElementById("spa-content");
@@ -35,6 +47,38 @@
       } else {
         document.body.innerHTML = bodyContent;
       }
+
+      // Now inject page-specific scripts
+      const scripts = doc.body.querySelectorAll("script");
+      scripts.forEach((originalScript) => {
+        // Skip persistent scripts
+        if (originalScript.src) {
+          if (persistent.some((p) => originalScript.src.includes(p))) {
+            return;
+          }
+          // Check if already loaded
+          const isLoaded = document.querySelector(
+            `script[src="${originalScript.src}"]`,
+          );
+          if (isLoaded) return;
+
+          const newScript = document.createElement("script");
+          newScript.src = originalScript.src;
+          // Copy attributes
+          if (originalScript.hasAttribute("type"))
+            newScript.type = originalScript.type;
+          if (originalScript.hasAttribute("async")) newScript.async = true;
+          if (originalScript.hasAttribute("defer")) newScript.defer = true;
+          if (originalScript.hasAttribute("crossorigin"))
+            newScript.crossOrigin = originalScript.crossOrigin;
+          document.body.appendChild(newScript);
+        } else if (originalScript.textContent.trim()) {
+          // Inline script
+          const newScript = document.createElement("script");
+          newScript.textContent = originalScript.textContent;
+          document.body.appendChild(newScript);
+        }
+      });
 
       // Close sidebar if open
       const sidebar = document.getElementById("glass-sidebar");
