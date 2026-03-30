@@ -3,6 +3,8 @@ importScripts("/scram/scramjet.all.js");
 const { ScramjetServiceWorker } = $scramjetLoadWorker();
 const scramjet = new ScramjetServiceWorker();
 
+let configErrorLogged = false;
+
 const BYPASS_HOSTS = [
   "vidking.net",
   "www.vidking.net",
@@ -33,7 +35,10 @@ async function handleRequest(event) {
   try {
     await scramjet.loadConfig();
   } catch (e) {
-    console.error("Scram config load error, bypassing proxy:", e);
+    if (!configErrorLogged) {
+      console.error("Scram config load error, bypassing proxy:", e);
+      configErrorLogged = true;
+    }
     return fetch(event.request);
   }
 

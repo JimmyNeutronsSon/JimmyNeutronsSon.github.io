@@ -1,4 +1,9 @@
 "use strict";
+// Only register service worker on pages that require scramjet proxy
+const path = window.location.pathname;
+if (!path.endsWith("/browse.html") && !path.endsWith("/movies.html")) {
+  return;
+}
 const stockSW = "./sw.js";
 
 /**
