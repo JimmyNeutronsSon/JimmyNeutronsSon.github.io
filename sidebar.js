@@ -43,6 +43,8 @@ window.initSidebar = function () {
       display: flex;
       flex-direction: column !important;
       font-family: 'Inter', sans-serif;
+      overflow-y: auto;
+      overflow-x: hidden;
     }
     .glass-sidebar.open {
       left: 0;
@@ -54,6 +56,7 @@ window.initSidebar = function () {
       justify-content: space-between;
       align-items: center;
       border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+      flex-shrink: 0;
     }
     /* Updated Title Font per Image */
     .sidebar-header .logo {
@@ -86,6 +89,8 @@ window.initSidebar = function () {
       display: flex;
       flex-direction: column;
       gap: 20px;
+      flex: 1;
+      overflow-y: auto;
     }
     .sidebar-link {
       display: flex;
@@ -136,6 +141,7 @@ window.initSidebar = function () {
       }
       .sidebar-header {
         padding: 20px;
+        flex-shrink: 0;
       }
       .sidebar-header .logo {
         font-size: 24px;
@@ -150,6 +156,8 @@ window.initSidebar = function () {
       .sidebar-nav {
         padding: 24px 14px;
         gap: 16px;
+        flex: 1;
+        overflow-y: auto;
       }
       .sidebar-link {
         padding: 12px 14px;
@@ -165,6 +173,7 @@ window.initSidebar = function () {
         max-width: 300px;
         left: -85%;
         max-left: -300px;
+        padding-bottom: 20px;
       }
       .glass-sidebar.open {
         left: 0;
@@ -183,6 +192,7 @@ window.initSidebar = function () {
       }
       .sidebar-header {
         padding: 16px;
+        flex-shrink: 0;
       }
       .sidebar-header .logo {
         font-size: 22px;
@@ -197,6 +207,8 @@ window.initSidebar = function () {
       .sidebar-nav {
         padding: 20px 12px;
         gap: 12px;
+        flex: 1;
+        overflow-y: auto;
       }
       .sidebar-link {
         padding: 10px 12px;
