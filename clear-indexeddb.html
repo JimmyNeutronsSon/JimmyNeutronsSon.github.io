@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Clear IndexedDB</title>
+</head>
+
+<body>
+    <h1>IndexedDB Cleanup</h1>
+    <button onclick="clearAll()">Clear All IndexedDB</button>
+    <pre id="output"></pre>
+    <script>
+        async function clearAll() {
+            const output = document.getElementById('output');
+            output.textContent = 'Clearing IndexedDB databases...\n';
+            try {
+                const databases = await indexedDB.databases();
+                for (const db of databases) {
+                    output.textContent += `Deleting: ${db.name}\n`;
+                    await indexedDB.deleteDatabase(db.name);
+                }
+                output.textContent += `\nComplete! Cleared ${databases.length} databases.`;
+            } catch (e) {
+                output.textContent += `Error: ${e}\n`;
+            }
+        }
+    </script>
+</body>
+
+</html>

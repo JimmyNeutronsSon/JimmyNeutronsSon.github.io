@@ -21,3 +21,6 @@ async function registerSW() {
 
   await navigator.serviceWorker.register(stockSW);
 }
+
+// Expose globally for inline scripts
+window.registerSW = registerSW;
