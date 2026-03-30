@@ -1,21 +1,14 @@
 "use strict";
-// Only register service worker on pages that require scramjet proxy
-const path = window.location.pathname;
-if (!path.endsWith("/browse.html") && !path.endsWith("/movies.html")) {
-  return;
-}
 const stockSW = "./sw.js";
 
-/**
- * List of hostnames that are allowed to run serviceworkers on http://
- */
 const swAllowedHostnames = ["localhost", "127.0.0.1"];
 
-/**
- * Global util
- * Used in 404.html and index.html
- */
 async function registerSW() {
+  const path = window.location.pathname;
+  if (!path.endsWith("/browse.html") && !path.endsWith("/movies.html")) {
+    return;
+  }
+
   if (!navigator.serviceWorker) {
     if (
       location.protocol !== "https:" &&
