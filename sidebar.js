@@ -240,9 +240,9 @@ window.initSidebar = function () {
           <a href="/movies.html" class="sidebar-link">Movies</a>
           <a href="/Soundboard/Soundboard.html" class="sidebar-link">Soundboard</a>
           <a href="#" class="sidebar-link" id="music-toggle">Music</a>
-        </nav>
-        <div id="sidebar-music-widget" class="sidebar-music-widget" style="display:none;"></div>
-      </aside>
+         </nav>
+         <div id="sidebar-music-widget" class="sidebar-music-widget" style="display:none;"></div>
+       </aside>
       <div id="sidebar-overlay" class="sidebar-overlay"></div>
     `;
 
