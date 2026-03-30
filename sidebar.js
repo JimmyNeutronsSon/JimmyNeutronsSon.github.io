@@ -85,7 +85,7 @@ window.initSidebar = function () {
       padding: 32px 16px;
       display: flex;
       flex-direction: column;
-      gap: 20px; /* Larger spacing preserved */
+      gap: 20px;
     }
     .sidebar-link {
       display: flex;
@@ -116,6 +116,93 @@ window.initSidebar = function () {
     .sidebar-overlay.open {
       opacity: 1;
       pointer-events: auto;
+    }
+
+    /* Responsive: Tablet (768px - 1199px) */
+    @media (max-width: 1199px) and (min-width: 768px) {
+      .glass-sidebar {
+        width: 240px;
+        left: -260px;
+      }
+      .glass-sidebar.open {
+        left: 0;
+      }
+      .sidebar-trigger {
+        width: 38px;
+        height: 52px;
+      }
+      .sidebar-trigger:hover {
+        width: 42px;
+      }
+      .sidebar-header {
+        padding: 20px;
+      }
+      .sidebar-header .logo {
+        font-size: 24px;
+      }
+      .sidebar-header .logo-square {
+        width: 7px;
+        height: 7px;
+      }
+      .sidebar-close {
+        font-size: 24px;
+      }
+      .sidebar-nav {
+        padding: 24px 14px;
+        gap: 16px;
+      }
+      .sidebar-link {
+        padding: 12px 14px;
+        font-size: 15px;
+        border-radius: 10px;
+      }
+    }
+
+    /* Responsive: Mobile (< 768px) */
+    @media (max-width: 767px) {
+      .glass-sidebar {
+        width: 85%;
+        max-width: 300px;
+        left: -85%;
+        max-left: -300px;
+      }
+      .glass-sidebar.open {
+        left: 0;
+      }
+      .sidebar-trigger {
+        width: 32px;
+        height: 44px;
+        border-radius: 0 10px 10px 0;
+      }
+      .sidebar-trigger:hover {
+        width: 36px;
+      }
+      .sidebar-trigger svg {
+        width: 18px !important;
+        height: 18px !important;
+      }
+      .sidebar-header {
+        padding: 16px;
+      }
+      .sidebar-header .logo {
+        font-size: 22px;
+      }
+      .sidebar-header .logo-square {
+        width: 6px;
+        height: 6px;
+      }
+      .sidebar-close {
+        font-size: 22px;
+      }
+      .sidebar-nav {
+        padding: 20px 12px;
+        gap: 12px;
+      }
+      .sidebar-link {
+        padding: 10px 12px;
+        font-size: 14px;
+        border-radius: 8px;
+      }
     }
     `;
   const style = document.createElement("style");
