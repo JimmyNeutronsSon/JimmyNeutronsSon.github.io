@@ -137,6 +137,9 @@
     const currentArtist = document.getElementById("current-artist");
     const swTitleEl = document.getElementById("sw-title");
     const swArtistEl = document.getElementById("sw-artist");
+    const fpTitle = document.getElementById("fp-title");
+    const fpArtist = document.getElementById("fp-artist");
+    const fpArt = document.getElementById("fp-art");
 
     if (currentTitle) currentTitle.textContent = name;
     if (currentArtist) currentArtist.textContent = artist;
@@ -146,11 +149,17 @@
         artist +
         ' <svg width="12" height="12" viewBox="0 0 24 24" fill="var(--text-muted)"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path></svg>';
 
+    // Update floating player
+    if (fpTitle) fpTitle.textContent = name;
+    if (fpArtist) fpArtist.textContent = artist;
+
     const imgObjs = song.image || song._raw?.image;
     const currentCover = document.getElementById("current-cover");
     if (imgObjs && imgObjs.length > 0 && currentCover) {
       let link = imgObjs[2]?.link || imgObjs[1]?.link || imgObjs[0]?.link;
       currentCover.innerHTML = `<img src="${wrapUrl(link)}" alt="" crossorigin="anonymous">`;
+      if (fpArt)
+        fpArt.innerHTML = `<img src="${wrapUrl(link)}" alt="" crossorigin="anonymous">`;
     }
   }
 
@@ -260,6 +269,53 @@
         </div>
     `;
 
+  const floatingPlayerHTML = `
+    <div id="floating-player" class="floating-player">
+      <div class="floating-player-row">
+        <div class="floating-player-left">
+          <div class="floating-player-art" id="fp-art">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>
+          </div>
+          <div class="floating-player-info">
+            <div class="floating-player-title" id="fp-title">Not Playing</div>
+            <div class="floating-player-artist" id="fp-artist">Select a song</div>
+          </div>
+          <button class="floating-player-shuffle inactive" id="fp-shuffle" title="Shuffle">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="16 3 21 3 21 8"></polyline><line x1="4" y1="20" x2="21" y2="3"></line><polyline points="21 16 21 21 16 21"></polyline><line x1="15" y1="15" x2="21" y2="21"></line><line x1="4" y1="4" x2="9" y2="9"></line></svg>
+          </button>
+        </div>
+        <div class="floating-player-center">
+          <button class="floating-player-btn" id="fp-prev" title="Previous">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><polygon points="19 20 9 12 19 4 19 20"></polygon><line x1="5" y1="19" x2="5" y2="5"></line></svg>
+          </button>
+          <button class="floating-player-btn floating-player-play" id="fp-playpause" title="Play">
+            <svg id="fp-play-icon" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+            <svg id="fp-pause-icon" style="display:none" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+          </button>
+          <button class="floating-player-btn" id="fp-next" title="Next">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 4 15 12 5 20 5 4"></polygon><line x1="19" y1="5" x2="19" y2="19"></line></svg>
+          </button>
+        </div>
+        <div class="floating-player-right">
+          <button class="floating-player-repeat" title="Repeat">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg>
+          </button>
+          <div class="floating-player-volume">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+            <input type="range" class="floating-player-vol-slider" id="fp-vol" min="0" max="1" step="0.01" value="1">
+          </div>
+        </div>
+      </div>
+      <div class="floating-player-timeline">
+        <span class="floating-player-time" id="fp-current">0:00</span>
+        <div class="floating-player-progress" id="fp-progress">
+          <div class="floating-player-progress-fill" id="fp-progress-fill"></div>
+        </div>
+        <span class="floating-player-time" id="fp-duration">-0:00</span>
+      </div>
+    </div>
+  `;
+
   function initSidebarWidget() {
     const swContainer = document.getElementById("sidebar-music-widget");
     if (swContainer && !swContainer.querySelector(".sidebar-widget-inner")) {
@@ -294,7 +350,7 @@
     if (swExpand) {
       swExpand.onclick = () => {
         if (window.closeSidebar) window.closeSidebar();
-        document.getElementById("music-overlay")?.classList.add("open");
+        document.getElementById("floating-player")?.classList.add("open");
       };
     }
 
@@ -349,9 +405,11 @@
 
   document.addEventListener("DOMContentLoaded", () => {
     document.body.insertAdjacentHTML("beforeend", playerHTML);
+    document.body.insertAdjacentHTML("beforeend", floatingPlayerHTML);
     setTimeout(restoreMusicState, 100);
 
     const overlay = document.getElementById("music-overlay");
+    const floatingPlayer = document.getElementById("floating-player");
     const searchInput = document.getElementById("music-search");
     const resultsList = document.getElementById("music-results-list");
     const playPauseBtn = document.getElementById("music-play-pause");
@@ -487,13 +545,108 @@
     }
 
     window.toggleMusic = function () {
-      overlay.classList.add("open");
+      floatingPlayer.classList.toggle("open");
     };
 
     document.addEventListener("click", (e) => {
       if (e.target.id === "music-close" || e.target === overlay) {
         overlay.classList.remove("open");
       }
+      // Close floating player when clicking outside
+      if (
+        e.target.closest("#floating-player") === null &&
+        !e.target.closest("#music-toggle") &&
+        floatingPlayer.classList.contains("open")
+      ) {
+        floatingPlayer.classList.remove("open");
+      }
+    });
+
+    // Floating player controls
+    const fpPlayPause = document.getElementById("fp-playpause");
+    const fpPrev = document.getElementById("fp-prev");
+    const fpNext = document.getElementById("fp-next");
+    const fpVol = document.getElementById("fp-vol");
+    const fpProgress = document.getElementById("fp-progress");
+    const fpPlayIcon = document.getElementById("fp-play-icon");
+    const fpPauseIcon = document.getElementById("fp-pause-icon");
+
+    if (fpPlayPause) {
+      fpPlayPause.onclick = () => {
+        if (!audio.src) {
+          // Open search if no song
+          floatingPlayer.classList.remove("open");
+          overlay.classList.add("open");
+          return;
+        }
+        if (audio.paused) {
+          audio.play();
+          if (fpPlayIcon) fpPlayIcon.style.display = "none";
+          if (fpPauseIcon) fpPauseIcon.style.display = "block";
+        } else {
+          audio.pause();
+          if (fpPlayIcon) fpPlayIcon.style.display = "block";
+          if (fpPauseIcon) fpPauseIcon.style.display = "none";
+        }
+      };
+    }
+
+    if (fpNext) {
+      fpNext.onclick = () => {
+        if (currentIndex < currentSongs.length - 1) {
+          playSong(currentIndex + 1);
+        }
+      };
+    }
+
+    if (fpPrev) {
+      fpPrev.onclick = () => {
+        if (currentIndex > 0) {
+          playSong(currentIndex - 1);
+        }
+      };
+    }
+
+    if (fpVol) {
+      fpVol.oninput = (e) => {
+        audio.volume = e.target.value;
+      };
+    }
+
+    if (fpProgress) {
+      fpProgress.onclick = (e) => {
+        const width = fpProgress.clientWidth;
+        const clickX = e.offsetX;
+        if (audio.duration) {
+          audio.currentTime = (clickX / width) * audio.duration;
+        }
+      };
+    }
+
+    // Update floating player progress and play/pause icons
+    audio.addEventListener("timeupdate", () => {
+      const fpProgressFill = document.getElementById("fp-progress-fill");
+      const fpCurrent = document.getElementById("fp-current");
+      const fpDuration = document.getElementById("fp-duration");
+      if (audio.duration) {
+        const progress = (audio.currentTime / audio.duration) * 100;
+        if (fpProgressFill) fpProgressFill.style.width = `${progress}%`;
+        if (fpCurrent) fpCurrent.textContent = formatTime(audio.currentTime);
+        if (fpDuration) {
+          const remaining = audio.duration - audio.currentTime;
+          fpDuration.textContent = "-" + formatTime(remaining);
+        }
+      }
+    });
+
+    audio.addEventListener("play", () => {
+      if (fpPlayIcon) fpPlayIcon.style.display = "none";
+      if (fpPauseIcon) fpPauseIcon.style.display = "block";
+    });
+
+    audio.addEventListener("pause", () => {
+      if (fpPlayIcon) fpPlayIcon.style.display = "block";
+      if (fpPauseIcon) fpPauseIcon.style.display = "none";
     });
 
     let searchTimeout;
