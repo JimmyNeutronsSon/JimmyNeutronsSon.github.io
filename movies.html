@@ -1,156 +1,288 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Movies · Welkin</title>
+    <link rel="icon" href="data:,">
+    <meta
+      name="description"
+      content="Discover and stream films with Welkin Cinema — TMDB metadata and Videasy playback."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Movies · Welkin</title>
-  <meta name="description"
-    content="Discover and stream films with Welkin Cinema — TMDB metadata and Vidking playback.">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
-</head>
-
-<body class="movies-hub">
-  <div id="movies-config-error" class="movies-config-error" hidden>
-    <p><strong>TMDB API key missing.</strong> Create a <code>.env</code> file in the project root with
-      <code>TMDB_API_KEY=your_key</code> and restart the server. Get a free key from
-      <a href="https://developer.themoviedb.org/reference/getting-started" target="_blank"
-        rel="noopener noreferrer">The Movie Database</a>.
-    </p>
-  </div>
-
-  <header class="movies-topnav">
-    <a href="index.html" class="movies-brand">Welkin<span class="logo-dot">.</span> Cinema</a>
-    <nav class="movies-topnav-links" aria-label="Section shortcuts">
-      <a href="#section-trending">Trending</a>
-      <a href="#section-popular">Popular</a>
-      <a href="#section-top">Top rated</a>
-      <a href="#section-tv">Series</a>
-      <a href="#section-genres">Genres</a>
-    </nav>
-    <div class="movies-search-wrap">
-      <label class="visually-hidden" for="movies-search-q">Search movies and TV</label>
-      <input type="search" id="movies-search-q" class="movies-search-input" placeholder="Search movies & TV…"
-        autocomplete="off" />
-      <div id="movies-search-results" class="movies-search-dropdown" hidden></div>
+  <body class="movies-hub">
+    <div id="movies-config-error" class="movies-config-error" hidden>
+      <p>
+        <strong>TMDB API key missing.</strong> Create a <code>.env</code> file
+        in the project root with <code>TMDB_API_KEY=your_key</code> and restart
+        the server. Get a free key from
+        <a
+          href="https://developer.themoviedb.org/reference/getting-started"
+          target="_blank"
+          rel="noopener noreferrer"
+          >The Movie Database</a
+        >.
+      </p>
     </div>
-  </header>
 
-  <section class="movies-hero" id="movies-hero" aria-label="Featured">
-    <div class="movies-hero-bg" id="hero-bg"></div>
-    <div class="movies-hero-shade"></div>
-    <div class="movies-hero-content">
-      <p class="movies-hero-kicker" id="hero-kicker"></p>
-      <h1 class="movies-hero-title" id="hero-title">Welkin Cinema</h1>
-      <p class="movies-hero-overview" id="hero-overview"></p>
-      <div class="movies-hero-actions">
-        <button type="button" class="movies-btn movies-btn-primary" id="hero-play">Play</button>
-        <button type="button" class="movies-btn movies-btn-ghost" id="hero-more">Details</button>
+    <header class="movies-topnav">
+      <a href="index.html" class="movies-brand"
+        >Welkin<span class="logo-dot">.</span> Cinema</a
+      >
+      <nav class="movies-topnav-links" aria-label="Section shortcuts">
+        <a href="#section-trending">Trending</a>
+        <a href="#section-popular">Popular</a>
+        <a href="#section-top">Top rated</a>
+        <a href="#section-tv">Series</a>
+        <a href="#section-genres">Genres</a>
+      </nav>
+      <div class="movies-search-wrap">
+        <label class="visually-hidden" for="movies-search-q"
+          >Search movies and TV</label
+        >
+        <input
+          type="search"
+          id="movies-search-q"
+          class="movies-search-input"
+          placeholder="Search movies & TV…"
+          autocomplete="off"
+        />
+        <div
+          id="movies-search-results"
+          class="movies-search-dropdown"
+          hidden
+        ></div>
       </div>
-      <div class="movies-hero-dots" id="hero-dots" role="tablist" aria-label="Featured titles"></div>
-    </div>
-  </section>
+    </header>
 
-  <main class="movies-main">
-    <section class="movies-row-section" id="section-top10" aria-labelledby="h-top10">
-      <div class="movies-row-head">
-        <h2 id="h-top10" class="movies-row-title">Top 10 today</h2>
-      </div>
-      <div class="movies-top10" id="top10-track"></div>
-    </section>
-
-    <section class="movies-row-section" id="section-trending" aria-labelledby="h-trending">
-      <div class="movies-row-head">
-        <h2 id="h-trending" class="movies-row-title">Trending today</h2>
-        <div class="movies-tabs" role="tablist">
-          <button type="button" class="movies-tab active" data-trend="movie" role="tab">Movies</button>
-          <button type="button" class="movies-tab" data-trend="tv" role="tab">Series</button>
+    <section class="movies-hero" id="movies-hero" aria-label="Featured">
+      <div class="movies-hero-bg" id="hero-bg"></div>
+      <div class="movies-hero-shade"></div>
+      <div class="movies-hero-content">
+        <p class="movies-hero-kicker" id="hero-kicker"></p>
+        <h1 class="movies-hero-title" id="hero-title">Welkin Cinema</h1>
+        <p class="movies-hero-overview" id="hero-overview"></p>
+        <div class="movies-hero-actions">
+          <button
+            type="button"
+            class="movies-btn movies-btn-primary"
+            id="hero-play"
+          >
+            Play
+          </button>
+          <button
+            type="button"
+            class="movies-btn movies-btn-ghost"
+            id="hero-more"
+          >
+            Details
+          </button>
         </div>
+        <div
+          class="movies-hero-dots"
+          id="hero-dots"
+          role="tablist"
+          aria-label="Featured titles"
+        ></div>
       </div>
-      <div class="movies-row-scroll" id="trending-row"></div>
     </section>
 
-    <section class="movies-row-section" id="section-popular" aria-labelledby="h-popular">
-      <div class="movies-row-head">
-        <h2 id="h-popular" class="movies-row-title">Popular movies</h2>
-      </div>
-      <div class="movies-row-scroll" id="popular-row"></div>
-    </section>
-
-    <section class="movies-row-section" id="section-top" aria-labelledby="h-toprated">
-      <div class="movies-row-head">
-        <h2 id="h-toprated" class="movies-row-title">Top rated</h2>
-        <div class="movies-tabs" role="tablist">
-          <button type="button" class="movies-tab active" data-top="movie" role="tab">Movies</button>
-          <button type="button" class="movies-tab" data-top="tv" role="tab">Series</button>
+    <main class="movies-main">
+      <section
+        class="movies-row-section"
+        id="section-top10"
+        aria-labelledby="h-top10"
+      >
+        <div class="movies-row-head">
+          <h2 id="h-top10" class="movies-row-title">Top 10 today</h2>
         </div>
-      </div>
-      <div class="movies-row-scroll" id="toprated-row"></div>
-    </section>
+        <div class="movies-top10" id="top10-track"></div>
+      </section>
 
-    <section class="movies-row-section" id="section-tv" aria-labelledby="h-tvpop">
-      <div class="movies-row-head">
-        <h2 id="h-tvpop" class="movies-row-title">Popular series</h2>
-      </div>
-      <div class="movies-row-scroll" id="tv-row"></div>
-    </section>
+      <section
+        class="movies-row-section"
+        id="section-trending"
+        aria-labelledby="h-trending"
+      >
+        <div class="movies-row-head">
+          <h2 id="h-trending" class="movies-row-title">Trending today</h2>
+          <div class="movies-tabs" role="tablist">
+            <button
+              type="button"
+              class="movies-tab active"
+              data-trend="movie"
+              role="tab"
+            >
+              Movies
+            </button>
+            <button type="button" class="movies-tab" data-trend="tv" role="tab">
+              Series
+            </button>
+          </div>
+        </div>
+        <div class="movies-row-scroll" id="trending-row"></div>
+      </section>
 
-    <section class="movies-row-section" id="section-genres" aria-labelledby="h-genres">
-      <div class="movies-row-head">
-        <h2 id="h-genres" class="movies-row-title">Browse by genre</h2>
-      </div>
-      <div class="movies-genre-chips" id="genre-chips"></div>
-      <div class="movies-row-scroll" id="genre-row"></div>
-    </section>
+      <section
+        class="movies-row-section"
+        id="section-popular"
+        aria-labelledby="h-popular"
+      >
+        <div class="movies-row-head">
+          <h2 id="h-popular" class="movies-row-title">Popular movies</h2>
+        </div>
+        <div class="movies-row-scroll" id="popular-row"></div>
+      </section>
 
-    <footer class="movies-foot">
-      <p>Metadata © <a href="https://www.themoviedb.org/" target="_blank" rel="noopener noreferrer">TMDB</a>.
-        Playback via <a href="https://www.vidking.net/" target="_blank" rel="noopener noreferrer">Vidking</a>
-        embeds (TMDB IDs). Welkin styling per brand guidelines.</p>
-    </footer>
-  </main>
+      <section
+        class="movies-row-section"
+        id="section-top"
+        aria-labelledby="h-toprated"
+      >
+        <div class="movies-row-head">
+          <h2 id="h-toprated" class="movies-row-title">Top rated</h2>
+          <div class="movies-tabs" role="tablist">
+            <button
+              type="button"
+              class="movies-tab active"
+              data-top="movie"
+              role="tab"
+            >
+              Movies
+            </button>
+            <button type="button" class="movies-tab" data-top="tv" role="tab">
+              Series
+            </button>
+          </div>
+        </div>
+        <div class="movies-row-scroll" id="toprated-row"></div>
+      </section>
 
-  <div class="movies-modal" id="detail-modal" hidden>
-    <div class="movies-modal-backdrop" data-close-modal></div>
-    <div class="movies-modal-panel" role="dialog" aria-modal="true" aria-labelledby="detail-title">
-      <button type="button" class="movies-modal-x" data-close-modal aria-label="Close">&times;</button>
-      <div class="movies-modal-bg" id="detail-backdrop"></div>
-      <div class="movies-modal-body">
-        <img class="movies-modal-poster" id="detail-poster" alt="" width="200" height="300" />
-        <div class="movies-modal-copy">
-          <h2 id="detail-title" class="movies-modal-title"></h2>
-          <p class="movies-modal-meta" id="detail-meta"></p>
-          <p class="movies-modal-overview" id="detail-overview"></p>
-          <div class="movies-modal-actions">
-            <button type="button" class="movies-btn movies-btn-primary" id="detail-play">Play</button>
+      <section
+        class="movies-row-section"
+        id="section-tv"
+        aria-labelledby="h-tvpop"
+      >
+        <div class="movies-row-head">
+          <h2 id="h-tvpop" class="movies-row-title">Popular series</h2>
+        </div>
+        <div class="movies-row-scroll" id="tv-row"></div>
+      </section>
+
+      <section
+        class="movies-row-section"
+        id="section-genres"
+        aria-labelledby="h-genres"
+      >
+        <div class="movies-row-head">
+          <h2 id="h-genres" class="movies-row-title">Browse by genre</h2>
+        </div>
+        <div class="movies-genre-chips" id="genre-chips"></div>
+        <div class="movies-row-scroll" id="genre-row"></div>
+      </section>
+
+      <footer class="movies-foot">
+        <p>
+          Metadata ©
+          <a
+            href="https://www.themoviedb.org/"
+            target="_blank"
+            rel="noopener noreferrer"
+            >TMDB</a
+          >. Playback via
+          <a
+            href="https://www.videasy.net/docs"
+            target="_blank"
+            rel="noopener noreferrer"
+            >Videasy</a
+          >
+          embeds (TMDB IDs). Welkin styling per brand guidelines.
+        </p>
+      </footer>
+    </main>
+
+    <div class="movies-modal" id="detail-modal" hidden>
+      <div class="movies-modal-backdrop" data-close-modal></div>
+      <div
+        class="movies-modal-panel"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="detail-title"
+      >
+        <button
+          type="button"
+          class="movies-modal-x"
+          data-close-modal
+          aria-label="Close"
+        >
+          &times;
+        </button>
+        <div class="movies-modal-bg" id="detail-backdrop"></div>
+        <div class="movies-modal-body">
+          <img
+            class="movies-modal-poster"
+            id="detail-poster"
+            alt=""
+            width="200"
+            height="300"
+          />
+          <div class="movies-modal-copy">
+            <h2 id="detail-title" class="movies-modal-title"></h2>
+            <p class="movies-modal-meta" id="detail-meta"></p>
+            <p class="movies-modal-overview" id="detail-overview"></p>
+            <div class="movies-modal-actions">
+              <button
+                type="button"
+                class="movies-btn movies-btn-primary"
+                id="detail-play"
+              >
+                Play
+              </button>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <div class="movies-modal movies-player-modal" id="player-modal" hidden>
-    <div class="movies-modal-backdrop" data-close-player></div>
-    <div class="movies-player-shell" role="dialog" aria-modal="true" aria-labelledby="player-title">
-      <div class="movies-player-head">
-        <h2 id="player-title" class="movies-player-title"></h2>
-        <button type="button" class="movies-modal-x" data-close-player aria-label="Close player">&times;</button>
-      </div>
-      <div class="movies-player-frame">
-        <!-- iframe injected by scramjet.createFrame() -->
+    <div class="movies-modal movies-player-modal" id="player-modal" hidden>
+      <div class="movies-modal-backdrop" data-close-player></div>
+      <div
+        class="movies-player-shell"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="player-title"
+      >
+        <div class="movies-player-head">
+          <h2 id="player-title" class="movies-player-title"></h2>
+          <button
+            type="button"
+            class="movies-modal-x"
+            data-close-player
+            aria-label="Close player"
+          >
+            &times;
+          </button>
+        </div>
+        <div class="movies-player-frame">
+          <!-- iframe injected by scramjet.createFrame() -->
+        </div>
       </div>
     </div>
-  </div>
 
-  <script src="register-sw.js"></script>
-  <script src="/scram/scramjet.all.js"></script>
-  <script src="/baremux/index.js"></script>
-  <script src="movies.js"></script>
-  <script src="music.js"></script>
-  <script src="sidebar.js"></script>
-</body>
-
+    <script src="register-sw.js"></script>
+    <script src="/scram/scramjet.all.js"></script>
+    <script src="/baremux/index.js"></script>
+    <script src="movies.js"></script>
+    <script src="music.js"></script>
+    <script src="sidebar.js"></script>
+    <script src="/ai.js"></script>
+  </body>
 </html>

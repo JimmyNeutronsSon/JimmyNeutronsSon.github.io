@@ -272,15 +272,12 @@
     els.playerFrameWrap.innerHTML = "";
     
     const frame = scramjet.createFrame();
-    frame.frame.id = "vidking-frame";
+    frame.frame.id = "videasy-frame";
     frame.frame.title = "Video player";
     frame.frame.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen";
-    frame.frame.setAttribute("allowfullscreen", "true");
-    frame.frame.setAttribute("webkitallowfullscreen", "true");
-    frame.frame.setAttribute("mozallowfullscreen", "true");
     els.playerFrameWrap.appendChild(frame.frame);
     
-    const url = type === "tv" ? `https://www.vidking.net/embed/tv/${id}/1/1?color=${PLAYER_COLOR}&autoPlay=true` : `https://www.vidking.net/embed/movie/${id}?color=${PLAYER_COLOR}&autoPlay=true`;
+    const url = type === "tv" ? `https://player.videasy.net/tv/${id}/1/1?color=${PLAYER_COLOR}` : `https://player.videasy.net/movie/${id}?color=${PLAYER_COLOR}`;
     
     frame.go(url);
     activePlayerFrame = frame;
