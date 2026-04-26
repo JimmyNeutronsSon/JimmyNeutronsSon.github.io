@@ -240,8 +240,9 @@ window.initSidebar = function () {
           <a href="/movies.html" class="sidebar-link">Movies</a>
           <a href="/Soundboard/Soundboard.html" class="sidebar-link">Soundboard</a>
           <a href="#" class="sidebar-link" id="music-toggle">Music</a>
-         </nav>
-         <div id="sidebar-music-widget" class="sidebar-music-widget" style="display:none;"></div>
+          <a href="#" class="sidebar-link" id="ai-toggle">AI</a>
+          </nav>
+          <div id="sidebar-music-widget" class="sidebar-music-widget" style="display:none;"></div>
        </aside>
       <div id="sidebar-overlay" class="sidebar-overlay"></div>
     `;
@@ -253,6 +254,7 @@ window.initSidebar = function () {
   const closeBtn = document.getElementById("sidebar-close");
   const overlay = document.getElementById("sidebar-overlay");
   const musicToggle = document.getElementById("music-toggle");
+  const aiToggle = document.getElementById("ai-toggle");
 
   const closeSidebar = () => {
     sidebar.classList.remove("open");
@@ -271,6 +273,14 @@ window.initSidebar = function () {
     musicToggle.addEventListener("click", (e) => {
       e.preventDefault();
       if (window.toggleMusic) window.toggleMusic();
+      closeSidebar();
+    });
+  }
+
+  if (aiToggle) {
+    aiToggle.addEventListener("click", (e) => {
+      e.preventDefault();
+      if (window.toggleAI) window.toggleAI();
       closeSidebar();
     });
   }

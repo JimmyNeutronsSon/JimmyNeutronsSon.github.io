@@ -186,6 +186,7 @@
                             <svg id="pause-icon" style="display:none" width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
                         </div>
                         <div class="music-btn" id="music-next"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 4 15 12 5 20 5 4"></polygon><line x1="19" y1="5" x2="19" y2="19"></line></svg></div>
+                        <div class="music-btn" id="music-download" title="Download"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg></div>
                     </div>
 
                     <div class="music-progress-container">
@@ -995,6 +996,38 @@
     playPauseBtn.onclick = handlePlayPause;
     nextBtn.onclick = handleNext;
     prevBtn.onclick = handlePrev;
+
+    const downloadBtn = document.getElementById("music-download");
+    if (downloadBtn) {
+      downloadBtn.onclick = () => {
+        if (!audio.src) return;
+        const currentSong = currentSongs[currentIndex];
+        const raw = currentSong._raw || currentSong;
+        let url = "";
+        if (raw.downloadUrl && raw.downloadUrl.length > 0) {
+          url =
+            raw.downloadUrl[4]?.link ||
+            raw.downloadUrl[3]?.link ||
+            raw.downloadUrl[2]?.link ||
+            raw.downloadUrl[0]?.link ||
+            "";
+        }
+        if (url) {
+          const name =
+            cleanHtml(currentSong.name || "song").replace(
+              /[^a-zA-Z0-9]/g,
+              "_",
+            ) + ".mp3";
+          const a = document.createElement("a");
+          a.href = wrapUrl(url);
+          a.download = name;
+          a.target = "_blank";
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+        }
+      };
+    }
 
     audio.ontimeupdate = () => {
       const progress = (audio.currentTime / audio.duration) * 100 || 0;

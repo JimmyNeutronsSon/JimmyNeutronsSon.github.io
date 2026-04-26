@@ -6,16 +6,26 @@
 /* ── CSS Custom Properties ─────────────────────── */
 :root {
   /* ── Brand Palette (from BRAND_GUIDELINES.md) ── */
-  --clr-deep: #0b1e3d; /* Abyss Blue — dark bg */
-  --clr-navy: #0a2d6e; /* Stratosphere Navy — primary deep */
-  --clr-twilight: #163a6b; /* Twilight — cards / overlays */
-  --clr-azure: #1e6cc7; /* Azure Sky — interactive */
-  --clr-cerulean: #3a8fe0; /* Cerulean — highlights */
-  --clr-daylight: #6cb4f0; /* Daylight Blue — accents */
-  --clr-haze: #b8cbe4; /* Mist / Haze */
-  --clr-horizon: #d6e5f5; /* Horizon glow */
-  --clr-cirrus: #e8eff8; /* Cloud Light */
-  --clr-cumulus: #f7faff; /* Cloud White */
+  --clr-deep: #0b1e3d;
+  /* Abyss Blue — dark bg */
+  --clr-navy: #0a2d6e;
+  /* Stratosphere Navy — primary deep */
+  --clr-twilight: #163a6b;
+  /* Twilight — cards / overlays */
+  --clr-azure: #1e6cc7;
+  /* Azure Sky — interactive */
+  --clr-cerulean: #3a8fe0;
+  /* Cerulean — highlights */
+  --clr-daylight: #6cb4f0;
+  /* Daylight Blue — accents */
+  --clr-haze: #b8cbe4;
+  /* Mist / Haze */
+  --clr-horizon: #d6e5f5;
+  /* Horizon glow */
+  --clr-cirrus: #e8eff8;
+  /* Cloud Light */
+  --clr-cumulus: #f7faff;
+  /* Cloud White */
 
   /* Dark‑mode semantic tokens */
   --bg-primary: var(--clr-deep);
@@ -23,7 +33,8 @@
   --bg-tertiary: var(--clr-navy);
   --text-primary: var(--clr-cumulus);
   --text-secondary: var(--clr-horizon);
-  --text-muted: #8fa4c2; /* Nimbus */
+  --text-muted: #8fa4c2;
+  /* Nimbus */
   --accent: var(--clr-daylight);
   --accent-hover: var(--clr-cerulean);
   --border: rgba(255, 255, 255, 0.12);
@@ -123,10 +134,12 @@ a {
 ul {
   list-style: none;
 }
+
 img {
   display: block;
   max-width: 100%;
 }
+
 button {
   cursor: pointer;
   border: none;
@@ -151,11 +164,14 @@ button {
 
 /* 3. Style the "Liquid Glass" thumb */
 ::-webkit-scrollbar-thumb {
-  background: rgba(135, 206, 235, 0.4); /* Sky Blue at 40% opacity */
-  backdrop-filter: blur(8px); /* The frosting effect */
+  background: rgba(135, 206, 235, 0.4);
+  /* Sky Blue at 40% opacity */
+  backdrop-filter: blur(8px);
+  /* The frosting effect */
   -webkit-backdrop-filter: blur(8px);
   border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.3); /* Glass edge highlight */
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  /* Glass edge highlight */
 
   /* Inner glow for depth */
   box-shadow:
@@ -331,9 +347,11 @@ button {
 .mobile-menu-toggle.open span:nth-child(1) {
   transform: translateY(7px) rotate(45deg);
 }
+
 .mobile-menu-toggle.open span:nth-child(2) {
   opacity: 0;
 }
+
 .mobile-menu-toggle.open span:nth-child(3) {
   transform: translateY(-7px) rotate(-45deg);
 }
@@ -532,22 +550,27 @@ button {
     opacity 0.2s;
   flex-shrink: 0;
 }
+
 .startup-card:hover {
   transform: translateY(-4px);
   opacity: 0.9;
 }
+
 .scroll-container::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
+
 .scroll-container::-webkit-scrollbar-track {
   background: rgba(255, 255, 255, 0.1);
   border-radius: 3px;
 }
+
 .scroll-container::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.3);
   border-radius: 3px;
 }
+
 .scroll-container {
   display: flex;
   gap: 20px;
@@ -558,6 +581,7 @@ button {
   scrollbar-width: auto;
   -ms-overflow-style: auto;
 }
+
 .music-scroll-wrapper {
   max-width: 100%;
   width: 100%;
@@ -566,18 +590,22 @@ button {
   scrollbar-width: auto;
   -ms-overflow-style: auto;
 }
+
 .music-scroll-wrapper::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
+
 .music-scroll-wrapper::-webkit-scrollbar-track {
   background: rgba(255, 255, 255, 0.1);
   border-radius: 3px;
 }
+
 .music-scroll-wrapper::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.3);
   border-radius: 3px;
 }
+
 .music-scroll-btn {
   position: absolute;
   top: 40%;
@@ -600,13 +628,16 @@ button {
     background 0.2s;
   pointer-events: all;
 }
+
 .music-scroll-btn:hover {
   opacity: 1;
   background: rgba(0, 0, 0, 0.9);
 }
+
 .music-scroll-btn.left {
   left: 5px;
 }
+
 .music-scroll-btn.right {
   right: 5px;
 }
@@ -623,6 +654,7 @@ button {
     opacity: 1;
     transform: scale(1);
   }
+
   50% {
     opacity: 0.5;
     transform: scale(0.85);
@@ -635,6 +667,7 @@ button {
     transform: translateY(0);
     opacity: 1;
   }
+
   50% {
     transform: translateY(8px);
     opacity: 0.3;
@@ -719,6 +752,7 @@ button {
     transform: translateX(-50px);
     opacity: 0;
   }
+
   100% {
     transform: translateX(0);
     opacity: 1;
@@ -730,6 +764,7 @@ button {
     transform: translateX(0);
     opacity: 1;
   }
+
   100% {
     transform: translateX(50px);
     opacity: 0;
@@ -744,6 +779,7 @@ button {
 .page-transition-exit {
   animation: slideOutToRight 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
 }
+
 /* ═══════════════════════════════════════════════════
    MUSIC PLAYER POPUP
    ═══════════════════════════════════════════════════ */
@@ -1755,11 +1791,13 @@ button {
   backdrop-filter: blur(8px);
   box-shadow: var(--shadow-md);
 }
+
 .sidebar-widget-inner {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
+
 .sw-title {
   font-size: 14px;
   font-weight: 700;
@@ -1769,6 +1807,7 @@ button {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
 .sw-artist {
   font-size: 11px;
   color: var(--text-muted);
@@ -1776,6 +1815,7 @@ button {
   align-items: center;
   gap: 4px;
 }
+
 .sw-controls {
   display: flex;
   justify-content: center;
@@ -1784,6 +1824,7 @@ button {
   margin-top: 4px;
   margin-bottom: 4px;
 }
+
 .sw-btn {
   background: none;
   border: none;
@@ -1798,25 +1839,30 @@ button {
     opacity 0.2s,
     transform 0.2s;
 }
+
 .sw-btn:hover {
   opacity: 1;
   transform: scale(1.1);
 }
+
 .sw-play {
   width: 32px;
   height: 32px;
 }
+
 .sw-progress-wrap {
   display: flex;
   align-items: center;
   gap: 8px;
 }
+
 .sw-time {
   font-size: 10px;
   color: var(--text-muted);
   min-width: 25px;
   text-align: center;
 }
+
 .sw-progress {
   flex: 1;
   height: 4px;
@@ -1825,17 +1871,20 @@ button {
   cursor: pointer;
   overflow: hidden;
 }
+
 .sw-progress-fill {
   height: 100%;
   background: var(--clr-cumulus);
   border-radius: 2px;
   width: 0%;
 }
+
 .sw-right-controls {
   display: flex;
   align-items: center;
   gap: 8px;
 }
+
 .sw-vol {
   flex: 1;
   height: 4px;
@@ -1845,6 +1894,7 @@ button {
   border-radius: 2px;
   outline: none;
 }
+
 .sw-vol::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
@@ -1854,6 +1904,7 @@ button {
   border-radius: 50%;
   cursor: pointer;
 }
+
 .sw-expand {
   background: none;
   border: none;
@@ -1863,6 +1914,7 @@ button {
   align-items: center;
   transition: color 0.2s;
 }
+
 .sw-expand:hover {
   color: var(--clr-cumulus);
 }
@@ -1873,6 +1925,7 @@ button {
   margin-bottom: 20px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
+
 .music-tab {
   background: none;
   border: none;
@@ -1884,12 +1937,15 @@ button {
   position: relative;
   transition: color 0.2s;
 }
+
 .music-tab:hover {
   color: var(--clr-cumulus);
 }
+
 .music-tab.active {
   color: var(--clr-cumulus);
 }
+
 .music-tab.active::after {
   content: "";
   position: absolute;
@@ -1899,15 +1955,18 @@ button {
   height: 2px;
   background: var(--accent);
 }
+
 .music-view {
   display: none;
   flex-direction: column;
   height: 100%;
   overflow: hidden;
 }
+
 .music-view.active {
   display: flex;
 }
+
 .music-create-btn {
   width: 100%;
   padding: 12px;
@@ -1920,9 +1979,11 @@ button {
   margin-bottom: 20px;
   transition: background 0.2s;
 }
+
 .music-create-btn:hover {
   background: rgba(255, 255, 255, 0.1);
 }
+
 .music-back-btn {
   background: none;
   border: none;
@@ -1935,12 +1996,15 @@ button {
   text-align: left;
   transition: color 0.2s;
 }
+
 .music-back-btn:hover {
   color: var(--clr-cumulus);
 }
+
 .music-item {
   position: relative;
 }
+
 .music-item-add {
   background: rgba(255, 255, 255, 0.1);
   border: none;
@@ -1959,12 +2023,15 @@ button {
     opacity 0.2s,
     background 0.2s;
 }
+
 .music-item:hover .music-item-add {
   opacity: 1;
 }
+
 .music-item-add:hover {
   background: var(--accent);
 }
+
 .music-add-popup {
   position: absolute;
   right: 32px;
@@ -1978,6 +2045,7 @@ button {
   z-index: 100;
   min-width: 160px;
 }
+
 .pl-option {
   padding: 10px 12px;
   font-size: 13px;
@@ -1987,6 +2055,7 @@ button {
   transition: background 0.2s;
   color: var(--clr-cumulus);
 }
+
 .pl-option:hover {
   background: rgba(255, 255, 255, 0.1);
 }
@@ -1999,6 +2068,7 @@ button {
   align-items: center;
   text-align: center;
 }
+
 .pl-cover {
   width: 240px;
   height: 240px;
@@ -2007,11 +2077,13 @@ button {
   margin-bottom: 24px;
   box-shadow: var(--shadow-lg);
 }
+
 .pl-info {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
+
 .pl-type {
   font-size: 11px;
   text-transform: uppercase;
@@ -2020,12 +2092,14 @@ button {
   color: var(--text-secondary);
   margin-bottom: 12px;
 }
+
 .pl-title {
   font-size: 32px;
   font-weight: 800;
   margin-bottom: 16px;
   color: var(--clr-cumulus);
 }
+
 .pl-desc {
   font-size: 14px;
   color: var(--text-muted);
@@ -2033,6 +2107,7 @@ button {
   margin-bottom: 24px;
   max-width: 90%;
 }
+
 .pl-meta {
   display: flex;
   align-items: center;
@@ -2040,6 +2115,7 @@ button {
   font-size: 13px;
   color: var(--text-muted);
 }
+
 .pl-like {
   width: 36px;
   height: 36px;
@@ -2052,13 +2128,16 @@ button {
   cursor: pointer;
   transition: background 0.2s;
 }
+
 .pl-like:hover {
   background: rgba(255, 255, 255, 0.2);
 }
+
 .pl-tracklist {
   margin-top: 10px;
   padding-bottom: 20px;
 }
+
 .pl-track {
   display: flex;
   align-items: center;
@@ -2068,32 +2147,39 @@ button {
   transition: background 0.2s;
   cursor: pointer;
 }
+
 .pl-track:hover {
   background: rgba(255, 255, 255, 0.05);
 }
+
 .pl-track-img {
   width: 48px;
   height: 48px;
   border-radius: 10px;
   object-fit: cover;
 }
+
 .pl-track-info {
   flex: 1;
 }
+
 .pl-track-name {
   font-size: 15px;
   font-weight: 600;
   margin-bottom: 4px;
   color: var(--clr-cumulus);
 }
+
 .pl-track-artist {
   font-size: 13px;
   color: var(--text-muted);
 }
+
 .pl-track-dur {
   font-size: 13px;
   color: var(--text-muted);
 }
+
 .pl-track-rm {
   opacity: 0;
   color: #ff6b6b;
@@ -2102,6 +2188,7 @@ button {
   padding: 4px;
   transition: opacity 0.2s;
 }
+
 .pl-track:hover .pl-track-rm {
   opacity: 1;
 }

@@ -6,8 +6,6 @@ const scramjet = new ScramjetServiceWorker();
 let configErrorLogged = false;
 
 const BYPASS_HOSTS = [
-  "vidking.net",
-  "www.vidking.net",
   "videasy.net",
   "db.videasy.net",
   "api.videasy.net",
