@@ -38,52 +38,48 @@
   const SERVERS = {
     videasy: {
       name: "Videasy",
-      movieUrl: (id) =>
+      movie: (id) =>
         `https://player.videasy.net/movie/${id}?color=${PLAYER_COLOR}`,
-      tvUrl: (id, season, episode) =>
-        `https://player.videasy.net/tv/${id}/${season}/${episode}?color=${PLAYER_COLOR}`,
+      tv: (id, season, ep) =>
+        `https://player.videasy.net/tv/${id}/${season}/${ep}?color=${PLAYER_COLOR}`,
     },
     vidlink: {
       name: "VidLink",
-      movieUrl: (id) => `https://vidlink.pro/movie/${id}`,
-      tvUrl: (id, season, episode) =>
-        `https://vidlink.pro/tv/${id}/${season}/${episode}`,
+      movie: (id) => `https://vidlink.pro/movie/${id}`,
+      tv: (id, season, ep) => `https://vidlink.pro/tv/${id}/${season}/${ep}`,
     },
     vidfast: {
       name: "VidFast",
-      movieUrl: (id) => `https://vidfast.pro/movie/${id}`,
-      tvUrl: (id, season, episode) =>
-        `https://vidfast.pro/tv/${id}/${season}/${episode}`,
+      movie: (id) => `https://vidfast.pro/movie/${id}`,
+      tv: (id, season, ep) => `https://vidfast.pro/tv/${id}/${season}/${ep}`,
     },
     vidsrcme: {
       name: "VidSrcMe",
-      movieUrl: (id) => `https://vidsrcme.ru/api/movie/${id}`,
-      tvUrl: (id, season, episode) =>
-        `https://vidsrcme.ru/api/tv/${id}/${season}/${episode}`,
+      movie: (id) => `https://vidsrcme.ru/api/movie/${id}`,
+      tv: (id, season, ep) =>
+        `https://vidsrcme.ru/api/tv/${id}/${season}/${ep}`,
     },
     embed2: {
       name: "2Embed",
-      movieUrl: (id) => `https://www.2embed.cc/embed/${id}`,
-      tvUrl: (id, season, episode) =>
-        `https://www.2embed.cc/embed-tv/${id}/${season}/${episode}`,
+      movie: (id) => `https://www.2embed.cc/embed/${id}`,
+      tv: (id, season, ep) =>
+        `https://www.2embed.cc/embed-tv/${id}/${season}/${ep}`,
     },
     vidnest: {
       name: "VidNest",
-      movieUrl: (id) => `https://vidnest.fun/movie/${id}`,
-      tvUrl: (id, season, episode) =>
-        `https://vidnest.fun/tv/${id}/${season}/${episode}`,
+      movie: (id) => `https://vidnest.fun/movie/${id}`,
+      tv: (id, season, ep) => `https://vidnest.fun/tv/${id}/${season}/${ep}`,
     },
     superembed: {
       name: "SuperEmbed",
-      movieUrl: (id) => `https://www.superembed.stream/embed/movie/${id}`,
-      tvUrl: (id, season, episode) =>
-        `https://www.superembed.stream/embed/tv/${id}/${season}/${episode}`,
+      movie: (id) => `https://www.superembed.stream/embed/movie/${id}`,
+      tv: (id, season, ep) =>
+        `https://www.superembed.stream/embed/tv/${id}/${season}/${ep}`,
     },
   };
 
-  function getSelectedServer() {
-    const select = document.getElementById("server-select");
-    return select ? select.value : "videasy";
+  function getServer() {
+    return SERVERS.videasy;
   }
 
   function imgUrl(path, size) {
@@ -313,9 +309,7 @@
   }
 
   function openPlayer(type, id, title) {
-    const serverKey = getSelectedServer();
-    const server = SERVERS[serverKey] || SERVERS.videasy;
-
+    const server = getServer();
     els.playerTitle.textContent = `${title} (${server.name})`;
 
     if (activePlayerFrame) {
@@ -327,36 +321,11 @@
     const frame = scramjet.createFrame();
     frame.frame.id = "video-player-frame";
     frame.frame.title = "Video player";
-    frame.frame.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen";
-    els.playerFrameWrap.appendChild(frame.frame);
-
-    let url;
-    if (type === "tv") {
-      // Default to season 1, episode 1 for TV shows
-      url = server.tvUrl(id, 1, 1);
-    } else {
-      url = server.movieUrl(id);
-    }
-
-    frame.go(url);
-    activePlayerFrame = frame;
-
-    els.playerModal.hidden = false;
-    document.body.style.overflow = "hidden";
-  }
-    els.playerFrameWrap.innerHTML = "";
-
-    const frame = scramjet.createFrame();
-    frame.frame.id = "videasy-frame";
-    frame.frame.title = "Video player";
     frame.frame.allow =
       "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen";
     els.playerFrameWrap.appendChild(frame.frame);
 
-    const url =
-      type === "tv"
-        ? `https://player.videasy.net/tv/${id}/1/1?color=${PLAYER_COLOR}`
-        : `https://player.videasy.net/movie/${id}?color=${PLAYER_COLOR}`;
+    const url = type === "tv" ? server.tv(id, 1, 1) : server.movie(id);
 
     frame.go(url);
     activePlayerFrame = frame;
