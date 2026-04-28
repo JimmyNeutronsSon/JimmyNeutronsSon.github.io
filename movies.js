@@ -310,7 +310,19 @@
     document.body.style.overflow = "";
   }
 
+  function reloadPlayer() {
+    if (!activePlayerFrame || !detailContext.id) return;
+    const server = getServer();
+    const url =
+      detailContext.type === "tv"
+        ? server.tv(detailContext.id, 1, 1)
+        : server.movie(detailContext.id);
+    activePlayerFrame.go(url);
+    els.playerTitle.textContent = `${detailContext.title} (${server.name})`;
+  }
+
   function openPlayer(type, id, title) {
+    detailContext = { type, id, title };
     const server = getServer();
     els.playerTitle.textContent = `${title} (${server.name})`;
 
@@ -568,4 +580,9 @@
   }
 
   init();
+
+  const serverSelect = document.getElementById("server-select");
+  if (serverSelect) {
+    serverSelect.addEventListener("change", reloadPlayer);
+  }
 })();
