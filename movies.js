@@ -43,21 +43,11 @@
       tv: (id, season, ep) =>
         `https://player.videasy.net/tv/${id}/${season}/${ep}?color=${PLAYER_COLOR}`,
     },
-    vidlink: {
-      name: "VidLink",
-      movie: (id) => `https://vidlink.pro/movie/${id}`,
-      tv: (id, season, ep) => `https://vidlink.pro/tv/${id}/${season}/${ep}`,
-    },
-    vidfast: {
-      name: "VidFast",
-      movie: (id) => `https://vidfast.pro/movie/${id}`,
-      tv: (id, season, ep) => `https://vidfast.pro/tv/${id}/${season}/${ep}`,
-    },
     vidsrcme: {
       name: "VidSrcMe",
-      movie: (id) => `https://vidsrcme.ru/api/movie/${id}`,
+      movie: (id) => `https://vidsrc.me/embed/movie/${id}`,
       tv: (id, season, ep) =>
-        `https://vidsrcme.ru/api/tv/${id}/${season}/${ep}`,
+        `https://vidsrc.me/embed/tv/${id}/${season}/${ep}`,
     },
     embed2: {
       name: "2Embed",

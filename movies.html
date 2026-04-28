@@ -263,19 +263,24 @@
         <div class="movies-player-head">
           <h2 id="player-title" class="movies-player-title"></h2>
           <div class="server-switcher">
-            <label for="server-select" class="visually-hidden"
-              >Select video server</label
-            >
+            <label for="server-select" class="visually-hidden">Select video server</label>
             <select id="server-select" class="server-select">
               <option value="videasy">Videasy (Default)</option>
-              <option value="vidlink">VidLink</option>
-              <option value="vidfast">VidFast</option>
               <option value="vidsrcme">VidSrcMe</option>
               <option value="embed2">2Embed</option>
               <option value="vidnest">VidNest</option>
               <option value="superembed">SuperEmbed</option>
             </select>
           </div>
+          <button
+            type="button"
+            class="movies-modal-x"
+            data-close-player
+            aria-label="Close player"
+          >
+            &times;
+          </button>
+        </div>
           <button
             type="button"
             class="movies-modal-x"
