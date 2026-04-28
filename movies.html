@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Not Sophisticated</title>
+    <title>Movies · Welkin</title>
     <link rel="icon" href="data:," />
     <meta
       name="description"
@@ -60,20 +60,6 @@
           class="movies-search-dropdown"
           hidden
         ></div>
-      </div>
-      <div class="server-switcher">
-        <label for="server-select" class="visually-hidden"
-          >Select video server</label
-        >
-        <select id="server-select" class="server-select">
-          <option value="videasy">Videasy (Default)</option>
-          <option value="vidlink">VidLink</option>
-          <option value="vidfast">VidFast</option>
-          <option value="vidsrcme">VidSrcMe</option>
-          <option value="embed2">2Embed</option>
-          <option value="vidnest">VidNest</option>
-          <option value="superembed">SuperEmbed</option>
-        </select>
       </div>
     </header>
 
@@ -211,8 +197,14 @@
             target="_blank"
             rel="noopener noreferrer"
             >TMDB</a
-          >. Playback via multiple servers (Videasy, VidLink, VidFast, VidSrcMe,
-          2Embed, VidNest, SuperEmbed). Welkin styling per brand guidelines.
+          >. Playback via
+          <a
+            href="https://www.videasy.net/docs"
+            target="_blank"
+            rel="noopener noreferrer"
+            >Videasy</a
+          >
+          embeds (TMDB IDs). Welkin styling per brand guidelines.
         </p>
       </footer>
     </main>
@@ -270,6 +262,20 @@
       >
         <div class="movies-player-head">
           <h2 id="player-title" class="movies-player-title"></h2>
+          <div class="server-switcher">
+            <label for="server-select" class="visually-hidden"
+              >Select video server</label
+            >
+            <select id="server-select" class="server-select">
+              <option value="videasy">Videasy (Default)</option>
+              <option value="vidlink">VidLink</option>
+              <option value="vidfast">VidFast</option>
+              <option value="vidsrcme">VidSrcMe</option>
+              <option value="embed2">2Embed</option>
+              <option value="vidnest">VidNest</option>
+              <option value="superembed">SuperEmbed</option>
+            </select>
+          </div>
           <button
             type="button"
             class="movies-modal-x"

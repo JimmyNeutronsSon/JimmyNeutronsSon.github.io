@@ -79,7 +79,9 @@
   };
 
   function getServer() {
-    return SERVERS.videasy;
+    const select = document.getElementById("server-select");
+    const key = select ? select.value : "videasy";
+    return SERVERS[key] || SERVERS.videasy;
   }
 
   function imgUrl(path, size) {
