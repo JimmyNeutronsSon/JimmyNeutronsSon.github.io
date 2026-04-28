@@ -1,149 +1,226 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Not Sophisticated</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="games_dashboard.css" />
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+      var sidebarScript = document.createElement("script");
+      sidebarScript.src = window.location.origin + "/sidebar.js";
+      document.head.appendChild(sidebarScript);
+    </script>
+  </head>
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Welkin | Gaming Dashboard</title>
-  <link rel="stylesheet" href="styles.css">
-  <link rel="stylesheet" href="games_dashboard.css">
-  <script src="https://unpkg.com/lucide@latest"></script>
-  <script>
-    var sidebarScript = document.createElement('script');
-    sidebarScript.src = window.location.origin + '/sidebar.js';
-    document.head.appendChild(sidebarScript);
-  </script>
-</head>
+  <body>
+    <div
+      class="vlt-cloud"
+      style="width: 220px; height: 80px; top: 10%; animation-duration: 40s"
+    ></div>
+    <div
+      class="vlt-cloud"
+      style="
+        width: 160px;
+        height: 55px;
+        top: 40%;
+        animation-duration: 54s;
+        animation-delay: 12s;
+      "
+    ></div>
+    <div
+      class="vlt-cloud"
+      style="
+        width: 300px;
+        height: 100px;
+        top: 65%;
+        animation-duration: 46s;
+        animation-delay: 24s;
+      "
+    ></div>
 
-<body>
+    <div class="vlt-app">
+      <!-- Center -->
+      <div class="vlt-center">
+        <header class="vlt-topbar">
+          <div class="vlt-logo">W</div>
+          <div class="vlt-greeting">Hello RHMS <strong>Students</strong></div>
+          <div class="vlt-search-wrap">
+            <i data-lucide="search" class="vlt-search-icon"></i>
+            <input
+              class="vlt-search-bar"
+              type="text"
+              placeholder="  Search 800+ games, genres, publishers..."
+              id="searchInput"
+            />
+          </div>
+          <button class="vlt-icon-btn" id="library-btn" title="Library">
+            <i data-lucide="library"></i>
+          </button>
+        </header>
 
-  <div class="vlt-cloud" style="width:220px;height:80px;top:10%;animation-duration:40s;"></div>
-  <div class="vlt-cloud" style="width:160px;height:55px;top:40%;animation-duration:54s;animation-delay:12s;"></div>
-  <div class="vlt-cloud" style="width:300px;height:100px;top:65%;animation-duration:46s;animation-delay:24s;"></div>
-
-  <div class="vlt-app">
-    <!-- Center -->
-    <div class="vlt-center">
-      <header class="vlt-topbar">
-        <div class="vlt-logo">W</div>
-        <div class="vlt-greeting">Hello RHMS <strong>Students</strong></div>
-        <div class="vlt-search-wrap">
-          <i data-lucide="search" class="vlt-search-icon"></i>
-          <input class="vlt-search-bar" type="text" placeholder="  Search 800+ games, genres, publishers..."
-            id="searchInput" />
-        </div>
-        <button class="vlt-icon-btn" id="library-btn" title="Library"><i data-lucide="library"></i></button>
-      </header>
-
-      <!-- Library Panel (Hidden by default) -->
-      <div id="vlt-library-panel" class="vlt-library-panel">
-        <div class="vlt-library-header">
-          <h3>Your Library</h3>
-          <button class="vlt-close-library">&times;</button>
-        </div>
-        <div id="vlt-library-items" class="vlt-library-items">
-          <!-- Library items injected here -->
-          <div class="vlt-empty-library">
-            <i data-lucide="bookmark" style="width: 48px; height: 48px; opacity: 0.2; margin-bottom: 10px;"></i>
-            <p>No games in your library yet.</p>
+        <!-- Library Panel (Hidden by default) -->
+        <div id="vlt-library-panel" class="vlt-library-panel">
+          <div class="vlt-library-header">
+            <h3>Your Library</h3>
+            <button class="vlt-close-library">&times;</button>
+          </div>
+          <div id="vlt-library-items" class="vlt-library-items">
+            <!-- Library items injected here -->
+            <div class="vlt-empty-library">
+              <i
+                data-lucide="bookmark"
+                style="
+                  width: 48px;
+                  height: 48px;
+                  opacity: 0.2;
+                  margin-bottom: 10px;
+                "
+              ></i>
+              <p>No games in your library yet.</p>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div class="vlt-main">
-        <!-- Filters -->
-        <div class="vlt-filter-row">
-          <div class="vlt-pill vlt-active" onclick="setFilter(this, 'All Games')">All Games</div>
-          <div class="vlt-pill" onclick="setFilter(this, 'Action')">Action</div>
-          <div class="vlt-pill" onclick="setFilter(this, 'Adventure')">Adventure</div>
-          <div class="vlt-pill" onclick="setFilter(this, 'RPG')">RPG</div>
-          <div class="vlt-pill" onclick="setFilter(this, 'Shooter')">Shooter</div>
-          <div class="vlt-pill" onclick="setFilter(this, 'Sports')">Sports</div>
-          <div class="vlt-pill" onclick="setFilter(this, 'Strategy')">Strategy</div>
-          <div class="vlt-pill" onclick="setFilter(this, 'Indie')">Indie</div>
-          <div class="vlt-pill" onclick="setFilter(this, 'Racing')">Racing</div>
-          <div class="vlt-pill" onclick="setFilter(this, 'Horror')">Horror</div>
-          <div class="vlt-pill" onclick="setFilter(this, 'Puzzle')">Puzzle</div>
-        </div>
+        <div class="vlt-main">
+          <!-- Filters -->
+          <div class="vlt-filter-row">
+            <div
+              class="vlt-pill vlt-active"
+              onclick="setFilter(this, 'All Games')"
+            >
+              All Games
+            </div>
+            <div class="vlt-pill" onclick="setFilter(this, 'Action')">
+              Action
+            </div>
+            <div class="vlt-pill" onclick="setFilter(this, 'Adventure')">
+              Adventure
+            </div>
+            <div class="vlt-pill" onclick="setFilter(this, 'RPG')">RPG</div>
+            <div class="vlt-pill" onclick="setFilter(this, 'Shooter')">
+              Shooter
+            </div>
+            <div class="vlt-pill" onclick="setFilter(this, 'Sports')">
+              Sports
+            </div>
+            <div class="vlt-pill" onclick="setFilter(this, 'Strategy')">
+              Strategy
+            </div>
+            <div class="vlt-pill" onclick="setFilter(this, 'Indie')">Indie</div>
+            <div class="vlt-pill" onclick="setFilter(this, 'Racing')">
+              Racing
+            </div>
+            <div class="vlt-pill" onclick="setFilter(this, 'Horror')">
+              Horror
+            </div>
+            <div class="vlt-pill" onclick="setFilter(this, 'Puzzle')">
+              Puzzle
+            </div>
+          </div>
 
-        <!-- Hero row -->
-        <div class="vlt-hero-row">
-          <div class="vlt-hero-card">
-            <div class="vlt-hero-info">
-              <div class="vlt-hero-badge">✦ Featured Pick</div>
-              <div class="vlt-hero-title">Hollow Knight<br>Void Heart</div>
-              <div class="vlt-hero-desc">Forge your own path in Hollow Knight! An epic action adventure through a vast
-                ruined kingdom of insects and heroes.</div>
-              <div class="vlt-hero-actions">
-                <button class="vlt-btn-primary"
-                  onclick="launchGame('Hollow Knight', 'vault/gamefiles/hollowknight.html')">▶ Play Now</button>
-                <button class="vlt-btn-ghost">+ Library</button>
+          <!-- Hero row -->
+          <div class="vlt-hero-row">
+            <div class="vlt-hero-card">
+              <div class="vlt-hero-info">
+                <div class="vlt-hero-badge">✦ Featured Pick</div>
+                <div class="vlt-hero-title">Hollow Knight<br />Void Heart</div>
+                <div class="vlt-hero-desc">
+                  Forge your own path in Hollow Knight! An epic action adventure
+                  through a vast ruined kingdom of insects and heroes.
+                </div>
+                <div class="vlt-hero-actions">
+                  <button
+                    class="vlt-btn-primary"
+                    onclick="
+                      launchGame(
+                        'Hollow Knight',
+                        'vault/gamefiles/hollowknight.html',
+                      )
+                    "
+                  >
+                    ▶ Play Now
+                  </button>
+                  <button class="vlt-btn-ghost">+ Library</button>
+                </div>
+              </div>
+              <div class="vlt-hero-art">
+                <div class="vlt-hero-art-bg"></div>
+                <div class="vlt-hero-art-emoji">🗡️</div>
+                <div class="vlt-hero-art-label">Action · Adventure</div>
               </div>
             </div>
-            <div class="vlt-hero-art">
-              <div class="vlt-hero-art-bg"></div>
-              <div class="vlt-hero-art-emoji">🗡️</div>
-              <div class="vlt-hero-art-label">Action · Adventure</div>
+
+            <div class="vlt-trending-panel">
+              <div class="vlt-section-header">
+                <div class="vlt-section-title">Trending</div>
+                <div class="vlt-see-more">All →</div>
+              </div>
+              <div
+                class="vlt-library-list"
+                style="display: flex; flex-direction: column; gap: 8px"
+              >
+                <!-- Populated by vault_logic.js -->
+              </div>
             </div>
           </div>
 
-          <div class="vlt-trending-panel">
+          <!-- All Games -->
+          <div class="vlt-games-section">
             <div class="vlt-section-header">
-              <div class="vlt-section-title">Trending</div>
-              <div class="vlt-see-more">All →</div>
+              <div class="vlt-section-title">All Vault Games</div>
+              <div class="vlt-see-more">800+ Available</div>
             </div>
-            <div class="vlt-library-list" style="display:flex; flex-direction:column; gap:8px;">
+            <div class="vlt-game-grid" id="gameGrid">
               <!-- Populated by vault_logic.js -->
             </div>
           </div>
         </div>
+      </div>
+    </div>
 
-        <!-- All Games -->
-        <div class="vlt-games-section">
-          <div class="vlt-section-header">
-            <div class="vlt-section-title">All Vault Games</div>
-            <div class="vlt-see-more">800+ Available</div>
-          </div>
-          <div class="vlt-game-grid" id="gameGrid">
-            <!-- Populated by vault_logic.js -->
-          </div>
+    <!-- Game Modal -->
+    <div id="gameModal" class="vlt-game-modal">
+      <div class="vlt-modal-header">
+        <span id="modalTitle" class="vlt-modal-title">Game Title</span>
+        <div style="display: flex; gap: 12px">
+          <button
+            class="vlt-close-modal"
+            onclick="toggleFullscreen()"
+            title="Fullscreen"
+          >
+            <i data-lucide="maximize"></i>
+          </button>
+          <button class="vlt-close-modal" onclick="closeModal()" title="Close">
+            <i data-lucide="x"></i>
+          </button>
         </div>
       </div>
+      <iframe
+        id="gameIframe"
+        class="vlt-game-iframe"
+        src="about:blank"
+      ></iframe>
     </div>
-  </div>
 
-  <!-- Game Modal -->
-  <div id="gameModal" class="vlt-game-modal">
-    <div class="vlt-modal-header">
-      <span id="modalTitle" class="vlt-modal-title">Game Title</span>
-      <div style="display: flex; gap: 12px;">
-        <button class="vlt-close-modal" onclick="toggleFullscreen()" title="Fullscreen">
-          <i data-lucide="maximize"></i>
-        </button>
-        <button class="vlt-close-modal" onclick="closeModal()" title="Close">
-          <i data-lucide="x"></i>
-        </button>
-      </div>
-    </div>
-    <iframe id="gameIframe" class="vlt-game-iframe" src="about:blank"></iframe>
-  </div>
+    <script src="vault/games.js"></script>
+    <script src="vault_logic.js"></script>
+    <script src="music.js"></script>
+    <script src="youtube.js"></script>
+    <script>
+      if (typeof lucide !== "undefined") {
+        lucide.createIcons();
+      }
+      initVault();
 
-  <script src="vault/games.js"></script>
-  <script src="vault_logic.js"></script>
-  <script src="music.js"></script>
-  <script src="music_v2.js"></script>
-  <script src="youtube.js"></script>
-  <script>
-    lucide.createIcons();
-    initVault();
-
-    function setFilter(el, genre) {
-      document.querySelectorAll('.vlt-pill').forEach(p => p.classList.remove('vlt-active'));
-      el.classList.add('vlt-active');
-      if (window.setFilterLogic) window.setFilterLogic(el, genre);
-    }
-  </script>
-
-</body>
-
+      function setFilter(el, genre) {
+        document
+          .querySelectorAll(".vlt-pill")
+          .forEach((p) => p.classList.remove("vlt-active"));
+        el.classList.add("vlt-active");
+        if (window.setFilterLogic) window.setFilterLogic(el, genre);
+      }
+    </script>
+  </body>
 </html>
