@@ -674,23 +674,23 @@
                 <button class="music-scroll-btn left" onclick="window.scrollMusicSection(this, 'left')">&lsaquo;</button>
                 <div style="display: flex; gap: 20px; overflow-x: auto; padding-bottom: 12px; scroll-snap-type: x mandatory; scroll-behavior: smooth;" class="scroll-container">
                     <div class="startup-card" onclick="window.openArtistProfile('Kanye West')">
-                        <img src="${wrapUrl('https://i.scdn.co/image/ab6761610000e5eb867008a971fae0f4d913f63a')}" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,0.3);" crossorigin="anonymous">
+                        <img src="${wrapUrl("https://i.scdn.co/image/ab6761610000e5eb867008a971fae0f4d913f63a")}" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,0.3);" crossorigin="anonymous">
                         <div style="font-size: 13px; font-weight: 600; text-align: center; margin-top: 8px; color: white;">Kanye West</div>
                     </div>
                     <div class="startup-card" onclick="window.openArtistProfile('The Weeknd')">
-                        <img src="${wrapUrl('https://i.scdn.co/image/ab6761610000e5eb214f3cf1cbe7139c1e26ffbb')}" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,0.3);" crossorigin="anonymous">
+                        <img src="${wrapUrl("https://i.scdn.co/image/ab6761610000e5eb214f3cf1cbe7139c1e26ffbb")}" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,0.3);" crossorigin="anonymous">
                         <div style="font-size: 13px; font-weight: 600; text-align: center; margin-top: 8px; color: white;">The Weeknd</div>
                     </div>
                     <div class="startup-card" onclick="window.openArtistProfile('Travis Scott')">
-                        <img src="${wrapUrl('https://i.scdn.co/image/ab6761610000e5eb19c2790744c792d05570bb71')}" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,0.3);" crossorigin="anonymous">
+                        <img src="${wrapUrl("https://i.scdn.co/image/ab6761610000e5eb19c2790744c792d05570bb71")}" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,0.3);" crossorigin="anonymous">
                         <div style="font-size: 13px; font-weight: 600; text-align: center; margin-top: 8px; color: white;">Travis Scott</div>
                     </div>
                     <div class="startup-card" onclick="window.openArtistProfile('Kendrick Lamar')">
-                        <img src="${wrapUrl('https://i.scdn.co/image/ab6761610000e5eb437b9e2a82505b3d93ff1022')}" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,0.3);" crossorigin="anonymous">
+                        <img src="${wrapUrl("https://i.scdn.co/image/ab6761610000e5eb437b9e2a82505b3d93ff1022")}" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,0.3);" crossorigin="anonymous">
                         <div style="font-size: 13px; font-weight: 600; text-align: center; margin-top: 8px; color: white;">Kendrick Lamar</div>
                     </div>
                     <div class="startup-card" onclick="window.openArtistProfile('Playboi Carti')">
-                        <img src="${wrapUrl('https://i.scdn.co/image/ab6761610000e5ebfc20c30950392cb3b9a528fa')}" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,0.3);" crossorigin="anonymous">
+                        <img src="${wrapUrl("https://i.scdn.co/image/ab6761610000e5ebfc20c30950392cb3b9a528fa")}" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,0.3);" crossorigin="anonymous">
                         <div style="font-size: 13px; font-weight: 600; text-align: center; margin-top: 8px; color: white;">Playboi Carti</div>
                     </div>
                 </div>
@@ -702,27 +702,27 @@
                 <button class="music-scroll-btn left" onclick="window.scrollMusicSection(this, 'left')">&lsaquo;</button>
                 <div style="display: flex; gap: 20px; overflow-x: auto; padding-bottom: 12px; scroll-snap-type: x mandatory; scroll-behavior: smooth;" class="scroll-container">
                     <div class="startup-card" onclick="window.openAlbumProfile('1945440')">
-                        <img src="${wrapUrl('https://upload.wikimedia.org/wikipedia/en/7/70/Graduation_%28album%29.jpg')}" style="width: 100px; height: 100px; border-radius: 12px; object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,0.3);" crossorigin="anonymous">
+                        <img src="${wrapUrl("https://upload.wikimedia.org/wikipedia/en/7/70/Graduation_%28album%29.jpg")}" style="width: 100px; height: 100px; border-radius: 12px; object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,0.3);" crossorigin="anonymous">
                         <div style="font-size: 13px; font-weight: 600; margin-top: 8px; color: white; width: 100px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Graduation</div>
                         <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Kanye West</div>
                     </div>
                     <div class="startup-card" onclick="window.openAlbumProfile('1117886')">
-                        <img src="${wrapUrl('https://upload.wikimedia.org/wikipedia/en/f/f0/My_Beautiful_Dark_Twisted_Fantasy.jpg')}" style="width: 100px; height: 100px; border-radius: 12px; object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,0.3);" crossorigin="anonymous">
+                        <img src="${wrapUrl("https://upload.wikimedia.org/wikipedia/en/f/f0/My_Beautiful_Dark_Twisted_Fantasy.jpg")}" style="width: 100px; height: 100px; border-radius: 12px; object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,0.3);" crossorigin="anonymous">
                         <div style="font-size: 13px; font-weight: 600; margin-top: 8px; color: white; width: 100px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">MBDTF</div>
                         <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Kanye West</div>
                     </div>
                     <div class="startup-card" onclick="window.openAlbumProfile('3002873')">
-                        <img src="${wrapUrl('https://upload.wikimedia.org/wikipedia/en/4/4d/The_life_of_pablo_alternate.jpg')}" style="width: 100px; height: 100px; border-radius: 12px; object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,0.3);" crossorigin="anonymous">
+                        <img src="${wrapUrl("https://upload.wikimedia.org/wikipedia/en/4/4d/The_life_of_pablo_alternate.jpg")}" style="width: 100px; height: 100px; border-radius: 12px; object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,0.3);" crossorigin="anonymous">
                         <div style="font-size: 13px; font-weight: 600; margin-top: 8px; color: white; width: 100px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">The Life of Pablo</div>
                         <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Kanye West</div>
                     </div>
                     <div class="startup-card" onclick="window.openAlbumProfile('13569498')">
-                        <img src="${wrapUrl('https://upload.wikimedia.org/wikipedia/en/0/0b/Astroworld_by_Travis_Scott.jpg')}" style="width: 100px; height: 100px; border-radius: 12px; object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,0.3);" crossorigin="anonymous">
+                        <img src="${wrapUrl("https://upload.wikimedia.org/wikipedia/en/0/0b/Astroworld_by_Travis_Scott.jpg")}" style="width: 100px; height: 100px; border-radius: 12px; object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,0.3);" crossorigin="anonymous">
                         <div style="font-size: 13px; font-weight: 600; margin-top: 8px; color: white; width: 100px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">ASTROWORLD</div>
                         <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Travis Scott</div>
                     </div>
                     <div class="startup-card" onclick="window.openAlbumProfile('1229836')">
-                        <img src="${wrapUrl('https://upload.wikimedia.org/wikipedia/en/f/f6/Kendrick_Lamar_-_To_Pimp_a_Butterfly.png')}" style="width: 100px; height: 100px; border-radius: 12px; object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,0.3);" crossorigin="anonymous">
+                        <img src="${wrapUrl("https://upload.wikimedia.org/wikipedia/en/f/f6/Kendrick_Lamar_-_To_Pimp_a_Butterfly.png")}" style="width: 100px; height: 100px; border-radius: 12px; object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,0.3);" crossorigin="anonymous">
                         <div style="font-size: 13px; font-weight: 600; margin-top: 8px; color: white; width: 100px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">TPAB</div>
                         <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Kendrick Lamar</div>
                     </div>
@@ -755,12 +755,12 @@
             ),
             fetch(
               wrapUrl(
-                `${MUSIC_API}/search/artists?query=${encodeURIComponent(query)}&limit=1`,
+                `${MUSIC_API}/search/artists?query=${encodeURIComponent(query)}&limit=10`,
               ),
             ),
             fetch(
               wrapUrl(
-                `${MUSIC_API}/search/albums?query=${encodeURIComponent(query)}&limit=1`,
+                `${MUSIC_API}/search/albums?query=${encodeURIComponent(query)}&limit=10`,
               ),
             ),
           ]);
@@ -1044,16 +1044,34 @@
       const rot = document.getElementById("repeat-one-text");
 
       if (repeatMode === 0) {
-        if (rb) { rb.style.color = ""; rb.style.opacity = "0.5"; }
-        if (srb) { srb.style.color = ""; srb.style.opacity = "0.5"; }
+        if (rb) {
+          rb.style.color = "";
+          rb.style.opacity = "0.5";
+        }
+        if (srb) {
+          srb.style.color = "";
+          srb.style.opacity = "0.5";
+        }
         if (rot) rot.style.display = "none";
       } else if (repeatMode === 1) {
-        if (rb) { rb.style.color = "var(--accent)"; rb.style.opacity = "1"; }
-        if (srb) { srb.style.color = "var(--accent)"; srb.style.opacity = "1"; }
+        if (rb) {
+          rb.style.color = "var(--accent)";
+          rb.style.opacity = "1";
+        }
+        if (srb) {
+          srb.style.color = "var(--accent)";
+          srb.style.opacity = "1";
+        }
         if (rot) rot.style.display = "none";
       } else if (repeatMode === 2) {
-        if (rb) { rb.style.color = "var(--accent)"; rb.style.opacity = "1"; }
-        if (srb) { srb.style.color = "var(--accent)"; srb.style.opacity = "1"; }
+        if (rb) {
+          rb.style.color = "var(--accent)";
+          rb.style.opacity = "1";
+        }
+        if (srb) {
+          srb.style.color = "var(--accent)";
+          srb.style.opacity = "1";
+        }
         if (rot) rot.style.display = "block";
       }
     }
@@ -1126,8 +1144,12 @@
     };
 
     let isDragging = false;
-    progressBar.onmousedown = () => { isDragging = true; };
-    document.onmouseup = () => { isDragging = false; };
+    progressBar.onmousedown = () => {
+      isDragging = true;
+    };
+    document.onmouseup = () => {
+      isDragging = false;
+    };
     document.onmousemove = (e) => {
       if (!isDragging || !audio.duration) return;
       const rect = progressBar.getBoundingClientRect();
