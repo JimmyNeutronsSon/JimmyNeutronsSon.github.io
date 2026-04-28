@@ -20,10 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const phrases = [
     "Atharva Joshi was here",
     "An RHMS original",
-    "Where's Mr. Rivera?",
-    "Made by a monkey",
-    "Unblock your true potential",
-    "Bypassing firewalls with style"
+    ""
   ];
   let currentPhraseIndex = 0;
   const heroSub = document.getElementById('hero-sub');

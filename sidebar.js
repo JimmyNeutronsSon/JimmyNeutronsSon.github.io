@@ -235,12 +235,12 @@ window.initSidebar = function () {
         <nav class="sidebar-nav">
           <a href="/index.html" class="sidebar-link">Home</a>
           <a href="/browse.html" class="sidebar-link">Browse</a>
-          <a href="/games.html" class="sidebar-link">Games</a>
+          <a href="/games_dashboard.html" class="sidebar-link">Games</a>
+          <a href="#" class="sidebar-link" id="music-toggle">Music</a>
+          <a href="#" class="sidebar-link" id="yt-toggle">YouTube</a>
+          <a href="/Soundboard/Soundboard.html" class="sidebar-link">Soundboard</a>
           <a href="/retro-bowl.html" class="sidebar-link">Retro Bowl</a>
           <a href="/movies.html" class="sidebar-link">Movies</a>
-          <a href="/Soundboard/Soundboard.html" class="sidebar-link">Soundboard</a>
-          <a href="#" class="sidebar-link" id="music-toggle">Music</a>
-          <a href="#" class="sidebar-link" id="ai-toggle">AI</a>
           </nav>
           <div id="sidebar-music-widget" class="sidebar-music-widget" style="display:none;"></div>
        </aside>
@@ -254,7 +254,7 @@ window.initSidebar = function () {
   const closeBtn = document.getElementById("sidebar-close");
   const overlay = document.getElementById("sidebar-overlay");
   const musicToggle = document.getElementById("music-toggle");
-  const aiToggle = document.getElementById("ai-toggle");
+  const ytToggle = document.getElementById("yt-toggle");
 
   const closeSidebar = () => {
     sidebar.classList.remove("open");
@@ -277,10 +277,10 @@ window.initSidebar = function () {
     });
   }
 
-  if (aiToggle) {
-    aiToggle.addEventListener("click", (e) => {
+  if (ytToggle) {
+    ytToggle.addEventListener("click", (e) => {
       e.preventDefault();
-      if (window.toggleAI) window.toggleAI();
+      if (window.toggleYouTube) window.toggleYouTube();
       closeSidebar();
     });
   }

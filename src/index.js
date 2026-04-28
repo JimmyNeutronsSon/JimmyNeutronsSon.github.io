@@ -296,10 +296,6 @@ fastify.get("/proxy", async (request, reply) => {
   }
 });
 
-fastify.setNotFoundHandler((res, reply) => {
-  return reply.code(404).type("text/html").sendFile("404.html");
-});
-
 // ── NVIDIA NIM Proxy Route ───────────────────────────
 const NVIDIA_API_KEY =
   "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";
@@ -326,6 +322,10 @@ fastify.post("/api/nim", async (request, reply) => {
     console.error("NIM Proxy Error:", err);
     return reply.code(500).send({ error: "Proxy error" });
   }
+});
+
+fastify.setNotFoundHandler((res, reply) => {
+  return reply.code(404).type("text/html").sendFile("404.html");
 });
 
 fastify.server.on("listening", () => {

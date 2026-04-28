@@ -3,6 +3,7 @@
   const MUSIC_API = "https://jiosaavn-api-privatecvc2.vercel.app";
   let currentSongs = [];
   let currentIndex = -1;
+  let repeatMode = 0; // 0: None, 1: Repeat All, 2: Repeat One
   let audio = new Audio();
   audio.crossOrigin = "anonymous";
 
@@ -19,11 +20,21 @@
     return div.textContent || div.innerText || "";
   }
 
+  window.scrollMusicSection = (btn, direction) => {
+    const wrapper = btn.closest(".music-scroll-wrapper");
+    const container = wrapper.querySelector(".scroll-container");
+    if (container) {
+      const scrollAmount = direction === "left" ? -300 : 300;
+      container.scrollBy({ left: scrollAmount, behavior: "smooth" });
+    }
+  };
+
   function saveMusicState() {
     if (!audio.src) return;
     const state = {
       v: 2,
       currentIndex: currentIndex,
+      repeatMode: repeatMode,
       currentTime: audio.currentTime,
       paused: audio.paused,
       src: audio.src,
@@ -42,7 +53,12 @@
 
   function wrapUrl(url) {
     if (!url) return "";
-    return `/proxy?url=${encodeURIComponent(url)}`;
+    let proxyBase = "/proxy";
+    // If the user is running on port 5500 (Live Server), but the backend is on 8080
+    if (window.location.port === "5500") {
+      proxyBase = "http://localhost:8080/proxy";
+    }
+    return `${proxyBase}?url=${encodeURIComponent(url)}`;
   }
 
   function restoreMusicState() {
@@ -57,9 +73,11 @@
       if (state.songs && state.songs.length > 0 && state.src) {
         currentSongs = state.songs;
         currentIndex = state.currentIndex || 0;
+        repeatMode = state.repeatMode || 0;
 
         // Update UI immediately
         updatePlayerUI();
+        if (window.__updateRepeatUI) window.__updateRepeatUI();
 
         // Set source and restore playback
         audio.src = state.src;
@@ -186,6 +204,7 @@
                             <svg id="pause-icon" style="display:none" width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
                         </div>
                         <div class="music-btn" id="music-next"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 4 15 12 5 20 5 4"></polygon><line x1="19" y1="5" x2="19" y2="19"></line></svg></div>
+                        <div class="music-btn" id="music-repeat" title="Repeat"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="repeat-icon-svg"><path d="M17 1l4 4-4 4"></path><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><path d="M7 23l-4-4 4-4"></path><path d="M21 13v2a4 4 0 0 1-4 4H3"></path><text x="12" y="15" font-size="8" fill="currentColor" id="repeat-one-text" style="display:none">1</text></svg></div>
                         <div class="music-btn" id="music-download" title="Download"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg></div>
                     </div>
 
@@ -254,6 +273,7 @@
             </div>
             
             <div class="sw-right-controls">
+                <button class="sw-btn" id="sw-repeat" style="margin-right:4px; opacity:0.5;" title="Repeat"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 1l4 4-4 4"></path><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><path d="M7 23l-4-4 4-4"></path><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg></button>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
                 <input type="range" class="sw-vol" id="sw-vol" min="0" max="1" step="0.01" value="1">
                 <button class="sw-expand" id="sw-expand"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"></path></svg></button>
@@ -345,6 +365,11 @@
         if (audio.duration)
           audio.currentTime = (clickX / width) * audio.duration;
       };
+    }
+
+    const swRepeat = document.getElementById("sw-repeat");
+    if (swRepeat) {
+      swRepeat.onclick = () => window.__toggleRepeat();
     }
   }
 
@@ -557,6 +582,7 @@
             
             <h3 style="margin: 0 0 16px 0; font-size: 16px; color: white; font-weight: 700;">Top Albums</h3>
             <div class="music-scroll-wrapper" style="position: relative;">
+                <button class="music-scroll-btn left" onclick="window.scrollMusicSection(this, 'left')">&lsaquo;</button>
                 <div style="display: flex; gap: 20px; overflow-x: auto; padding-bottom: 12px;" class="scroll-container">
         `;
 
@@ -574,6 +600,7 @@
         });
 
         html += `</div>
+                <button class="music-scroll-btn right" onclick="window.scrollMusicSection(this, 'right')">&rsaquo;</button>
             </div></div>`;
         resultsList.innerHTML = html;
 
@@ -643,60 +670,64 @@
       resultsList.innerHTML = `
         <div style="padding: 10px;">
             <h3 style="margin: 0 0 16px 0; font-size: 16px; color: white; font-weight: 700;">Featured Artists</h3>
-            <div class="music-scroll-wrapper" style="margin-bottom: 24px;">
-                <div style="display: flex; gap: 20px; overflow-x: auto; padding-bottom: 12px;" class="scroll-container">
+            <div class="music-scroll-wrapper" style="margin-bottom: 24px; position: relative;">
+                <button class="music-scroll-btn left" onclick="window.scrollMusicSection(this, 'left')">&lsaquo;</button>
+                <div style="display: flex; gap: 20px; overflow-x: auto; padding-bottom: 12px; scroll-snap-type: x mandatory; scroll-behavior: smooth;" class="scroll-container">
                     <div class="startup-card" onclick="window.openArtistProfile('Kanye West')">
-                        <img src="https://i.scdn.co/image/ab6761610000e5eb867008a971fae0f4d913f63a" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+                        <img src="${wrapUrl('https://i.scdn.co/image/ab6761610000e5eb867008a971fae0f4d913f63a')}" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,0.3);" crossorigin="anonymous">
                         <div style="font-size: 13px; font-weight: 600; text-align: center; margin-top: 8px; color: white;">Kanye West</div>
                     </div>
                     <div class="startup-card" onclick="window.openArtistProfile('The Weeknd')">
-                        <img src="https://i.scdn.co/image/ab6761610000e5eb214f3cf1cbe7139c1e26ffbb" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+                        <img src="${wrapUrl('https://i.scdn.co/image/ab6761610000e5eb214f3cf1cbe7139c1e26ffbb')}" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,0.3);" crossorigin="anonymous">
                         <div style="font-size: 13px; font-weight: 600; text-align: center; margin-top: 8px; color: white;">The Weeknd</div>
                     </div>
                     <div class="startup-card" onclick="window.openArtistProfile('Travis Scott')">
-                        <img src="https://i.scdn.co/image/ab6761610000e5eb19c2790744c792d05570bb71" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+                        <img src="${wrapUrl('https://i.scdn.co/image/ab6761610000e5eb19c2790744c792d05570bb71')}" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,0.3);" crossorigin="anonymous">
                         <div style="font-size: 13px; font-weight: 600; text-align: center; margin-top: 8px; color: white;">Travis Scott</div>
                     </div>
                     <div class="startup-card" onclick="window.openArtistProfile('Kendrick Lamar')">
-                        <img src="https://i.scdn.co/image/ab6761610000e5eb437b9e2a82505b3d93ff1022" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+                        <img src="${wrapUrl('https://i.scdn.co/image/ab6761610000e5eb437b9e2a82505b3d93ff1022')}" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,0.3);" crossorigin="anonymous">
                         <div style="font-size: 13px; font-weight: 600; text-align: center; margin-top: 8px; color: white;">Kendrick Lamar</div>
                     </div>
                     <div class="startup-card" onclick="window.openArtistProfile('Playboi Carti')">
-                        <img src="https://i.scdn.co/image/ab6761610000e5ebfc20c30950392cb3b9a528fa" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+                        <img src="${wrapUrl('https://i.scdn.co/image/ab6761610000e5ebfc20c30950392cb3b9a528fa')}" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,0.3);" crossorigin="anonymous">
                         <div style="font-size: 13px; font-weight: 600; text-align: center; margin-top: 8px; color: white;">Playboi Carti</div>
                     </div>
                 </div>
+                <button class="music-scroll-btn right" onclick="window.scrollMusicSection(this, 'right')">&rsaquo;</button>
             </div>
 
             <h3 style="margin: 0 0 16px 0; font-size: 16px; color: white; font-weight: 700;">Premade Albums</h3>
-            <div class="music-scroll-wrapper">
-                <div style="display: flex; gap: 20px; overflow-x: auto; padding-bottom: 12px;" class="scroll-container">
+            <div class="music-scroll-wrapper" style="position: relative;">
+                <button class="music-scroll-btn left" onclick="window.scrollMusicSection(this, 'left')">&lsaquo;</button>
+                <div style="display: flex; gap: 20px; overflow-x: auto; padding-bottom: 12px; scroll-snap-type: x mandatory; scroll-behavior: smooth;" class="scroll-container">
                     <div class="startup-card" onclick="window.openAlbumProfile('1945440')">
-                        <img src="https://upload.wikimedia.org/wikipedia/en/7/70/Graduation_%28album%29.jpg" style="width: 100px; height: 100px; border-radius: 12px; object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+                        <img src="${wrapUrl('https://upload.wikimedia.org/wikipedia/en/7/70/Graduation_%28album%29.jpg')}" style="width: 100px; height: 100px; border-radius: 12px; object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,0.3);" crossorigin="anonymous">
                         <div style="font-size: 13px; font-weight: 600; margin-top: 8px; color: white; width: 100px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Graduation</div>
                         <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Kanye West</div>
                     </div>
                     <div class="startup-card" onclick="window.openAlbumProfile('1117886')">
-                        <img src="https://upload.wikimedia.org/wikipedia/en/f/f0/My_Beautiful_Dark_Twisted_Fantasy.jpg" style="width: 100px; height: 100px; border-radius: 12px; object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+                        <img src="${wrapUrl('https://upload.wikimedia.org/wikipedia/en/f/f0/My_Beautiful_Dark_Twisted_Fantasy.jpg')}" style="width: 100px; height: 100px; border-radius: 12px; object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,0.3);" crossorigin="anonymous">
                         <div style="font-size: 13px; font-weight: 600; margin-top: 8px; color: white; width: 100px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">MBDTF</div>
                         <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Kanye West</div>
                     </div>
                     <div class="startup-card" onclick="window.openAlbumProfile('3002873')">
-                        <img src="https://upload.wikimedia.org/wikipedia/en/4/4d/The_life_of_pablo_alternate.jpg" style="width: 100px; height: 100px; border-radius: 12px; object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+                        <img src="${wrapUrl('https://upload.wikimedia.org/wikipedia/en/4/4d/The_life_of_pablo_alternate.jpg')}" style="width: 100px; height: 100px; border-radius: 12px; object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,0.3);" crossorigin="anonymous">
                         <div style="font-size: 13px; font-weight: 600; margin-top: 8px; color: white; width: 100px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">The Life of Pablo</div>
                         <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Kanye West</div>
                     </div>
                     <div class="startup-card" onclick="window.openAlbumProfile('13569498')">
-                        <img src="https://upload.wikimedia.org/wikipedia/en/0/0b/Astroworld_by_Travis_Scott.jpg" style="width: 100px; height: 100px; border-radius: 12px; object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+                        <img src="${wrapUrl('https://upload.wikimedia.org/wikipedia/en/0/0b/Astroworld_by_Travis_Scott.jpg')}" style="width: 100px; height: 100px; border-radius: 12px; object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,0.3);" crossorigin="anonymous">
                         <div style="font-size: 13px; font-weight: 600; margin-top: 8px; color: white; width: 100px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">ASTROWORLD</div>
                         <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Travis Scott</div>
                     </div>
                     <div class="startup-card" onclick="window.openAlbumProfile('1229836')">
-                        <img src="https://upload.wikimedia.org/wikipedia/en/f/f6/Kendrick_Lamar_-_To_Pimp_a_Butterfly.png" style="width: 100px; height: 100px; border-radius: 12px; object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+                        <img src="${wrapUrl('https://upload.wikimedia.org/wikipedia/en/f/f6/Kendrick_Lamar_-_To_Pimp_a_Butterfly.png')}" style="width: 100px; height: 100px; border-radius: 12px; object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,0.3);" crossorigin="anonymous">
                         <div style="font-size: 13px; font-weight: 600; margin-top: 8px; color: white; width: 100px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">TPAB</div>
                         <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Kendrick Lamar</div>
                     </div>
                 </div>
+                <button class="music-scroll-btn right" onclick="window.scrollMusicSection(this, 'right')">&rsaquo;</button>
             </div>
         </div>
       `;
@@ -997,6 +1028,40 @@
     nextBtn.onclick = handleNext;
     prevBtn.onclick = handlePrev;
 
+    const repeatBtn = document.getElementById("music-repeat");
+    const swRepeatBtn = document.getElementById("sw-repeat");
+    const repeatOneText = document.getElementById("repeat-one-text");
+
+    const toggleRepeat = () => {
+      repeatMode = (repeatMode + 1) % 3;
+      updateRepeatUI();
+      saveMusicState();
+    };
+
+    function updateRepeatUI() {
+      const rb = document.getElementById("music-repeat");
+      const srb = document.getElementById("sw-repeat");
+      const rot = document.getElementById("repeat-one-text");
+
+      if (repeatMode === 0) {
+        if (rb) { rb.style.color = ""; rb.style.opacity = "0.5"; }
+        if (srb) { srb.style.color = ""; srb.style.opacity = "0.5"; }
+        if (rot) rot.style.display = "none";
+      } else if (repeatMode === 1) {
+        if (rb) { rb.style.color = "var(--accent)"; rb.style.opacity = "1"; }
+        if (srb) { srb.style.color = "var(--accent)"; srb.style.opacity = "1"; }
+        if (rot) rot.style.display = "none";
+      } else if (repeatMode === 2) {
+        if (rb) { rb.style.color = "var(--accent)"; rb.style.opacity = "1"; }
+        if (srb) { srb.style.color = "var(--accent)"; srb.style.opacity = "1"; }
+        if (rot) rot.style.display = "block";
+      }
+    }
+
+    if (repeatBtn) repeatBtn.onclick = toggleRepeat;
+    window.__toggleRepeat = toggleRepeat;
+    window.__updateRepeatUI = updateRepeatUI;
+
     const downloadBtn = document.getElementById("music-download");
     if (downloadBtn) {
       downloadBtn.onclick = () => {
@@ -1060,11 +1125,36 @@
       saveMusicState();
     };
 
+    let isDragging = false;
+    progressBar.onmousedown = () => { isDragging = true; };
+    document.onmouseup = () => { isDragging = false; };
+    document.onmousemove = (e) => {
+      if (!isDragging || !audio.duration) return;
+      const rect = progressBar.getBoundingClientRect();
+      let x = e.clientX - rect.left;
+      x = Math.max(0, Math.min(x, rect.width));
+      audio.currentTime = (x / rect.width) * audio.duration;
+    };
+
     audio.onended = () => {
-      if (currentIndex < currentSongs.length - 1) {
-        playSong(currentIndex + 1);
+      if (repeatMode === 2) {
+        // Repeat One
+        audio.currentTime = 0;
+        audio.play();
+      } else if (repeatMode === 1) {
+        // Repeat All
+        if (currentIndex < currentSongs.length - 1) {
+          playSong(currentIndex + 1);
+        } else {
+          playSong(0);
+        }
       } else {
-        updatePlayIcon(false);
+        // No Repeat
+        if (currentIndex < currentSongs.length - 1) {
+          playSong(currentIndex + 1);
+        } else {
+          updatePlayIcon(false);
+        }
       }
       saveMusicState();
     };
