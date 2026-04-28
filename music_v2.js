@@ -320,7 +320,7 @@
     const artImg = document.getElementById('v2-art');
     const progressFill = document.getElementById('v2-progress-fill');
 
-    window.toggleMusic = () => {
+    window.toggleDiscovery = () => {
         drawer.classList.add('open');
     };
 
