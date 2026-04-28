@@ -2608,3 +2608,42 @@ button {
     margin-top: 4px;
   }
 }
+
+/* ── Server Switcher ─────────────────────────── */
+.server-switcher {
+  position: relative;
+  margin-left: 12px;
+}
+
+.server-select {
+  appearance: none;
+  -webkit-appearance: none;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  color: var(--clr-cumulus);
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  padding: 8px 32px 8px 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23ffffff' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+}
+
+.server-select:hover {
+  background-color: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.server-select:focus {
+  outline: none;
+  border-color: var(--clr-azure);
+  box-shadow: 0 0 0 3px rgba(30, 108, 199, 0.15);
+}
+
+.server-select option {
+  background: var(--clr-deep);
+  color: var(--clr-cumulus);
+}

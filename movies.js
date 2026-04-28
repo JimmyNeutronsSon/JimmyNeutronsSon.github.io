@@ -3,35 +3,88 @@
     if (typeof registerSW === "function") {
       await registerSW();
     }
-  } catch(e) {
+  } catch (e) {
     console.warn("SW not registered", e);
   }
 
   const { ScramjetController } = $scramjetLoadController();
   const scramjet = new ScramjetController({
     files: {
-        wasm: "/scram/scramjet.wasm.wasm",
-        all: "/scram/scramjet.all.js",
-        sync: "/scram/scramjet.sync.js",
+      wasm: "/scram/scramjet.wasm.wasm",
+      all: "/scram/scramjet.all.js",
+      sync: "/scram/scramjet.sync.js",
     },
   });
   scramjet.init();
 
   const connection = new BareMux.BareMuxConnection("/baremux/worker.js");
   let wispUrl =
-      (location.protocol === "https:" ? "wss" : "ws") +
-      "://" +
-      location.host +
-      "/wisp/";
+    (location.protocol === "https:" ? "wss" : "ws") +
+    "://" +
+    location.host +
+    "/wisp/";
 
   if ((await connection.getTransport()) !== "/libcurl/index.mjs") {
-      await connection.setTransport("/libcurl/index.mjs", [{
-          wisp: wispUrl,
-          wasm: "/libcurl/libcurl.wasm"
-      }]);
+    await connection.setTransport("/libcurl/index.mjs", [
+      {
+        wisp: wispUrl,
+        wasm: "/libcurl/libcurl.wasm",
+      },
+    ]);
   }
 
   const PLAYER_COLOR = "1E6CC7";
+
+  const SERVERS = {
+    videasy: {
+      name: "Videasy",
+      movieUrl: (id) =>
+        `https://player.videasy.net/movie/${id}?color=${PLAYER_COLOR}`,
+      tvUrl: (id, season, episode) =>
+        `https://player.videasy.net/tv/${id}/${season}/${episode}?color=${PLAYER_COLOR}`,
+    },
+    vidlink: {
+      name: "VidLink",
+      movieUrl: (id) => `https://vidlink.pro/movie/${id}`,
+      tvUrl: (id, season, episode) =>
+        `https://vidlink.pro/tv/${id}/${season}/${episode}`,
+    },
+    vidfast: {
+      name: "VidFast",
+      movieUrl: (id) => `https://vidfast.pro/movie/${id}`,
+      tvUrl: (id, season, episode) =>
+        `https://vidfast.pro/tv/${id}/${season}/${episode}`,
+    },
+    vidsrcme: {
+      name: "VidSrcMe",
+      movieUrl: (id) => `https://vidsrcme.ru/api/movie/${id}`,
+      tvUrl: (id, season, episode) =>
+        `https://vidsrcme.ru/api/tv/${id}/${season}/${episode}`,
+    },
+    embed2: {
+      name: "2Embed",
+      movieUrl: (id) => `https://www.2embed.cc/embed/${id}`,
+      tvUrl: (id, season, episode) =>
+        `https://www.2embed.cc/embed-tv/${id}/${season}/${episode}`,
+    },
+    vidnest: {
+      name: "VidNest",
+      movieUrl: (id) => `https://vidnest.fun/movie/${id}`,
+      tvUrl: (id, season, episode) =>
+        `https://vidnest.fun/tv/${id}/${season}/${episode}`,
+    },
+    superembed: {
+      name: "SuperEmbed",
+      movieUrl: (id) => `https://www.superembed.stream/embed/movie/${id}`,
+      tvUrl: (id, season, episode) =>
+        `https://www.superembed.stream/embed/tv/${id}/${season}/${episode}`,
+    },
+  };
+
+  function getSelectedServer() {
+    const select = document.getElementById("server-select");
+    return select ? select.value : "videasy";
+  }
 
   function imgUrl(path, size) {
     if (!path) return "";
@@ -226,9 +279,7 @@
     detailContext = { type, id };
     try {
       const path =
-        type === "tv"
-          ? `/api/tmdb/tv/${id}`
-          : `/api/tmdb/movie/${id}`;
+        type === "tv" ? `/api/tmdb/tv/${id}` : `/api/tmdb/movie/${id}`;
       const d = await api(path);
       const title = type === "tv" ? d.name : d.title;
       const date = type === "tv" ? d.first_air_date : d.release_date;
@@ -243,8 +294,7 @@
       ]
         .filter(Boolean)
         .join(" · ");
-      els.detailOverview.textContent =
-        d.overview || "No overview available.";
+      els.detailOverview.textContent = d.overview || "No overview available.";
       els.detailPoster.src = imgUrl(d.poster_path, "w500") || "";
       els.detailPoster.alt = title;
       const b = imgUrl(d.backdrop_path, "w780");
@@ -263,22 +313,51 @@
   }
 
   function openPlayer(type, id, title) {
-    els.playerTitle.textContent = title;
-    
+    const serverKey = getSelectedServer();
+    const server = SERVERS[serverKey] || SERVERS.videasy;
+
+    els.playerTitle.textContent = `${title} (${server.name})`;
+
     if (activePlayerFrame) {
       activePlayerFrame.frame.remove();
       activePlayerFrame = null;
     }
     els.playerFrameWrap.innerHTML = "";
-    
+
     const frame = scramjet.createFrame();
-    frame.frame.id = "videasy-frame";
+    frame.frame.id = "video-player-frame";
     frame.frame.title = "Video player";
     frame.frame.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen";
     els.playerFrameWrap.appendChild(frame.frame);
-    
-    const url = type === "tv" ? `https://player.videasy.net/tv/${id}/1/1?color=${PLAYER_COLOR}` : `https://player.videasy.net/movie/${id}?color=${PLAYER_COLOR}`;
-    
+
+    let url;
+    if (type === "tv") {
+      // Default to season 1, episode 1 for TV shows
+      url = server.tvUrl(id, 1, 1);
+    } else {
+      url = server.movieUrl(id);
+    }
+
+    frame.go(url);
+    activePlayerFrame = frame;
+
+    els.playerModal.hidden = false;
+    document.body.style.overflow = "hidden";
+  }
+    els.playerFrameWrap.innerHTML = "";
+
+    const frame = scramjet.createFrame();
+    frame.frame.id = "videasy-frame";
+    frame.frame.title = "Video player";
+    frame.frame.allow =
+      "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen";
+    els.playerFrameWrap.appendChild(frame.frame);
+
+    const url =
+      type === "tv"
+        ? `https://player.videasy.net/tv/${id}/1/1?color=${PLAYER_COLOR}`
+        : `https://player.videasy.net/movie/${id}?color=${PLAYER_COLOR}`;
+
     frame.go(url);
     activePlayerFrame = frame;
 
@@ -350,9 +429,7 @@
 
   async function loadGenres() {
     const data = await api("/api/tmdb/genre/movie/list");
-    genreById = new Map(
-      (data.genres || []).map((g) => [g.id, g.name]),
-    );
+    genreById = new Map((data.genres || []).map((g) => [g.id, g.name]));
     els.genreChips.innerHTML = (data.genres || [])
       .slice(0, 12)
       .map(

@@ -3,8 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Movies · Welkin</title>
-    <link rel="icon" href="data:,">
+    <title>Not Sophisticated</title>
+    <link rel="icon" href="data:," />
     <meta
       name="description"
       content="Discover and stream films with Welkin Cinema — TMDB metadata and Videasy playback."
@@ -60,6 +60,20 @@
           class="movies-search-dropdown"
           hidden
         ></div>
+      </div>
+      <div class="server-switcher">
+        <label for="server-select" class="visually-hidden"
+          >Select video server</label
+        >
+        <select id="server-select" class="server-select">
+          <option value="videasy">Videasy (Default)</option>
+          <option value="vidlink">VidLink</option>
+          <option value="vidfast">VidFast</option>
+          <option value="vidsrcme">VidSrcMe</option>
+          <option value="embed2">2Embed</option>
+          <option value="vidnest">VidNest</option>
+          <option value="superembed">SuperEmbed</option>
+        </select>
       </div>
     </header>
 
@@ -197,14 +211,8 @@
             target="_blank"
             rel="noopener noreferrer"
             >TMDB</a
-          >. Playback via
-          <a
-            href="https://www.videasy.net/docs"
-            target="_blank"
-            rel="noopener noreferrer"
-            >Videasy</a
-          >
-          embeds (TMDB IDs). Welkin styling per brand guidelines.
+          >. Playback via multiple servers (Videasy, VidLink, VidFast, VidSrcMe,
+          2Embed, VidNest, SuperEmbed). Welkin styling per brand guidelines.
         </p>
       </footer>
     </main>
