@@ -2753,3 +2753,104 @@ button {
     font-size: 12px;
   }
 }
+
+.season-tabs {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin: 8px 0;
+}
+
+.season-tab {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  color: rgba(255, 255, 255, 0.8);
+  padding: 6px 12px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.season-tab:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.season-tab.active {
+  background: var(--clr-azure);
+  border-color: var(--clr-azure);
+  color: white;
+}
+
+.episode-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 8px;
+  max-height: 200px;
+  overflow-y: auto;
+  margin: 8px 0;
+}
+
+.episode-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  padding: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.episode-card:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.episode-card.active {
+  border-color: var(--clr-azure);
+  background: rgba(30, 108, 199, 0.2);
+}
+
+.ep-num {
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--clr-azure);
+}
+
+.ep-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 4px 0;
+}
+
+.ep-overview {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.6);
+  line-height: 1.3;
+}
+
+.ep-loading, .ep-error {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 13px;
+  padding: 12px;
+  text-align: center;
+}
+
+.movies-player-info {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 13px;
+  line-height: 1.4;
+  max-height: 60px;
+  overflow-y: auto;
+  margin: 8px 0;
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+}
+
+@media (max-width: 640px) {
+  .episode-grid {
+    grid-template-columns: 1fr;
+    max-height: 150px;
+  }
+}
