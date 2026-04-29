@@ -119,7 +119,7 @@
     detailPlay: $("#detail-play"),
     playerModal: $("#player-modal"),
     playerTitle: $("#player-title"),
-    playerFrameWrap: $(".movies-player-frame"),
+    playerFrameWrap: $("#player-frame-wrap"),
   };
 
   let activePlayerFrame = null;
