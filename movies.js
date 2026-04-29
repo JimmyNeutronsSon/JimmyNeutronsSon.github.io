@@ -347,14 +347,25 @@
     frame.title = "Video player";
     frame.allow =
       "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen";
-    frame.allowFullscreen = true;
-    frame.referrerPolicy = "no-referrer";
-    frame.sandbox =
-      "allow-scripts allow-same-origin allow-presentation allow-popups";
+    frame.referrerPolicy = "origin";
     frame.src = url;
     els.playerFrameWrap.appendChild(frame);
 
     activePlayerFrame = frame;
+
+    // Try next server if embed fails to load
+    const loadTimeout = setTimeout(() => {
+      console.warn("Player load timeout, trying next server...");
+      const nextServer = getNextServer();
+      if (nextServer.name !== server.name) {
+        els.playerTitle.textContent = `${title} (${nextServer.name})`;
+        const nextUrl =
+          type === "tv" ? nextServer.tv(id, 1, 1) : nextServer.movie(id);
+        activePlayerFrame.src = nextUrl;
+      }
+    }, 10000);
+
+    frame.addEventListener("load", () => clearTimeout(loadTimeout));
 
     els.playerModal.hidden = false;
     document.body.style.overflow = "hidden";
