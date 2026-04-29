@@ -325,7 +325,6 @@
     }
     els.playerFrameWrap.innerHTML = "";
 
-    // Show episode selector for TV shows
     const epSelector = document.getElementById("episode-selector");
     const seasonTabs = document.getElementById("season-tabs");
     const episodeGrid = document.getElementById("episode-grid");
@@ -334,38 +333,126 @@
     if (type === "tv") {
       epSelector.hidden = false;
       playerInfo.hidden = false;
-      seasonTabs.innerHTML = "Loading seasons...";
+      seasonTabs.innerHTML = "Loading...";
       episodeGrid.innerHTML = "";
+      playerInfo.classList.remove("faded");
+      playerInfo.classList.remove("expanded");
+      playerInfo.title = "";
 
-      // Always fetch fresh TV data to get seasons
       try {
-        seasonTabs.innerHTML = "Fetching TV data...";
         const tvData = await api(`/api/tmdb/tv/${id}`);
-        seasonTabs.innerHTML =
-          "Got TV data, seasons: " + (tvData.seasons?.length || 0);
-        playerInfo.textContent = tvData.overview || "";
+        playerInfo.textContent = tvData.overview || "No description available.";
         populateEpisodes(tvData);
       } catch (e) {
-        console.error("Failed to load TV data:", e);
-        seasonTabs.innerHTML = "Error: " + e.message;
+        seasonTabs.innerHTML = "Failed to load";
         playerInfo.textContent = "Failed to load episode list";
       }
     } else {
       epSelector.hidden = true;
       playerInfo.hidden = false;
-      // Show movie description
+      playerInfo.classList.remove("expanded");
+
       if (detailContext.tmdbData) {
-        playerInfo.textContent = detailContext.tmdbData.overview || "";
+        playerInfo.textContent =
+          detailContext.tmdbData.overview || "No description available.";
       } else {
-        // Fetch movie data if not already loaded
         try {
           const movieData = await api(`/api/tmdb/movie/${id}`);
-          playerInfo.textContent = movieData.overview || "";
+          playerInfo.textContent =
+            movieData.overview || "No description available.";
         } catch {
           playerInfo.textContent = "";
         }
       }
+
+      if (playerInfo.textContent && playerInfo.textContent.length > 100) {
+        playerInfo.classList.add("faded");
+        playerInfo.title = "Click to expand";
+        playerInfo.onclick = () => {
+          playerInfo.classList.toggle("expanded");
+          playerInfo.title = playerInfo.classList.contains("expanded")
+            ? "Click to collapse"
+            : "Click to expand";
+        };
+      }
     }
+
+    const url = type === "tv" ? server.tv(id, 1, 1) : server.movie(id);
+
+    const frame = document.createElement("iframe");
+    frame.id = "video-player-frame";
+    frame.title = "Video player";
+    frame.allow =
+      "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen";
+    frame.referrerPolicy = "origin";
+    frame.src = url;
+    els.playerFrameWrap.appendChild(frame);
+
+    activePlayerFrame = frame;
+
+    const loadTimeout = setTimeout(() => {
+      const nextServer = getNextServer();
+      if (nextServer.name !== server.name) {
+        els.playerTitle.textContent = `${title} (${nextServer.name})`;
+        const nextUrl =
+          type === "tv" ? nextServer.tv(id, 1, 1) : nextServer.movie(id);
+        activePlayerFrame.src = nextUrl;
+      }
+    }, 10000);
+
+    frame.addEventListener("load", () => clearTimeout(loadTimeout));
+
+    els.playerModal.hidden = false;
+    document.body.style.overflow = "hidden";
+  }
+  els.playerFrameWrap.innerHTML = "";
+
+  // Show episode selector for TV shows
+  const epSelector = document.getElementById("episode-selector");
+  const seasonTabs = document.getElementById("season-tabs");
+  const episodeGrid = document.getElementById("episode-grid");
+  const playerInfo = document.getElementById("player-info");
+
+  if (type === "tv") {
+    epSelector.hidden = false;
+    playerInfo.hidden = false;
+    seasonTabs.innerHTML = "Loading...";
+    episodeGrid.innerHTML = "";
+
+    try {
+      const tvData = await api(`/api/tmdb/tv/${id}`);
+      playerInfo.textContent = tvData.overview || "No description available.";
+      playerInfo.classList.add("faded");
+      playerInfo.title = "Hover to expand";
+      populateEpisodes(tvData);
+    } catch (e) {
+      seasonTabs.innerHTML = "Failed to load";
+      playerInfo.textContent = "Failed to load episode list";
+    }
+  } else {
+    epSelector.hidden = true;
+    playerInfo.hidden = false;
+    if (detailContext.tmdbData) {
+      playerInfo.textContent =
+        detailContext.tmdbData.overview || "No description available.";
+    } else {
+      try {
+        const movieData = await api(`/api/tmdb/movie/${id}`);
+        playerInfo.textContent =
+          movieData.overview || "No description available.";
+      } catch {
+        playerInfo.textContent = "";
+      }
+    }
+    playerInfo.classList.add("faded");
+    playerInfo.title = "Click to expand";
+    playerInfo.addEventListener("click", () => {
+      playerInfo.classList.toggle("expanded");
+      playerInfo.title = playerInfo.classList.contains("expanded")
+        ? "Click to collapse"
+        : "Click to expand";
+    });
+
     const url = type === "tv" ? server.tv(id, 1, 1) : server.movie(id);
 
     const frame = document.createElement("iframe");
@@ -411,6 +498,7 @@
     }
 
     epSelector.hidden = false;
+    seasonTabs.innerHTML = "";
 
     seasons.forEach((season, idx) => {
       const tab = document.createElement("button");
@@ -435,6 +523,11 @@
 
     try {
       const seasonData = await api(`/api/tmdb/tv/${tvId}/season/${seasonNum}`);
+      if (!seasonData.episodes || seasonData.episodes.length === 0) {
+        grid.innerHTML =
+          "<div class='ep-error'>No episodes found for this season</div>";
+        return;
+      }
       grid.innerHTML = "";
       (seasonData.episodes || []).forEach((ep) => {
         const card = document.createElement("div");
@@ -443,7 +536,6 @@
         card.innerHTML = `
           <div class="ep-num">E${ep.episode_number}</div>
           <div class="ep-name">${escapeHtml(ep.name)}</div>
-          <div class="ep-overview">${(ep.overview || "").slice(0, 80)}${ep.overview && ep.overview.length > 80 ? "..." : ""}</div>
         `;
         card.addEventListener("click", () => {
           $$(".episode-card").forEach((c) => c.classList.remove("active"));
@@ -452,7 +544,7 @@
         });
         grid.appendChild(card);
       });
-    } catch {
+    } catch (e) {
       grid.innerHTML = "<div class='ep-error'>Failed to load episodes</div>";
     }
   }

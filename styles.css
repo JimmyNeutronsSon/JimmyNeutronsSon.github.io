@@ -2854,3 +2854,32 @@ button {
     max-height: 150px;
   }
 }
+
+.movies-player-info.faded {
+  max-height: 36px;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+  cursor: pointer;
+  position: relative;
+}
+
+.movies-player-info.faded::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 20px;
+  background: linear-gradient(transparent, rgba(0,0,0,0.8));
+  pointer-events: none;
+}
+
+.movies-player-info.faded:hover,
+.movies-player-info.faded.expanded {
+  max-height: 200px;
+}
+
+.movies-player-info.faded:hover::after,
+.movies-player-info.faded.expanded::after {
+  display: none;
+}
