@@ -314,7 +314,7 @@
     document.body.style.overflow = "";
   }
 
-  function openPlayer(type, id, title) {
+  async function openPlayer(type, id, title) {
     detailContext = { type, id, title };
     const server = getServer();
     els.playerTitle.textContent = `${title} (${server.name})`;
@@ -328,18 +328,35 @@
     // Show episode selector for TV shows
     const epSelector = document.getElementById("episode-selector");
     const playerInfo = document.getElementById("player-info");
-    if (type === "tv" && detailContext.tmdbData) {
+
+    if (type === "tv") {
       epSelector.hidden = false;
-      populateEpisodes(detailContext.tmdbData);
-      playerInfo.textContent = detailContext.tmdbData.overview || "";
       playerInfo.hidden = false;
+      // Always fetch fresh TV data to get seasons
+      try {
+        const tvData = await api(`/api/tmdb/tv/${id}`);
+        playerInfo.textContent = tvData.overview || "";
+        populateEpisodes(tvData);
+      } catch (e) {
+        console.error("Failed to load TV data:", e);
+        playerInfo.textContent = "Failed to load episode list";
+      }
     } else {
       epSelector.hidden = true;
       playerInfo.hidden = false;
-      const d = detailContext.tmdbData;
-      playerInfo.textContent = d ? d.overview || "" : "";
+      // Show movie description
+      if (detailContext.tmdbData) {
+        playerInfo.textContent = detailContext.tmdbData.overview || "";
+      } else {
+        // Fetch movie data if not already loaded
+        try {
+          const movieData = await api(`/api/tmdb/movie/${id}`);
+          playerInfo.textContent = movieData.overview || "";
+        } catch {
+          playerInfo.textContent = "";
+        }
+      }
     }
-
     const url = type === "tv" ? server.tv(id, 1, 1) : server.movie(id);
 
     const frame = document.createElement("iframe");
