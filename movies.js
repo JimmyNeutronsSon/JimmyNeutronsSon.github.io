@@ -315,6 +315,7 @@
   }
 
   function openPlayer(type, id, title) {
+    console.log("openPlayer called:", type, id, title);
     detailContext = { type, id, title };
     const server = getServer();
     els.playerTitle.textContent = `${title} (${server.name})`;
@@ -377,11 +378,30 @@
     seasonTabs.innerHTML = "";
     episodeGrid.innerHTML = "";
 
-    const seasons = (tvData.seasons || []).filter((s) => s.season_number >= 1);
+    const seasons = (tvData.seasons || []).filter(s => s.season_number >= 1);
+    console.log("Seasons found:", seasons.length, seasons);
     if (seasons.length === 0) {
       document.getElementById("episode-selector").hidden = true;
       return;
     }
+
+    seasons.forEach((season, idx) => {
+      const tab = document.createElement("button");
+      tab.type = "button";
+      tab.className = "season-tab" + (idx === 0 ? " active" : "");
+      tab.textContent = season.name || `S${season.season_number}`;
+      tab.dataset.seasonNum = season.season_number;
+      tab.addEventListener("click", () => {
+        $$(".season-tab").forEach(t => t.classList.remove("active"));
+        tab.classList.add("active");
+        loadEpisodes(tvData.id, season.season_number, episodeGrid);
+      });
+      seasonTabs.appendChild(tab);
+    });
+
+    // Load first season episodes
+    loadEpisodes(tvData.id, seasons[0].season_number, episodeGrid);
+  }
 
     seasons.forEach((season, idx) => {
       const tab = document.createElement("button");
