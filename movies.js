@@ -256,10 +256,12 @@
 
   async function openDetail(type, id) {
     detailContext = { type, id };
+    detailContext.tmdbData = null;
     try {
       const path =
         type === "tv" ? `/api/tmdb/tv/${id}` : `/api/tmdb/movie/${id}`;
       const d = await api(path);
+      detailContext.tmdbData = d;
       const title = type === "tv" ? d.name : d.title;
       const date = type === "tv" ? d.first_air_date : d.release_date;
       const genreLine =
@@ -323,6 +325,21 @@
     }
     els.playerFrameWrap.innerHTML = "";
 
+    // Show episode selector for TV shows
+    const epSelector = document.getElementById("episode-selector");
+    const playerInfo = document.getElementById("player-info");
+    if (type === "tv" && detailContext.tmdbData) {
+      epSelector.hidden = false;
+      populateEpisodes(detailContext.tmdbData);
+      playerInfo.textContent = detailContext.tmdbData.overview || "";
+      playerInfo.hidden = false;
+    } else {
+      epSelector.hidden = true;
+      playerInfo.hidden = false;
+      const d = detailContext.tmdbData;
+      playerInfo.textContent = d ? d.overview || "" : "";
+    }
+
     const url = type === "tv" ? server.tv(id, 1, 1) : server.movie(id);
 
     const frame = document.createElement("iframe");
@@ -341,6 +358,57 @@
 
     els.playerModal.hidden = false;
     document.body.style.overflow = "hidden";
+  }
+
+  function populateEpisodes(tvData) {
+    const seasonSelect = document.getElementById("season-select");
+    const episodeSelect = document.getElementById("episode-select");
+    seasonSelect.innerHTML = "";
+    episodeSelect.innerHTML = "";
+
+    (tvData.seasons || []).forEach((season) => {
+      if (season.season_number < 1) return;
+      const opt = document.createElement("option");
+      opt.value = season.season_number;
+      opt.textContent = season.name || `Season ${season.season_number}`;
+      seasonSelect.appendChild(opt);
+    });
+
+    seasonSelect.onchange = () => loadEpisodes(tvData, seasonSelect.value);
+    if (seasonSelect.options.length > 0) {
+      loadEpisodes(tvData, seasonSelect.value);
+    }
+  }
+
+  async function loadEpisodes(tvData, seasonNum) {
+    const episodeSelect = document.getElementById("episode-select");
+    episodeSelect.innerHTML = "<option>Loading...</option>";
+
+    try {
+      const seasonData = await api(
+        `/api/tmdb/tv/${tvData.id}/season/${seasonNum}`,
+      );
+      episodeSelect.innerHTML = "";
+      (seasonData.episodes || []).forEach((ep) => {
+        const opt = document.createElement("option");
+        opt.value = ep.episode_number;
+        opt.textContent = `E${ep.episode_number} - ${ep.name}`;
+        episodeSelect.appendChild(opt);
+      });
+      episodeSelect.onchange = () =>
+        playEpisode(tvData.id, seasonNum, episodeSelect.value);
+    } catch {
+      episodeSelect.innerHTML = "<option>Error loading</option>";
+    }
+  }
+
+  function playEpisode(id, season, episode) {
+    if (!activePlayerFrame) return;
+    const server = getServer();
+    const url = server.tv(id, season, episode);
+    activePlayerFrame.src = url;
+    const title = detailContext.title;
+    els.playerTitle.textContent = `${title} (${server.name})`;
   }
 
   function playFromDetail() {
@@ -392,8 +460,6 @@
       else if (!els.detailModal.hidden) closeDetail();
     }
   });
-
-  /** Delegated row clicks already on .movies-card */
 
   async function loadGenres() {
     const data = await api("/api/tmdb/genre/movie/list");

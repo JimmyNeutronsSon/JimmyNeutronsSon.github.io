@@ -2696,3 +2696,60 @@ button {
   background: var(--clr-deep);
   color: var(--clr-cumulus);
 }
+
+.episode-selector {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0;
+  flex-wrap: wrap;
+}
+
+.episode-selector label {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.episode-selector select {
+  appearance: none;
+  -webkit-appearance: none;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  color: var(--clr-cumulus);
+  font-family: "Inter", sans-serif;
+  font-size: 13px;
+  padding: 6px 28px 6px 10px;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath fill='%23ffffff' d='M5 6L1 2h8z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+}
+
+.episode-selector select:hover {
+  background-color: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.movies-player-info {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 13px;
+  line-height: 1.4;
+  max-height: 60px;
+  overflow-y: auto;
+  margin: 8px 0;
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+}
+
+@media (max-width: 640px) {
+  .episode-selector {
+    gap: 6px;
+  }
+  .movies-player-info {
+    max-height: 40px;
+    font-size: 12px;
+  }
+}
