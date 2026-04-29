@@ -327,18 +327,27 @@
 
     // Show episode selector for TV shows
     const epSelector = document.getElementById("episode-selector");
+    const seasonTabs = document.getElementById("season-tabs");
+    const episodeGrid = document.getElementById("episode-grid");
     const playerInfo = document.getElementById("player-info");
 
     if (type === "tv") {
       epSelector.hidden = false;
       playerInfo.hidden = false;
+      seasonTabs.innerHTML = "Loading seasons...";
+      episodeGrid.innerHTML = "";
+
       // Always fetch fresh TV data to get seasons
       try {
+        seasonTabs.innerHTML = "Fetching TV data...";
         const tvData = await api(`/api/tmdb/tv/${id}`);
+        seasonTabs.innerHTML =
+          "Got TV data, seasons: " + (tvData.seasons?.length || 0);
         playerInfo.textContent = tvData.overview || "";
         populateEpisodes(tvData);
       } catch (e) {
         console.error("Failed to load TV data:", e);
+        seasonTabs.innerHTML = "Error: " + e.message;
         playerInfo.textContent = "Failed to load episode list";
       }
     } else {
