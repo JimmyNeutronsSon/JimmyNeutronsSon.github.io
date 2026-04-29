@@ -440,16 +440,31 @@
     loadEpisodes(tvData.id, seasons[0].season_number, episodeGrid);
   }
 
-  async function loadEpisodes(tvId, seasonNum, grid) {
+  async function loadEpisodes(tvId, seasonNum, grid, retrySeason = 3) {
     grid.innerHTML = "<div class='ep-loading'>Loading episodes...</div>";
 
     try {
       const seasonData = await api(`/api/tmdb/tv/${tvId}/season/${seasonNum}`);
-      if (!seasonData.episodes || seasonData.episodes.length === 0) {
+
+      // If 404, try the next season
+      if (
+        seasonData.status_code === 34 ||
+        !seasonData.episodes ||
+        seasonData.episodes.length === 0
+      ) {
+        if (retrySeason > 0) {
+          grid.innerHTML = `<div class='ep-loading'>Season ${seasonNum} not found, trying season ${seasonNum + 1}...</div>`;
+          setTimeout(
+            () => loadEpisodes(tvId, seasonNum + 1, grid, retrySeason - 1),
+            1500,
+          );
+          return;
+        }
         grid.innerHTML =
-          "<div class='ep-error'>No episodes found for this season</div>";
+          "<div class='ep-error'>No episodes available for this show</div>";
         return;
       }
+
       grid.innerHTML = "";
       (seasonData.episodes || []).forEach((ep) => {
         const card = document.createElement("div");
@@ -467,9 +482,18 @@
         grid.appendChild(card);
       });
     } catch (e) {
+      if (retrySeason > 0 && e.status === 404) {
+        grid.innerHTML = `<div class='ep-loading'>Season ${seasonNum} failed, trying season ${seasonNum + 1}...</div>`;
+        setTimeout(
+          () => loadEpisodes(tvId, seasonNum + 1, grid, retrySeason - 1),
+          1500,
+        );
+        return;
+      }
       grid.innerHTML = "<div class='ep-error'>Failed to load episodes</div>";
     }
   }
+
   function playEpisode(id, season, episode) {
     if (!activePlayerFrame) return;
     const server = getServer();
