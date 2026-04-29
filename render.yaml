@@ -3,9 +3,9 @@ services:
     name: welkin-backend
     env: node
     plan: free
-    branch: Update_v0.1
-    buildCommand: pnpm install
+    branch: main
+    buildCommand: npm install
     startCommand: npm start
     envVars:
       - key: NODE_VERSION
-        value: ~18
+        value: 20

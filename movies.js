@@ -36,12 +36,11 @@
   const PLAYER_COLOR = "1E6CC7";
 
   const SERVERS = {
-    videasy: {
-      name: "Videasy",
-      movie: (id) =>
-        `https://player.videasy.net/movie/${id}?color=${PLAYER_COLOR}`,
+    vidsrc: {
+      name: "VidSrc",
+      movie: (id) => `https://vidsrc.cc/v2/embed/movie/${id}`,
       tv: (id, season, ep) =>
-        `https://player.videasy.net/tv/${id}/${season}/${ep}?color=${PLAYER_COLOR}`,
+        `https://vidsrc.cc/v2/embed/tv/${id}/${season}/${ep}`,
     },
     vidsrcme: {
       name: "VidSrcMe",
@@ -49,16 +48,23 @@
       tv: (id, season, ep) =>
         `https://vidsrc.me/embed/tv/${id}/${season}/${ep}`,
     },
+    autoembed: {
+      name: "AutoEmbed",
+      movie: (id) => `https://autoembed.co/movie/tmdb-${id}`,
+      tv: (id, season, ep) =>
+        `https://autoembed.co/tv/tmdb-${id}/${season}/${ep}`,
+    },
+    smashystream: {
+      name: "SmashyStream",
+      movie: (id) => `https://embed.smashystream.com/movie/${id}`,
+      tv: (id, season, ep) =>
+        `https://embed.smashystream.com/tv/${id}/${season}/${ep}`,
+    },
     embed2: {
       name: "2Embed",
       movie: (id) => `https://www.2embed.cc/embed/${id}`,
       tv: (id, season, ep) =>
         `https://www.2embed.cc/embed-tv/${id}/${season}/${ep}`,
-    },
-    vidnest: {
-      name: "VidNest",
-      movie: (id) => `https://vidnest.fun/movie/${id}`,
-      tv: (id, season, ep) => `https://vidnest.fun/tv/${id}/${season}/${ep}`,
     },
     superembed: {
       name: "SuperEmbed",
@@ -68,10 +74,21 @@
     },
   };
 
+  const SERVER_KEYS = Object.keys(SERVERS);
+  let currentServerIndex = 0;
+
   function getServer() {
     const select = document.getElementById("server-select");
-    const key = select ? select.value : "videasy";
-    return SERVERS[key] || SERVERS.videasy;
+    const key = select ? select.value : SERVER_KEYS[currentServerIndex];
+    return SERVERS[key] || SERVERS[SERVER_KEYS[0]];
+  }
+
+  function getNextServer() {
+    currentServerIndex = (currentServerIndex + 1) % SERVER_KEYS.length;
+    const nextKey = SERVER_KEYS[currentServerIndex];
+    const select = document.getElementById("server-select");
+    if (select) select.value = nextKey;
+    return SERVERS[nextKey];
   }
 
   function imgUrl(path, size) {
@@ -336,6 +353,23 @@
 
     els.playerModal.hidden = false;
     document.body.style.overflow = "hidden";
+
+    // Listen for errors and try next server
+    const tryNextServer = () => {
+      const nextServer = getNextServer();
+      if (nextServer.name === server.name) return; // tried all servers
+      els.playerTitle.textContent = `${title} (${nextServer.name})`;
+      const nextUrl =
+        type === "tv" ? nextServer.tv(id, 1, 1) : nextServer.movie(id);
+      activePlayerFrame.go(nextUrl);
+    };
+
+    frame.frame.addEventListener("error", tryNextServer);
+    setTimeout(() => {
+      if (frame.frame.contentWindow) {
+        frame.frame.contentWindow.addEventListener("error", tryNextServer);
+      }
+    }, 1000);
   }
 
   function closePlayer() {

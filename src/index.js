@@ -296,6 +296,18 @@ fastify.get("/proxy", async (request, reply) => {
   }
 });
 
+// ── Health Check ──────────────────────────────
+fastify.get("/health", async (request, reply) => {
+  const checks = {
+    tmdb: !!process.env.TMDB_API_KEY,
+    scramjet: require("fs").existsSync(
+      require("@mercuryworkshop/scramjet/path").scramjetPath,
+    ),
+  };
+  const ok = Object.values(checks).every(Boolean);
+  return reply.code(ok ? 200 : 503).send({ ok, checks });
+});
+
 // ── NVIDIA NIM Proxy Route ───────────────────────────
 const NVIDIA_API_KEY =
   "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";
