@@ -409,7 +409,6 @@
   function populateEpisodes(tvData, startSeason = 1) {
     const seasonTabs = document.getElementById("season-tabs");
     const episodeGrid = document.getElementById("episode-grid");
-    const epSelector = document.getElementById("episode-selector");
     seasonTabs.innerHTML = "";
     episodeGrid.innerHTML = "";
 
