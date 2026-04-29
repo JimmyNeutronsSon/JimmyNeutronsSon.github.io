@@ -7,32 +7,6 @@
     console.warn("SW not registered", e);
   }
 
-  const { ScramjetController } = $scramjetLoadController();
-  const scramjet = new ScramjetController({
-    files: {
-      wasm: "/scram/scramjet.wasm.wasm",
-      all: "/scram/scramjet.all.js",
-      sync: "/scram/scramjet.sync.js",
-    },
-  });
-  scramjet.init();
-
-  const connection = new BareMux.BareMuxConnection("/baremux/worker.js");
-  let wispUrl =
-    (location.protocol === "https:" ? "wss" : "ws") +
-    "://" +
-    location.host +
-    "/wisp/";
-
-  if ((await connection.getTransport()) !== "/libcurl/index.mjs") {
-    await connection.setTransport("/libcurl/index.mjs", [
-      {
-        wisp: wispUrl,
-        wasm: "/libcurl/libcurl.wasm",
-      },
-    ]);
-  }
-
   const PLAYER_COLOR = "1E6CC7";
 
   const SERVERS = {
@@ -324,7 +298,7 @@
       detailContext.type === "tv"
         ? server.tv(detailContext.id, 1, 1)
         : server.movie(detailContext.id);
-    activePlayerFrame.go(url);
+    activePlayerFrame.frame.src = url;
     els.playerTitle.textContent = `${detailContext.title} (${server.name})`;
   }
 
@@ -337,6 +311,27 @@
       activePlayerFrame.frame.remove();
       activePlayerFrame = null;
     }
+    els.playerFrameWrap.innerHTML = "";
+
+    const url = type === "tv" ? server.tv(id, 1, 1) : server.movie(id);
+
+    // Use regular iframe (no Scramjet proxy)
+    const frame = document.createElement("iframe");
+    frame.id = "video-player-frame";
+    frame.title = "Video player";
+    frame.allow =
+      "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen";
+    frame.allowFullscreen = true;
+    frame.referrerPolicy = "no-referrer";
+    frame.sandbox = "allow-scripts allow-same-origin allow-presentation allow-popups";
+    frame.src = url;
+    els.playerFrameWrap.appendChild(frame);
+
+    activePlayerFrame = { frame };
+
+    els.playerModal.hidden = false;
+    document.body.style.overflow = "hidden";
+  }
     els.playerFrameWrap.innerHTML = "";
 
     const frame = scramjet.createFrame();
