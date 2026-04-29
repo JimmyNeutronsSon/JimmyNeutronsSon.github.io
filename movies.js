@@ -298,8 +298,18 @@
       detailContext.type === "tv"
         ? server.tv(detailContext.id, 1, 1)
         : server.movie(detailContext.id);
-    activePlayerFrame.frame.src = url;
+    activePlayerFrame.src = url;
     els.playerTitle.textContent = `${detailContext.title} (${server.name})`;
+  }
+
+  function closePlayer() {
+    els.playerModal.hidden = true;
+    if (activePlayerFrame) {
+      activePlayerFrame.remove();
+      activePlayerFrame = null;
+    }
+    els.playerFrameWrap.innerHTML = "";
+    document.body.style.overflow = "";
   }
 
   function openPlayer(type, id, title) {
@@ -308,14 +318,13 @@
     els.playerTitle.textContent = `${title} (${server.name})`;
 
     if (activePlayerFrame) {
-      activePlayerFrame.frame.remove();
+      activePlayerFrame.remove();
       activePlayerFrame = null;
     }
     els.playerFrameWrap.innerHTML = "";
 
     const url = type === "tv" ? server.tv(id, 1, 1) : server.movie(id);
 
-    // Use regular iframe (no Scramjet proxy)
     const frame = document.createElement("iframe");
     frame.id = "video-player-frame";
     frame.title = "Video player";
@@ -323,58 +332,15 @@
       "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen";
     frame.allowFullscreen = true;
     frame.referrerPolicy = "no-referrer";
-    frame.sandbox = "allow-scripts allow-same-origin allow-presentation allow-popups";
+    frame.sandbox =
+      "allow-scripts allow-same-origin allow-presentation allow-popups";
     frame.src = url;
     els.playerFrameWrap.appendChild(frame);
 
-    activePlayerFrame = { frame };
-
-    els.playerModal.hidden = false;
-    document.body.style.overflow = "hidden";
-  }
-    els.playerFrameWrap.innerHTML = "";
-
-    const frame = scramjet.createFrame();
-    frame.frame.id = "video-player-frame";
-    frame.frame.title = "Video player";
-    frame.frame.allow =
-      "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen";
-    els.playerFrameWrap.appendChild(frame.frame);
-
-    const url = type === "tv" ? server.tv(id, 1, 1) : server.movie(id);
-
-    frame.go(url);
     activePlayerFrame = frame;
 
     els.playerModal.hidden = false;
     document.body.style.overflow = "hidden";
-
-    // Listen for errors and try next server
-    const tryNextServer = () => {
-      const nextServer = getNextServer();
-      if (nextServer.name === server.name) return; // tried all servers
-      els.playerTitle.textContent = `${title} (${nextServer.name})`;
-      const nextUrl =
-        type === "tv" ? nextServer.tv(id, 1, 1) : nextServer.movie(id);
-      activePlayerFrame.go(nextUrl);
-    };
-
-    frame.frame.addEventListener("error", tryNextServer);
-    setTimeout(() => {
-      if (frame.frame.contentWindow) {
-        frame.frame.contentWindow.addEventListener("error", tryNextServer);
-      }
-    }, 1000);
-  }
-
-  function closePlayer() {
-    els.playerModal.hidden = true;
-    if (activePlayerFrame) {
-      activePlayerFrame.frame.remove();
-      activePlayerFrame = null;
-    }
-    els.playerFrameWrap.innerHTML = "";
-    document.body.style.overflow = "";
   }
 
   function playFromDetail() {
