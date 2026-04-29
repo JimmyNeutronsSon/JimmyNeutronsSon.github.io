@@ -342,7 +342,7 @@
       try {
         const tvData = await api(`/api/tmdb/tv/${id}`);
         playerInfo.textContent = tvData.overview || "No description available.";
-        populateEpisodes(tvData);
+        populateEpisodes(tvData, tvData.seasons[0]?.season_number || 1);
       } catch (e) {
         seasonTabs.innerHTML = "Failed to load";
         playerInfo.textContent = "Failed to load episode list";
@@ -406,14 +406,14 @@
     document.body.style.overflow = "hidden";
   }
 
-  function populateEpisodes(tvData) {
+  function populateEpisodes(tvData, startSeason = 1) {
     const seasonTabs = document.getElementById("season-tabs");
     const episodeGrid = document.getElementById("episode-grid");
     const epSelector = document.getElementById("episode-selector");
     seasonTabs.innerHTML = "";
     episodeGrid.innerHTML = "";
 
-    const seasons = (tvData.seasons || []).filter((s) => s.season_number >= 1);
+    const seasons = (tvData.seasons || []).filter(s => s.season_number >= 1);
     if (seasons.length === 0) {
       epSelector.hidden = true;
       return;
@@ -429,17 +429,39 @@
       tab.textContent = season.name || `S${season.season_number}`;
       tab.dataset.seasonNum = season.season_number;
       tab.addEventListener("click", () => {
-        $$(".season-tab").forEach((t) => t.classList.remove("active"));
+        $$(".season-tab").forEach(t => t.classList.remove("active"));
         tab.classList.add("active");
-        loadEpisodes(tvData.id, season.season_number, episodeGrid);
+        loadEpisodes(tvData.id, season.season_number, episodeGrid, 3);
       });
       seasonTabs.appendChild(tab);
     });
 
     // Load first season episodes
-    loadEpisodes(tvData.id, seasons[0].season_number, episodeGrid);
+    if (seasons.length > 0) {
+      loadEpisodes(tvData.id, startSeason, episodeGrid, 3);
+    }
   }
 
+
+    epSelector.hidden = false;
+    seasonTabs.innerHTML = "";
+
+    seasons.forEach((season, idx) => {
+      const tab = document.createElement("button");
+      tab.type = "button";
+      tab.className = "season-tab" + (idx === 0 ? " active" : "");
+      tab.textContent = season.name || `S${season.season_number}`;
+      tab.dataset.seasonNum = season.season_number;
+      tab.addEventListener("click", () => {
+        $$(".season-tab").forEach((t) => t.classList.remove("active"));
+        tab.classList.add("active");
+        loadEpisodes(tvData.id, season.season_number, episodeGrid, 3);
+      });
+      seasonTabs.appendChild(tab);
+    });
+
+    // Load first season episodes
+    loadEpisodes(tvData.id, startSeason, episodeGrid, 3);
   async function loadEpisodes(tvId, seasonNum, grid, retrySeason = 3) {
     grid.innerHTML = "<div class='ep-loading'>Loading episodes...</div>";
 
