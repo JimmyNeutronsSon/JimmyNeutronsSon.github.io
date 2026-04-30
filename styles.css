@@ -594,10 +594,8 @@ button {
 .music-scroll-wrapper {
   max-width: 100%;
   width: 100%;
-  overflow-x: auto;
-  overflow-y: hidden;
-  scrollbar-width: thin;
-  -ms-overflow-style: -ms-autohidingbar;
+  position: relative;
+  overflow: visible;
 }
 
 .music-results {
@@ -886,9 +884,9 @@ button {
 }
 
 .music-cover-large {
-  width: 280px;
-  height: 280px;
-  border-radius: 20px;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
   background: rgba(0, 0, 0, 0.2);
   margin-bottom: 24px;
   display: flex;
@@ -896,12 +894,25 @@ button {
   justify-content: center;
   box-shadow: 0 16px 32px rgba(0, 0, 0, 0.3);
   overflow: hidden;
+  animation: spinCover 8s linear infinite;
+  animation-play-state: paused;
+  border: 4px solid rgba(255, 255, 255, 0.1);
+}
+
+.music-cover-large.spinning {
+  animation-play-state: running;
 }
 
 .music-cover-large img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  border-radius: 50%;
+}
+
+@keyframes spinCover {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 .music-song-title {
@@ -963,11 +974,16 @@ button {
 
 .music-progress-bar {
   width: 100%;
-  height: 4px;
+  height: 6px;
   background: rgba(255, 255, 255, 0.1);
-  border-radius: 2px;
+  border-radius: 3px;
   cursor: pointer;
   position: relative;
+  transition: height 0.15s ease;
+}
+
+.music-progress-bar:hover {
+  height: 10px;
 }
 
 .music-progress-current {
@@ -976,8 +992,9 @@ button {
   left: 0;
   height: 100%;
   background: var(--accent);
-  border-radius: 2px;
+  border-radius: 3px;
   width: 0%;
+  pointer-events: none;
 }
 
 .music-time {

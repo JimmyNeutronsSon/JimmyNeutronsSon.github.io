@@ -254,6 +254,12 @@ fastify.get("/api/tmdb/tv/:id", (req, reply) => {
 	return tmdbForward(`/tv/${req.params.id}`, req.query, reply);
 });
 
+fastify.get("/api/tmdb/tv/:id/season/:season_number", (req, reply) => {
+	if (!/^\d+$/.test(req.params.id) || !/^\d+$/.test(req.params.season_number))
+		return reply.code(400).send({ ok: false, error: "Invalid parameters" });
+	return tmdbForward(`/tv/${req.params.id}/season/${req.params.season_number}`, req.query, reply);
+});
+
 fastify.register(fastifyStatic, {
 	root: publicPath,
 	decorateReply: true,

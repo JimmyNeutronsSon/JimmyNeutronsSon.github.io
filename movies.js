@@ -296,10 +296,16 @@
   function reloadPlayer() {
     if (!activePlayerFrame || !detailContext.id) return;
     const server = getServer();
-    const url =
+    let url =
       detailContext.type === "tv"
         ? server.tv(detailContext.id, 1, 1)
         : server.movie(detailContext.id);
+
+    const useProxy = document.getElementById("proxy-toggle")?.checked;
+    if (useProxy) {
+      url = `/proxy?url=${encodeURIComponent(url)}`;
+    }
+
     activePlayerFrame.src = url;
     els.playerTitle.textContent = `${detailContext.title} (${server.name})`;
   }
@@ -377,7 +383,11 @@
       }
     }
 
-    const url = type === "tv" ? server.tv(id, 1, 1) : server.movie(id);
+    let url = type === "tv" ? server.tv(id, 1, 1) : server.movie(id);
+    const useProxy = document.getElementById("proxy-toggle")?.checked;
+    if (useProxy) {
+      url = `/proxy?url=${encodeURIComponent(url)}`;
+    }
 
     const frame = document.createElement("iframe");
     frame.id = "video-player-frame";
@@ -409,6 +419,7 @@
   function populateEpisodes(tvData, startSeason = 1) {
     const seasonTabs = document.getElementById("season-tabs");
     const episodeGrid = document.getElementById("episode-grid");
+    const epSelector = document.getElementById("episode-selector");
     seasonTabs.innerHTML = "";
     episodeGrid.innerHTML = "";
 
@@ -441,10 +452,51 @@
     }
   }
 
+  async function loadEpisodes(tvId, seasonNum, container, retryCount = 3) {
+    container.innerHTML = "<p style='padding:1rem;color:#fff;'>Loading episodes...</p>";
+    try {
+      const data = await api(`/api/tmdb/tv/${tvId}/season/${seasonNum}`);
+      const eps = data.episodes || [];
+      if (!eps.length) {
+        container.innerHTML = "<p style='padding:1rem;color:#fff;'>No episodes found.</p>";
+        return;
+      }
+      container.innerHTML = eps.map(ep => {
+        const epImg = imgUrl(ep.still_path, "w300");
+        const fallback = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='169' viewBox='0 0 300 169' fill='%23222'%3E%3C/svg%3E";
+        return `
+          <button type="button" class="episode-btn" data-season="${seasonNum}" data-ep="${ep.episode_number}">
+            <div class="ep-img">
+              <img src="${epImg || fallback}" alt="Episode ${ep.episode_number}" loading="lazy" width="300" height="169"/>
+            </div>
+            <div class="ep-info">
+              <span class="ep-num">${ep.episode_number}. ${escapeHtml(ep.name || 'Episode ' + ep.episode_number)}</span>
+              <span class="ep-date">${yearFromDate(ep.air_date)}</span>
+            </div>
+          </button>
+        `;
+      }).join("");
+
+      container.querySelectorAll(".episode-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          container.querySelectorAll(".episode-btn").forEach(b => b.classList.remove("active"));
+          btn.classList.add("active");
+          playEpisode(tvId, btn.dataset.season, btn.dataset.ep);
+        });
+      });
+    } catch (e) {
+      container.innerHTML = "<p style='padding:1rem;color:#fff;'>Failed to load episodes.</p>";
+    }
+  }
+
   function playEpisode(id, season, episode) {
     if (!activePlayerFrame) return;
     const server = getServer();
-    const url = server.tv(id, season, episode);
+    let url = server.tv(id, season, episode);
+    const useProxy = document.getElementById("proxy-toggle")?.checked;
+    if (useProxy) {
+      url = `/proxy?url=${encodeURIComponent(url)}`;
+    }
     activePlayerFrame.src = url;
     const title = detailContext.title;
     els.playerTitle.textContent = `${title} (${server.name})`;
@@ -674,5 +726,10 @@
   const serverSelect = document.getElementById("server-select");
   if (serverSelect) {
     serverSelect.addEventListener("change", reloadPlayer);
+  }
+
+  const proxyToggle = document.getElementById("proxy-toggle");
+  if (proxyToggle) {
+    proxyToggle.addEventListener("change", reloadPlayer);
   }
 })();

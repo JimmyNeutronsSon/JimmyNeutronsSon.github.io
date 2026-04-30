@@ -531,77 +531,53 @@
 
     // Scroll indicator removed - now using native scrollbar
 
-    window.openArtistProfile = async (artistName) => {
+    // --- Artist Profile View ---
+    window.openArtistProfile = async (name) => {
       clearTimeout(searchTimeout);
       resultsList.innerHTML =
-        '<div style="text-align:center; padding: 20px; opacity: 0.5;">Loading profile...</div>';
+        '<div style="text-align:center; padding: 20px; opacity: 0.5;">Loading artist…</div>';
       try {
         const searchRes = await fetch(
-          wrapUrl(
-            `${MUSIC_API}/search/artists?query=${encodeURIComponent(artistName)}`,
-          ),
+          wrapUrl(`${MUSIC_API}/search/artists?query=${encodeURIComponent(name)}`),
         ).then((r) => r.json());
         const artistId = searchRes?.data?.results?.[0]?.id;
         if (!artistId) throw new Error("Artist not found");
 
         const [infoRes, songsRes, albumsRes] = await Promise.all([
-          fetch(wrapUrl(`${MUSIC_API}/artists?id=${artistId}`)).then((r) =>
-            r.json(),
-          ),
-          fetch(wrapUrl(`${MUSIC_API}/artists/${artistId}/songs?page=1`)).then(
-            (r) => r.json(),
-          ),
-          fetch(wrapUrl(`${MUSIC_API}/artists/${artistId}/albums?page=1`)).then(
-            (r) => r.json(),
-          ),
+          fetch(wrapUrl(`${MUSIC_API}/artists?id=${artistId}`)).then((r) => r.json()),
+          fetch(wrapUrl(`${MUSIC_API}/artists/${artistId}/songs?page=1`)).then((r) => r.json()),
+          fetch(wrapUrl(`${MUSIC_API}/artists/${artistId}/albums?page=1`)).then((r) => r.json()),
         ]);
 
         const info = infoRes.data;
         const songs = songsRes.data.results || [];
-        const albums = albumsRes.data.results || [];
+        let albums = albumsRes.data.results || [];
+        
+        // Fetch second page of albums to show more "all"
+        try {
+          const albumsRes2 = await fetch(wrapUrl(`${MUSIC_API}/artists/${artistId}/albums?page=2`)).then((r) => r.json());
+          if (albumsRes2?.data?.results) albums = [...albums, ...albumsRes2.data.results];
+        } catch(e) {}
 
-        const img =
-          info.image[2]?.link ||
-          info.image[1]?.link ||
-          info.image[0]?.link ||
-          "";
+        const img = info.image[2]?.link || info.image[1]?.link || info.image[0]?.link || "";
 
         let html = `
           <div style="padding: 10px; padding-bottom: 30px;">
-            <button onclick="window.triggerMusicSearch('')" class="music-back-btn" style="margin-bottom: 20px;">&larr; Back to Search</button>
+            <button onclick="renderStartupView()" class="music-back-btn" style="margin-bottom: 20px;">&larr; Back</button>
             <div style="display: flex; align-items: center; gap: 20px; margin-bottom: 24px;">
-              <img src="${wrapUrl(img)}" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,0.3);" crossorigin="anonymous">
+              <img src="${wrapUrl(img)}" style="width: 90px; height: 90px; border-radius: 50%; object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,0.3);" crossorigin="anonymous">
               <div>
-                <h2 style="margin: 0 0 8px 0; font-size: 24px; color: white;">${cleanHtml(info.name)}</h2>
+                <h2 style="margin: 0 0 6px 0; font-size: 22px; color: white;">${cleanHtml(info.name)}</h2>
                 <div style="font-size: 13px; color: var(--text-muted);">${Number(info.followerCount || info.fanCount || 0).toLocaleString()} Followers</div>
               </div>
             </div>
-            
-            <h3 style="margin: 0 0 16px 0; font-size: 16px; color: white; font-weight: 700;">Top Songs</h3>
-            <div id="artist-songs-list" style="margin-bottom: 24px;"></div>
-            
-            <h3 style="margin: 0 0 16px 0; font-size: 16px; color: white; font-weight: 700;">Top Albums</h3>
-            <div class="music-scroll-wrapper" style="position: relative;">
-                <button class="music-scroll-btn left" onclick="window.scrollMusicSection(this, 'left')">&lsaquo;</button>
-                <div style="display: flex; gap: 20px; overflow-x: auto; padding-bottom: 12px;" class="scroll-container">
-        `;
 
-        albums.forEach((al) => {
-          let alImg = Array.isArray(al.image)
-            ? al.image[2]?.link || al.image[1]?.link
-            : al.image;
-          html += `
-              <div class="startup-card" onclick="window.openAlbumProfile('${al.id}')">
-                  <img src="${wrapUrl(alImg)}" style="width: 100px; height: 100px; border-radius: 12px; object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,0.3);" crossorigin="anonymous">
-                  <div style="font-size: 13px; font-weight: 600; margin-top: 8px; color: white; width: 100px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${cleanHtml(al.name)}</div>
-                  <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">${al.year || ""}</div>
-              </div>
-           `;
-        });
+            <h3 style="margin: 0 0 14px 0; font-size: 15px; color: white; font-weight: 700;">Top Songs</h3>
+            <div id="artist-songs-list" style="margin-bottom: 30px;"></div>
 
-        html += `</div>
-                <button class="music-scroll-btn right" onclick="window.scrollMusicSection(this, 'right')">&rsaquo;</button>
-            </div></div>`;
+            <h3 style="margin: 20px 0 14px 0; font-size: 15px; color: white; font-weight: 700;">All Albums</h3>
+            <div id="artist-albums-list" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 16px;"></div>
+          </div>`;
         resultsList.innerHTML = html;
 
         if (songs.length > 0) {
@@ -610,47 +586,55 @@
           document.getElementById("artist-songs-list").innerHTML =
             '<div style="color:var(--text-muted); font-size:13px;">No songs found.</div>';
         }
+
+        const albumContainer = document.getElementById("artist-albums-list");
+        if (albums.length > 0) {
+          albums.forEach((al) => {
+            const albumImg = al.image[1]?.link || al.image[0]?.link || "";
+            albumContainer.innerHTML += `
+              <div class="startup-card" onclick="window.openAlbumProfile('${al.id}')" style="cursor:pointer; transition: transform 0.2s;">
+                <img src="${wrapUrl(albumImg)}" style="aspect-ratio:1/1; width:100%; border-radius:12px; object-fit:cover; box-shadow:0 4px 12px rgba(0,0,0,0.3);" crossorigin="anonymous" onmouseover="this.parentElement.style.transform='scale(1.03)'" onmouseout="this.parentElement.style.transform='scale(1)'">
+                <div style="font-size:11px; font-weight:600; margin-top:8px; color:white; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${cleanHtml(al.name)}</div>
+                <div style="font-size:10px; color:var(--text-muted); margin-top:2px;">${al.year || ""}</div>
+              </div>`;
+          });
+        } else {
+          albumContainer.innerHTML = '<div style="color:var(--text-muted); font-size:13px;">No albums found.</div>';
+        }
       } catch (e) {
         console.error(e);
         resultsList.innerHTML =
-          '<div style="text-align:center; padding: 20px; color: #ff6b6b;">Failed to load artist profile.</div>';
+          '<div style="text-align:center; padding: 20px; color: #ff6b6b;">Failed to load artist.</div>';
       }
     };
 
+    // --- Album Profile View ---
     window.openAlbumProfile = async (albumId) => {
       clearTimeout(searchTimeout);
       resultsList.innerHTML =
-        '<div style="text-align:center; padding: 20px; opacity: 0.5;">Loading album...</div>';
+        '<div style="text-align:center; padding: 20px; opacity: 0.5;">Loading album…</div>';
       try {
-        const res = await fetch(
-          wrapUrl(`${MUSIC_API}/albums?id=${albumId}`),
-        ).then((r) => r.json());
+        const res = await fetch(wrapUrl(`${MUSIC_API}/albums?id=${albumId}`)).then((r) => r.json());
         if (res.status !== "SUCCESS") throw new Error("Album not found");
 
         const data = res.data;
         const songs = data.songs || [];
-        const img =
-          data.image[2]?.link ||
-          data.image[1]?.link ||
-          data.image[0]?.link ||
-          "";
+        const img = data.image[2]?.link || data.image[1]?.link || data.image[0]?.link || "";
 
         let html = `
           <div style="padding: 10px; padding-bottom: 30px;">
-            <button onclick="window.triggerMusicSearch('')" class="music-back-btn" style="margin-bottom: 20px;">&larr; Back</button>
+            <button onclick="renderStartupView()" class="music-back-btn" style="margin-bottom: 20px;">&larr; Back</button>
             <div style="display: flex; align-items: center; gap: 20px; margin-bottom: 24px;">
-              <img src="${wrapUrl(img)}" style="width: 100px; height: 100px; border-radius: 12px; object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,0.3);" crossorigin="anonymous">
+              <img src="${wrapUrl(img)}" style="width: 90px; height: 90px; border-radius: 12px; object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,0.3);" crossorigin="anonymous">
               <div>
-                <h2 style="margin: 0 0 8px 0; font-size: 24px; color: white;">${cleanHtml(data.name)}</h2>
+                <h2 style="margin: 0 0 6px 0; font-size: 22px; color: white;">${cleanHtml(data.name)}</h2>
                 <div style="font-size: 13px; color: var(--text-muted);">${cleanHtml(data.primaryArtists || "")} &bull; ${data.year || ""} &bull; ${songs.length} songs</div>
-                <button onclick="window.playSearchSong(new Event('click'), 0)" style="margin-top: 12px; background: var(--accent); color: white; border: none; padding: 6px 16px; border-radius: 20px; font-weight: bold; cursor: pointer;">Play Album</button>
+                <button onclick="window.playSearchSong(new Event('click'), 0)" style="margin-top: 10px; background: var(--accent); color: white; border: none; padding: 6px 16px; border-radius: 20px; font-weight: bold; cursor: pointer;">Play Album</button>
               </div>
             </div>
-            
-            <h3 style="margin: 0 0 16px 0; font-size: 16px; color: white; font-weight: 700;">Songs</h3>
-            <div id="album-songs-list" style="margin-bottom: 24px;"></div>
-          </div>
-        `;
+            <h3 style="margin: 0 0 14px 0; font-size: 15px; color: white; font-weight: 700;">Songs</h3>
+            <div id="album-songs-list"></div>
+          </div>`;
         resultsList.innerHTML = html;
 
         if (songs.length > 0) {
@@ -666,71 +650,86 @@
       }
     };
 
-    function renderStartupView() {
-      resultsList.innerHTML = `
-        <div style="padding: 10px;">
-            <h3 style="margin: 0 0 16px 0; font-size: 16px; color: white; font-weight: 700;">Featured Artists</h3>
-            <div class="music-scroll-wrapper" style="margin-bottom: 24px; position: relative;">
-                <button class="music-scroll-btn left" onclick="window.scrollMusicSection(this, 'left')">&lsaquo;</button>
-                <div style="display: flex; gap: 20px; overflow-x: auto; padding-bottom: 12px; scroll-snap-type: x mandatory; scroll-behavior: smooth;" class="scroll-container">
-                    <div class="startup-card" onclick="window.openArtistProfile('Kanye West')">
-                        <img src="${wrapUrl("https://i.scdn.co/image/ab6761610000e5eb867008a971fae0f4d913f63a")}" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,0.3);" crossorigin="anonymous">
-                        <div style="font-size: 13px; font-weight: 600; text-align: center; margin-top: 8px; color: white;">Kanye West</div>
-                    </div>
-                    <div class="startup-card" onclick="window.openArtistProfile('The Weeknd')">
-                        <img src="${wrapUrl("https://i.scdn.co/image/ab6761610000e5eb214f3cf1cbe7139c1e26ffbb")}" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,0.3);" crossorigin="anonymous">
-                        <div style="font-size: 13px; font-weight: 600; text-align: center; margin-top: 8px; color: white;">The Weeknd</div>
-                    </div>
-                    <div class="startup-card" onclick="window.openArtistProfile('Travis Scott')">
-                        <img src="${wrapUrl("https://i.scdn.co/image/ab6761610000e5eb19c2790744c792d05570bb71")}" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,0.3);" crossorigin="anonymous">
-                        <div style="font-size: 13px; font-weight: 600; text-align: center; margin-top: 8px; color: white;">Travis Scott</div>
-                    </div>
-                    <div class="startup-card" onclick="window.openArtistProfile('Kendrick Lamar')">
-                        <img src="${wrapUrl("https://i.scdn.co/image/ab6761610000e5eb437b9e2a82505b3d93ff1022")}" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,0.3);" crossorigin="anonymous">
-                        <div style="font-size: 13px; font-weight: 600; text-align: center; margin-top: 8px; color: white;">Kendrick Lamar</div>
-                    </div>
-                    <div class="startup-card" onclick="window.openArtistProfile('Playboi Carti')">
-                        <img src="${wrapUrl("https://i.scdn.co/image/ab6761610000e5ebfc20c30950392cb3b9a528fa")}" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,0.3);" crossorigin="anonymous">
-                        <div style="font-size: 13px; font-weight: 600; text-align: center; margin-top: 8px; color: white;">Playboi Carti</div>
-                    </div>
-                </div>
-                <button class="music-scroll-btn right" onclick="window.scrollMusicSection(this, 'right')">&rsaquo;</button>
-            </div>
+    // --- Hardcoded Home View ---
+    const FEATURED_ARTISTS = [
+      { name: "Bruno Mars", img: "https://i.scdn.co/image/ab6761610000e5ebc3613d9f3a14f84d0ffad48a" },
+      { name: "The Weeknd", img: "https://i.scdn.co/image/ab6761610000e5eb214f3cfcf3ef696d06179477" },
+      { name: "Bad Bunny", img: "https://i.scdn.co/image/ab6761610000e5eb9bb6bca5311da9481ad9b663" },
+      { name: "Rihanna", img: "https://i.scdn.co/image/ab6761610000e5eb69903ef8a5d4615ec6696d72" },
+      { name: "Taylor Swift", img: "https://i.scdn.co/image/ab6761610000e5eb5a00969d67568593ecf2053b" },
+      { name: "Drake", img: "https://i.scdn.co/image/ab6761610000e5eb4293385d429e41ddcb1f6940" },
+      { name: "Billie Eilish", img: "https://i.scdn.co/image/ab6761610000e5eb20d738f725a3717e8850689b" },
+      { name: "Ariana Grande", img: "https://i.scdn.co/image/ab6761610000e5ebcdce2ec6171340b17b6059d4" },
+      { name: "Kendrick Lamar", img: "https://i.scdn.co/image/ab6761610000e5eb437b9e2a82505b3d93ff1022" },
+      { name: "Lady Gaga", img: "https://i.scdn.co/image/ab6761610000e5eb730594a558509e516f499a2a" },
+      { name: "Kanye West", img: "https://i.scdn.co/image/ab6761610000e5eb867008a971fae0f4d913f63a" },
+    ];
 
-            <h3 style="margin: 0 0 16px 0; font-size: 16px; color: white; font-weight: 700;">Premade Albums</h3>
-            <div class="music-scroll-wrapper" style="position: relative;">
-                <button class="music-scroll-btn left" onclick="window.scrollMusicSection(this, 'left')">&lsaquo;</button>
-                <div style="display: flex; gap: 20px; overflow-x: auto; padding-bottom: 12px; scroll-snap-type: x mandatory; scroll-behavior: smooth;" class="scroll-container">
-                    <div class="startup-card" onclick="window.openAlbumProfile('1945440')">
-                        <img src="${wrapUrl("https://upload.wikimedia.org/wikipedia/en/7/70/Graduation_%28album%29.jpg")}" style="width: 100px; height: 100px; border-radius: 12px; object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,0.3);" crossorigin="anonymous">
-                        <div style="font-size: 13px; font-weight: 600; margin-top: 8px; color: white; width: 100px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Graduation</div>
-                        <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Kanye West</div>
-                    </div>
-                    <div class="startup-card" onclick="window.openAlbumProfile('1117886')">
-                        <img src="${wrapUrl("https://upload.wikimedia.org/wikipedia/en/f/f0/My_Beautiful_Dark_Twisted_Fantasy.jpg")}" style="width: 100px; height: 100px; border-radius: 12px; object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,0.3);" crossorigin="anonymous">
-                        <div style="font-size: 13px; font-weight: 600; margin-top: 8px; color: white; width: 100px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">MBDTF</div>
-                        <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Kanye West</div>
-                    </div>
-                    <div class="startup-card" onclick="window.openAlbumProfile('3002873')">
-                        <img src="${wrapUrl("https://upload.wikimedia.org/wikipedia/en/4/4d/The_life_of_pablo_alternate.jpg")}" style="width: 100px; height: 100px; border-radius: 12px; object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,0.3);" crossorigin="anonymous">
-                        <div style="font-size: 13px; font-weight: 600; margin-top: 8px; color: white; width: 100px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">The Life of Pablo</div>
-                        <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Kanye West</div>
-                    </div>
-                    <div class="startup-card" onclick="window.openAlbumProfile('13569498')">
-                        <img src="${wrapUrl("https://upload.wikimedia.org/wikipedia/en/0/0b/Astroworld_by_Travis_Scott.jpg")}" style="width: 100px; height: 100px; border-radius: 12px; object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,0.3);" crossorigin="anonymous">
-                        <div style="font-size: 13px; font-weight: 600; margin-top: 8px; color: white; width: 100px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">ASTROWORLD</div>
-                        <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Travis Scott</div>
-                    </div>
-                    <div class="startup-card" onclick="window.openAlbumProfile('1229836')">
-                        <img src="${wrapUrl("https://upload.wikimedia.org/wikipedia/en/f/f6/Kendrick_Lamar_-_To_Pimp_a_Butterfly.png")}" style="width: 100px; height: 100px; border-radius: 12px; object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,0.3);" crossorigin="anonymous">
-                        <div style="font-size: 13px; font-weight: 600; margin-top: 8px; color: white; width: 100px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">TPAB</div>
-                        <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Kendrick Lamar</div>
-                    </div>
-                </div>
-                <button class="music-scroll-btn right" onclick="window.scrollMusicSection(this, 'right')">&rsaquo;</button>
-            </div>
-        </div>
-      `;
+    const FEATURED_ALBUMS = [
+      { id: "70806443", name: "TTPD", artist: "Taylor Swift" },
+      { id: "70977370", name: "Hit Me Hard and Soft", artist: "Billie Eilish" },
+      { id: "70643750", name: "Eternal Sunshine", artist: "Ariana Grande" },
+      { id: "70806334", name: "Cowboy Carter", artist: "Beyonce" },
+      { id: "72153229", name: "GNX", artist: "Kendrick Lamar" },
+      { id: "71988126", name: "CHROMAKOPIA", artist: "Tyler, The Creator" },
+      { id: "70335970", name: "Nadie Sabe...", artist: "Bad Bunny" },
+      { id: "72093220", name: "Short n' Sweet", artist: "Sabrina Carpenter" },
+      { id: "71893220", name: "BRAT", artist: "Charli XCX" },
+      { id: "2306373", name: "Views", artist: "Drake" },
+    ];
+
+    // Cache album covers after first fetch
+    const _albumCovers = {};
+    async function getAlbumCover(albumId) {
+      if (_albumCovers[albumId]) return _albumCovers[albumId];
+      try {
+        const res = await fetch(wrapUrl(`${MUSIC_API}/albums?id=${albumId}`)).then(r => r.json());
+        const img = res?.data?.image?.[2]?.link || res?.data?.image?.[1]?.link || "";
+        _albumCovers[albumId] = img;
+        return img;
+      } catch { return ""; }
+    }
+
+    window.renderStartupView = renderStartupView;
+    function renderStartupView() {
+      let html = '<div style="padding: 10px;">';
+
+      // --- Artists Section ---
+      html += '<h3 style="margin: 0 0 14px 0; font-size: 15px; color: white; font-weight: 700;">Artists</h3>';
+      html += '<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 16px; margin-bottom: 30px;">';
+      FEATURED_ARTISTS.forEach((a) => {
+        html += `
+          <div class="startup-card" onclick="window.openArtistProfile('${a.name.replace(/'/g, "\\'")}')" style="cursor:pointer; text-align:center;">
+            <img src="${wrapUrl(a.img)}" style="width:72px; height:72px; border-radius:50%; object-fit:cover; box-shadow:0 4px 12px rgba(0,0,0,0.3);" crossorigin="anonymous">
+            <div style="font-size:11px; font-weight:600; margin-top:8px; color:white; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${cleanHtml(a.name)}</div>
+          </div>`;
+      });
+      html += '</div>';
+
+      // --- Albums Section ---
+      html += '<h3 style="margin: 0 0 14px 0; font-size: 15px; color: white; font-weight: 700;">Albums</h3>';
+      html += '<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 20px; margin-bottom: 30px;">';
+      FEATURED_ALBUMS.forEach((al) => {
+        html += `
+          <div class="startup-card" onclick="window.openAlbumProfile('${al.id}')" style="cursor:pointer;">
+            <div id="album-cover-${al.id}" style="aspect-ratio:1/1; width:100%; border-radius:12px; background:rgba(255,255,255,0.05); box-shadow:0 4px 12px rgba(0,0,0,0.3); overflow:hidden; min-height: 96px;"></div>
+            <div style="font-size:11px; font-weight:600; margin-top:8px; color:white; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${cleanHtml(al.name)}</div>
+            <div style="font-size:10px; color:var(--text-muted); margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${cleanHtml(al.artist)}</div>
+          </div>`;
+      });
+      html += '</div>';
+
+      html += '</div>';
+      resultsList.innerHTML = html;
+
+      // Lazy-load album covers
+      FEATURED_ALBUMS.forEach(async (al) => {
+        const cover = await getAlbumCover(al.id);
+        const el = document.getElementById(`album-cover-${al.id}`);
+        if (el && cover) {
+          el.innerHTML = `<img src="${wrapUrl(cover)}" style="width:100%; height:100%; object-fit:cover;" crossorigin="anonymous">`;
+        }
+      });
     }
 
     renderStartupView();
@@ -747,83 +746,49 @@
         resultsList.innerHTML =
           '<div style="text-align:center; padding: 20px; opacity: 0.5;">Searching...</div>';
         try {
-          const [songsRes, artistsRes, albumsRes] = await Promise.all([
-            fetch(
-              wrapUrl(
-                `${MUSIC_API}/search/songs?query=${encodeURIComponent(query)}&limit=10`,
-              ),
-            ),
-            fetch(
-              wrapUrl(
-                `${MUSIC_API}/search/artists?query=${encodeURIComponent(query)}&limit=10`,
-              ),
-            ),
-            fetch(
-              wrapUrl(
-                `${MUSIC_API}/search/albums?query=${encodeURIComponent(query)}&limit=10`,
-              ),
-            ),
+          const [songsRes, albumsRes, artistsRes] = await Promise.all([
+            fetch(wrapUrl(`${MUSIC_API}/search/songs?query=${encodeURIComponent(query)}&limit=10`)).then(r => r.json()),
+            fetch(wrapUrl(`${MUSIC_API}/search/albums?query=${encodeURIComponent(query)}&limit=5`)).then(r => r.json()),
+            fetch(wrapUrl(`${MUSIC_API}/search/artists?query=${encodeURIComponent(query)}&limit=5`)).then(r => r.json()),
           ]);
 
-          const songsData = await songsRes.json();
-          const artistsData = await artistsRes.json();
-          const albumsData = await albumsRes.json();
+          let html = '<div style="padding: 10px;">';
 
-          let html = "";
-
-          if (artistsData?.data?.results?.length > 0) {
-            html += '<div style="margin-bottom: 20px;">';
-            html +=
-              '<div style="font-size: 14px; font-weight: 600; color: var(--text-muted); margin-bottom: 12px;">Artists</div>';
-            artistsData.data.results.forEach((artist) => {
-              const img =
-                artist.image?.[2]?.link ||
-                artist.image?.[1]?.link ||
-                artist.image?.[0]?.link ||
-                "";
+          // Artists
+          if (artistsRes?.data?.results?.length > 0) {
+            html += '<div style="font-size: 14px; font-weight: 600; color: var(--text-muted); margin-bottom: 12px;">Artists</div>';
+            html += '<div style="display: flex; gap: 16px; overflow-x: auto; padding-bottom: 15px; margin-bottom: 20px;">';
+            artistsRes.data.results.forEach(artist => {
+              const img = artist.image[1]?.link || artist.image[0]?.link || "";
               html += `
-                <div class="music-item" onclick="window.openArtistProfile('${artist.name}')" style="cursor: pointer;">
-                  <img class="music-item-img" src="${wrapUrl(img)}" alt="" crossorigin="anonymous" style="border-radius: 50%;">
-                  <div class="music-item-info">
-                    <div class="music-item-title">${cleanHtml(artist.name)}</div>
-                    <div class="music-item-subtitle">${Number(artist.followerCount || artist.fanCount || 0).toLocaleString()} followers</div>
-                  </div>
-                </div>
-              `;
+                <div onclick="window.openArtistProfile('${artist.name.replace(/'/g, "\\'")}')" style="cursor:pointer; text-align:center; flex-shrink:0; width:70px;">
+                  <img src="${wrapUrl(img)}" style="width:60px; height:60px; border-radius:50%; object-fit:cover;" crossorigin="anonymous">
+                  <div style="font-size:10px; color:white; margin-top:5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${cleanHtml(artist.name)}</div>
+                </div>`;
             });
-            html += "</div>";
+            html += '</div>';
           }
 
-          if (albumsData?.data?.results?.length > 0) {
-            html += '<div style="margin-bottom: 20px;">';
-            html +=
-              '<div style="font-size: 14px; font-weight: 600; color: var(--text-muted); margin-bottom: 12px;">Albums</div>';
-            albumsData.data.results.forEach((album) => {
-              const img =
-                album.image?.[2]?.link ||
-                album.image?.[1]?.link ||
-                album.image?.[0]?.link ||
-                "";
+          // Albums
+          if (albumsRes?.data?.results?.length > 0) {
+            html += '<div style="font-size: 14px; font-weight: 600; color: var(--text-muted); margin-bottom: 12px;">Albums</div>';
+            html += '<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 12px; margin-bottom: 20px;">';
+            albumsRes.data.results.forEach(album => {
+              const img = album.image[1]?.link || album.image[0]?.link || "";
               html += `
-                <div class="music-item" onclick="window.openAlbumProfile('${album.id}')" style="cursor: pointer;">
-                  <img class="music-item-img" src="${wrapUrl(img)}" alt="" crossorigin="anonymous">
-                  <div class="music-item-info">
-                    <div class="music-item-title">${cleanHtml(album.name)}</div>
-                    <div class="music-item-subtitle">${cleanHtml(album.artist || album.primaryArtists || "")}${album.year ? " • " + album.year : ""}</div>
-                  </div>
-                </div>
-              `;
+                <div class="startup-card" onclick="window.openAlbumProfile('${album.id}')" style="cursor:pointer;">
+                  <img src="${wrapUrl(img)}" style="width:100%; aspect-ratio:1/1; border-radius:8px; object-fit:cover;" crossorigin="anonymous">
+                  <div style="font-size:11px; font-weight:600; margin-top:6px; color:white; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${cleanHtml(album.name)}</div>
+                  <div style="font-size:10px; color:var(--text-muted);">${cleanHtml(album.primaryArtists)}</div>
+                </div>`;
             });
-            html += "</div>";
+            html += '</div>';
           }
 
-          if (
-            songsData?.status === "SUCCESS" &&
-            songsData?.data?.results?.length > 0
-          ) {
-            html +=
-              '<div style="font-size: 14px; font-weight: 600; color: var(--text-muted); margin-bottom: 12px;">Songs</div>';
-            songsData.data.results.forEach((song, index) => {
+          // Songs
+          if (songsRes?.data?.results?.length > 0) {
+            html += '<div style="font-size: 14px; font-weight: 600; color: var(--text-muted); margin-bottom: 12px;">Songs</div>';
+            songsRes.data.results.forEach((song, index) => {
               const imgUrl = wrapUrl(song.image[1].link);
               html += `
                 <div class="music-item">
@@ -838,12 +803,13 @@
                 </div>
               `;
             });
-            window.__searchSongs = songsData.data.results;
+            window.__searchSongs = songsRes.data.results;
           }
 
-          if (!html) {
-            html =
-              '<div style="text-align:center; padding: 20px; color: var(--text-muted);">No results found</div>';
+          html += '</div>';
+
+          if (html === '<div style="padding: 10px;"></div>') {
+            html = '<div style="text-align:center; padding: 20px; color: var(--text-muted);">No results found</div>';
           }
 
           resultsList.innerHTML = html;
@@ -980,9 +946,11 @@
     }
 
     function updatePlayIcon(isPlaying) {
+      const coverEl = document.getElementById("current-cover");
       if (isPlaying) {
         playIcon.style.display = "none";
         pauseIcon.style.display = "block";
+        if (coverEl) coverEl.classList.add("spinning");
         const swPlayIconEl = document.getElementById("sw-play-icon");
         const swPauseIconEl = document.getElementById("sw-pause-icon");
         if (swPlayIconEl) swPlayIconEl.style.display = "none";
@@ -990,6 +958,7 @@
       } else {
         playIcon.style.display = "block";
         pauseIcon.style.display = "none";
+        if (coverEl) coverEl.classList.remove("spinning");
         const swPlayIconEl = document.getElementById("sw-play-icon");
         const swPauseIconEl = document.getElementById("sw-pause-icon");
         if (swPlayIconEl) swPlayIconEl.style.display = "block";
@@ -1135,6 +1104,8 @@
       }
     }, 5000);
 
+    // Progress bar control disabled per user request
+    /*
     progressBar.onclick = (e) => {
       const width = progressBar.clientWidth;
       const clickX = e.offsetX;
@@ -1157,6 +1128,7 @@
       x = Math.max(0, Math.min(x, rect.width));
       audio.currentTime = (x / rect.width) * audio.duration;
     };
+    */
 
     audio.onended = () => {
       if (repeatMode === 2) {

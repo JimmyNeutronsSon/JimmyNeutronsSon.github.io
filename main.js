@@ -18,9 +18,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ── Cycle Landing Phrases ─────────────────────────
   const phrases = [
-    "Atharva Joshi was here",
-    "An RHMS original",
-    ""
+    "Atharva Joshi is a cutie",
+    "Basketball > Soccer"
   ];
   let currentPhraseIndex = 0;
   const heroSub = document.getElementById('hero-sub');
