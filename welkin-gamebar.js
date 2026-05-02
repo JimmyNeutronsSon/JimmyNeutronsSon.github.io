@@ -215,19 +215,46 @@
     }
   }
 
-  window.launchWgGame = (url, title) => {
-    const gameId = 'wg-game-' + title.replace(/\s+/g, '-').toLowerCase();
-    const win = createWindow(gameId, title, '🕹️', 50, 50, 1100, 650, (container) => {
-      container.style.padding = '0';
-      container.style.background = '#000';
-      container.innerHTML = `
-        <div style="width:100%; height:100%; overflow:hidden; position:relative;">
-          <iframe src="${wrapUrl(url)}" style="width:100%; height:calc(100% + 55px); border:none; margin-top:-55px; position:absolute; top:0; left:0;"></iframe>
-        </div>
-      `;
-    }, true);
-    win.style.display = 'flex';
-  };
+    const launchWgGame = async (url, title) => {
+      const gameId = 'wg-game-' + title.replace(/\s+/g, '-').toLowerCase();
+      const win = createWindow(gameId, title, '🕹️', 50, 50, 1100, 650, (container) => {
+        container.style.padding = '0';
+        container.style.background = '#000';
+        container.innerHTML = `
+          <div style="width:100%; height:100%; overflow:hidden; position:relative;">
+            <div id="game-loader-msg" style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; background:#000; color:#fff; z-index:1;">Loading Game...</div>
+            <iframe id="${gameId}-frame" style="width:100%; height:calc(100% + 55px); border:none; margin-top:-55px; position:absolute; top:0; left:0; z-index:2; display:none;"></iframe>
+          </div>
+        `;
+        
+        const frame = container.querySelector(`#${gameId}-frame`);
+        const msg = container.querySelector('#game-loader-msg');
+        
+        fetch(wrapUrl(url))
+          .then(r => r.text())
+          .then(html => {
+            // Fix relative paths for assets in the HTML content
+            const baseUrl = url.substring(0, url.lastIndexOf('/') + 1);
+            const fixedHtml = html.replace(/(src|href)="([^"]+)"/g, (m, attr, path) => {
+              if (path.startsWith('http') || path.startsWith('data:') || path.startsWith('#')) return m;
+              return `${attr}="${wrapUrl(baseUrl + path)}"`;
+            });
+            
+            const blob = new Blob([fixedHtml], { type: 'text/html' });
+            frame.src = URL.createObjectURL(blob);
+            frame.onload = () => {
+              frame.style.display = 'block';
+              msg.style.display = 'none';
+            };
+          })
+          .catch(err => {
+            msg.innerText = 'Failed to load game content.';
+            console.error('Game Load Error:', err);
+          });
+      }, true);
+      win.style.display = 'flex';
+    };
+    window.launchWgGame = launchWgGame;
 
   const buildProxy = (container) => {
     container.style.display = 'flex';
@@ -434,10 +461,19 @@
     const playSong = (song) => {
       titleEl.innerText = song.name;
       artistEl.innerText = Array.isArray(song.primaryArtists) ? song.primaryArtists.map(a => a.name).join(', ') : (typeof song.primaryArtists === 'object' ? song.primaryArtists.name : (song.primaryArtists || song.artist));
-      artEl.style.backgroundImage = `url('${wrapUrl(song.image[2].link)}')`;
-      player.src = wrapUrl(song.downloadUrl[4].link);
-      player.play();
-      playBtn.innerText = '⏸';
+      
+      const imgObjs = song.image || [];
+      const link = imgObjs[2]?.link || imgObjs[1]?.link || imgObjs[0]?.link;
+      artEl.style.backgroundImage = `url('${wrapUrl(link)}')`;
+      
+      const dlUrls = song.downloadUrl || [];
+      const audioUrl = dlUrls[4]?.link || dlUrls[3]?.link || dlUrls[2]?.link || dlUrls[0]?.link;
+      
+      if (audioUrl) {
+        player.src = wrapUrl(audioUrl);
+        player.play();
+        playBtn.innerText = '⏸';
+      }
     };
 
     const fetchApi = async (url) => {
