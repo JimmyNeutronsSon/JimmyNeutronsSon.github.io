@@ -35,4 +35,23 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 5000);
   }
 
+  // ── Bookmarklet Generator ─────────────────────────
+  const bookmarkletBtn = document.getElementById('btn-bookmarklet');
+  if (bookmarkletBtn) {
+    const origin = window.location.origin;
+    const jsCode = `javascript:(function(){
+      if(document.getElementById('welkin-gb-root')) return;
+      var s = document.createElement('script');
+      s.src = '${origin}/welkin-gamebar.js?v=' + Date.now();
+      document.body.appendChild(s);
+    })();`.replace(/\n\s+/g, '');
+    
+    bookmarkletBtn.href = jsCode;
+    
+    bookmarkletBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      alert('Drag this button to your bookmarks bar, then click it on any website to open the Welkin Overlay!');
+    });
+  }
+
 });
