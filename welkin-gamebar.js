@@ -12,6 +12,12 @@
     glass: 'backdrop-filter: blur(30px) saturate(180%);'
   };
 
+  const wrapUrl = (url) => {
+    if (!url) return "";
+    const proxyBase = "https://welkin.blueshadows.cl/proxy";
+    return `${proxyBase}?url=${encodeURIComponent(url)}`;
+  };
+
   const root = document.createElement('div');
   root.id = 'welkin-gb-root';
   root.style.cssText = `
@@ -216,7 +222,7 @@
       container.style.background = '#000';
       container.innerHTML = `
         <div style="width:100%; height:100%; overflow:hidden; position:relative;">
-          <iframe src="${url}" style="width:100%; height:calc(100% + 55px); border:none; margin-top:-55px; position:absolute; top:0; left:0;"></iframe>
+          <iframe src="${wrapUrl(url)}" style="width:100%; height:calc(100% + 55px); border:none; margin-top:-55px; position:absolute; top:0; left:0;"></iframe>
         </div>
       `;
     }, true);
@@ -301,7 +307,7 @@
           btn.style.boxShadow = '0 8px 25px rgba(0,0,0,0.4)';
         };
         btn.onclick = () => {
-          const audio = new Audio('https://www.myinstants.com' + s.mp3);
+          const audio = new Audio(wrapUrl('https://www.myinstants.com' + s.mp3));
           audio.play();
           playingAudios.push(audio);
         };
@@ -318,7 +324,7 @@
       });
     };
 
-    fetch('https://cdn.jsdelivr.net/gh/genizy/soundboard@latest/sounds.js')
+    fetch(wrapUrl('https://cdn.jsdelivr.net/gh/genizy/soundboard@latest/sounds.js'))
       .then(r => r.text())
       .then(txt => {
         // Robust parsing: look for the start of the array after 'export const sounds'
@@ -368,7 +374,7 @@
       });
     };
 
-    fetch('https://cdn.jsdelivr.net/gh/WanoCapy/ChickenKingsVault@main/games.js')
+    fetch(wrapUrl('https://cdn.jsdelivr.net/gh/WanoCapy/ChickenKingsVault@main/games.js'))
       .then(r => r.text())
       .then(txt => {
         const match = txt.match(/const games =`([\s\S]*?)`/);
@@ -428,22 +434,15 @@
     const playSong = (song) => {
       titleEl.innerText = song.name;
       artistEl.innerText = Array.isArray(song.primaryArtists) ? song.primaryArtists.map(a => a.name).join(', ') : (typeof song.primaryArtists === 'object' ? song.primaryArtists.name : (song.primaryArtists || song.artist));
-      artEl.style.backgroundImage = `url('${song.image[2].link}')`;
-      player.src = song.downloadUrl[4].link;
+      artEl.style.backgroundImage = `url('${wrapUrl(song.image[2].link)}')`;
+      player.src = wrapUrl(song.downloadUrl[4].link);
       player.play();
       playBtn.innerText = '⏸';
     };
 
     const fetchApi = async (url) => {
-      try {
-        const res = await fetch(url);
-        if (!res.ok) throw new Error();
-        return await res.json();
-      } catch (e) {
-        const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(url)}`;
-        const res = await fetch(proxyUrl);
-        return await res.json();
-      }
+      const res = await fetch(wrapUrl(url));
+      return await res.json();
     };
 
     const search = async (q) => {
@@ -462,7 +461,7 @@
           songsRes.data.results.forEach((s, i) => {
             const div = document.createElement('div');
             div.style.cssText = 'display:flex; align-items:center; gap:12px; padding:10px; cursor:pointer; border-radius:10px; margin-bottom:8px; background:rgba(255,255,255,0.03);';
-            div.innerHTML = `<img src="${s.image[1].link}" style="width:45px; height:45px; border-radius:8px;"> <div style="flex:1; overflow:hidden;"><div style="font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${s.name}</div><div style="font-size:11px; color:#aaa;">${Array.isArray(s.primaryArtists) ? s.primaryArtists.map(a => a.name).join(', ') : (typeof s.primaryArtists === 'object' ? s.primaryArtists.name : s.primaryArtists)}</div></div>`;
+            div.innerHTML = `<img src="${wrapUrl(s.image[1].link)}" style="width:45px; height:45px; border-radius:8px;"> <div style="flex:1; overflow:hidden;"><div style="font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${s.name}</div><div style="font-size:11px; color:#aaa;">${Array.isArray(s.primaryArtists) ? s.primaryArtists.map(a => a.name).join(', ') : (typeof s.primaryArtists === 'object' ? s.primaryArtists.name : s.primaryArtists)}</div></div>`;
             div.onclick = () => { queue = [s]; curIdx = 0; playSong(s); };
             results.appendChild(div);
           });
@@ -473,7 +472,7 @@
           albumsRes.data.results.forEach(al => {
             const div = document.createElement('div');
             div.style.cssText = 'display:flex; align-items:center; gap:12px; padding:10px; cursor:pointer; border-radius:10px; margin-bottom:8px; background:rgba(255,255,255,0.03);';
-            div.innerHTML = `<img src="${al.image[1].link}" style="width:45px; height:45px; border-radius:8px;"> <div><div style="font-weight:600;">${al.name}</div><div style="font-size:11px; color:#aaa;">${Array.isArray(al.primaryArtists) ? al.primaryArtists.map(a => a.name).join(', ') : (typeof al.primaryArtists === 'object' ? al.primaryArtists.name : al.primaryArtists)}</div></div>`;
+            div.innerHTML = `<img src="${wrapUrl(al.image[1].link)}" style="width:45px; height:45px; border-radius:8px;"> <div><div style="font-weight:600;">${al.name}</div><div style="font-size:11px; color:#aaa;">${Array.isArray(al.primaryArtists) ? al.primaryArtists.map(a => a.name).join(', ') : (typeof al.primaryArtists === 'object' ? al.primaryArtists.name : al.primaryArtists)}</div></div>`;
             div.onclick = async () => {
               results.innerHTML = '<div style="color:#aaa;text-align:center;padding:20px;">Loading album...</div>';
               const alData = await fetchApi(`${base}/albums?id=${al.id}`);
