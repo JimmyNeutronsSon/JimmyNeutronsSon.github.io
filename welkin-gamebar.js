@@ -368,7 +368,7 @@
       });
     };
 
-    fetch('https://raw.githubusercontent.com/WanoCapy/ChickenKingsVault/main/games.js')
+    fetch('https://cdn.jsdelivr.net/gh/WanoCapy/ChickenKingsVault@main/games.js')
       .then(r => r.text())
       .then(txt => {
         const match = txt.match(/const games =`([\s\S]*?)`/);
@@ -377,8 +377,8 @@
           const doc = parser.parseFromString(match[1], 'text/html');
           gamesList = Array.from(doc.querySelectorAll('a')).map(a => ({
             title: a.querySelector('div')?.innerText || 'Unknown',
-            url: 'https://raw.githack.com/WanoCapy/ChickenKingsVault/main/' + a.getAttribute('href'),
-            img: 'https://raw.githack.com/WanoCapy/ChickenKingsVault/main/' + a.querySelector('img')?.getAttribute('src')
+            url: 'https://cdn.jsdelivr.net/gh/WanoCapy/ChickenKingsVault@main/' + a.getAttribute('href'),
+            img: 'https://cdn.jsdelivr.net/gh/WanoCapy/ChickenKingsVault@main/' + a.querySelector('img')?.getAttribute('src')
           }));
           render();
         }
@@ -434,40 +434,53 @@
       playBtn.innerText = '⏸';
     };
 
+    const fetchApi = async (url) => {
+      try {
+        const res = await fetch(url);
+        if (!res.ok) throw new Error();
+        return await res.json();
+      } catch (e) {
+        const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(url)}`;
+        const res = await fetch(proxyUrl);
+        return await res.json();
+      }
+    };
+
     const search = async (q) => {
       results.innerHTML = '<div style="color:#aaa;text-align:center;padding:20px;">Searching...</div>';
       try {
+        const base = 'https://jiosaavn-api-privatecvc2.vercel.app';
         const [songsRes, albumsRes] = await Promise.all([
-          fetch(`https://jiosaavn-api-privatecvc2.vercel.app/search/songs?query=${encodeURIComponent(q)}&limit=15`).then(r => r.json()),
-          fetch(`https://jiosaavn-api-privatecvc2.vercel.app/search/albums?query=${encodeURIComponent(q)}&limit=5`).then(r => r.json())
+          fetchApi(`${base}/search/songs?query=${encodeURIComponent(q)}&limit=15`),
+          fetchApi(`${base}/search/albums?query=${encodeURIComponent(q)}&limit=5`)
         ]);
 
         results.innerHTML = '';
 
+        if (songsRes.data?.results?.length) {
+          results.innerHTML += '<div style="font-size:12px; color:#3b82f6; font-weight:bold; margin-bottom:10px; text-transform:uppercase;">Songs</div>';
+          songsRes.data.results.forEach((s, i) => {
+            const div = document.createElement('div');
+            div.style.cssText = 'display:flex; align-items:center; gap:12px; padding:10px; cursor:pointer; border-radius:10px; margin-bottom:8px; background:rgba(255,255,255,0.03);';
+            div.innerHTML = `<img src="${s.image[1].link}" style="width:45px; height:45px; border-radius:8px;"> <div style="flex:1; overflow:hidden;"><div style="font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${s.name}</div><div style="font-size:11px; color:#aaa;">${Array.isArray(s.primaryArtists) ? s.primaryArtists.map(a => a.name).join(', ') : (typeof s.primaryArtists === 'object' ? s.primaryArtists.name : s.primaryArtists)}</div></div>`;
+            div.onclick = () => { queue = [s]; curIdx = 0; playSong(s); };
+            results.appendChild(div);
+          });
+        }
+
         if (albumsRes.data?.results?.length) {
-          results.innerHTML += '<div style="font-size:12px; color:#3b82f6; font-weight:bold; margin-bottom:10px; text-transform:uppercase;">Albums</div>';
+          results.innerHTML += '<div style="font-size:12px; color:#3b82f6; font-weight:bold; margin:15px 0 10px; text-transform:uppercase;">Albums</div>';
           albumsRes.data.results.forEach(al => {
             const div = document.createElement('div');
             div.style.cssText = 'display:flex; align-items:center; gap:12px; padding:10px; cursor:pointer; border-radius:10px; margin-bottom:8px; background:rgba(255,255,255,0.03);';
             div.innerHTML = `<img src="${al.image[1].link}" style="width:45px; height:45px; border-radius:8px;"> <div><div style="font-weight:600;">${al.name}</div><div style="font-size:11px; color:#aaa;">${Array.isArray(al.primaryArtists) ? al.primaryArtists.map(a => a.name).join(', ') : (typeof al.primaryArtists === 'object' ? al.primaryArtists.name : al.primaryArtists)}</div></div>`;
             div.onclick = async () => {
               results.innerHTML = '<div style="color:#aaa;text-align:center;padding:20px;">Loading album...</div>';
-              const alData = await fetch(`https://jiosaavn-api-privatecvc2.vercel.app/albums?id=${al.id}`).then(r => r.json());
+              const alData = await fetchApi(`${base}/albums?id=${al.id}`);
               queue = alData.data.songs; curIdx = 0;
               playSong(queue[0]);
               search(q);
             };
-            results.appendChild(div);
-          });
-        }
-
-        if (songsRes.data?.results?.length) {
-          results.innerHTML += '<div style="font-size:12px; color:#3b82f6; font-weight:bold; margin:15px 0 10px; text-transform:uppercase;">Songs</div>';
-          songsRes.data.results.forEach((s, i) => {
-            const div = document.createElement('div');
-            div.style.cssText = 'display:flex; align-items:center; gap:12px; padding:10px; cursor:pointer; border-radius:10px; margin-bottom:8px; background:rgba(255,255,255,0.03);';
-            div.innerHTML = `<img src="${s.image[1].link}" style="width:45px; height:45px; border-radius:8px;"> <div style="flex:1; overflow:hidden;"><div style="font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${s.name}</div><div style="font-size:11px; color:#aaa;">${Array.isArray(s.primaryArtists) ? s.primaryArtists.map(a => a.name).join(', ') : (typeof s.primaryArtists === 'object' ? s.primaryArtists.name : s.primaryArtists)}</div></div>`;
-            div.onclick = () => { queue = [s]; curIdx = 0; playSong(s); };
             results.appendChild(div);
           });
         }
