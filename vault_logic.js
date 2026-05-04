@@ -2,7 +2,7 @@
  * Welkin Vault Logic - V3 Refined (Scoped Classes)
  */
 
-const VAULT_PATH = 'https://raw.githack.com/WanoCapy/ChickenKingsVault/main/';
+const VAULT_PATH = 'vault/';
 let heroRotationIndex = 0;
 let heroGames = [];
 
