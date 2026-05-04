@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welkin Music Widget</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: transparent !important;
+      overflow: hidden;
+    }
+    /* Force the music overlay to act as the full page */
+    .music-player-overlay {
+      position: static !important;
+      background: transparent !important;
+      backdrop-filter: none !important;
+      padding: 0 !important;
+      display: flex !important;
+      opacity: 1 !important;
+      visibility: visible !important;
+      pointer-events: auto !important;
+      align-items: stretch !important;
+      justify-content: stretch !important;
+    }
+    .music-player-card {
+      width: 100vw !important;
+      height: 100vh !important;
+      max-width: none !important;
+      max-height: none !important;
+      margin: 0 !important;
+      border-radius: 0 !important;
+      border: none !important;
+      box-shadow: none !important;
+      background: transparent !important;
+    }
+    /* Hide the close button and sidebar widget */
+    #music-close { display: none !important; }
+    #sidebar-music-widget { display: none !important; }
+  </style>
+</head>
+<body>
+  <!-- Inject the same music player script -->
+  <script src="music.js"></script>
+</body>
+</html>

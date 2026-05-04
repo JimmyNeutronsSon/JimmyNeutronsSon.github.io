@@ -146,7 +146,7 @@
         toggleWindow(id);
       }
     };
-    
+
     btnContainer.appendChild(fullBtn);
     btnContainer.appendChild(closeBtn);
     header.appendChild(btnContainer);
@@ -215,46 +215,76 @@
     }
   }
 
-    const launchWgGame = async (url, title) => {
-      const gameId = 'wg-game-' + title.replace(/\s+/g, '-').toLowerCase();
-      const win = createWindow(gameId, title, '🕹️', 50, 50, 1100, 650, (container) => {
-        container.style.padding = '0';
-        container.style.background = '#000';
-        container.innerHTML = `
-          <div style="width:100%; height:100%; overflow:hidden; position:relative;">
-            <div id="game-loader-msg" style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; background:#000; color:#fff; z-index:1;">Loading Game...</div>
-            <iframe id="${gameId}-frame" style="width:100%; height:calc(100% + 55px); border:none; margin-top:-55px; position:absolute; top:0; left:0; z-index:2; display:none;"></iframe>
-          </div>
-        `;
-        
-        const frame = container.querySelector(`#${gameId}-frame`);
-        const msg = container.querySelector('#game-loader-msg');
-        
-        fetch(wrapUrl(url))
-          .then(r => r.text())
-          .then(html => {
-            // Fix relative paths for assets in the HTML content
-            const baseUrl = url.substring(0, url.lastIndexOf('/') + 1);
-            const fixedHtml = html.replace(/(src|href)="([^"]+)"/g, (m, attr, path) => {
-              if (path.startsWith('http') || path.startsWith('data:') || path.startsWith('#')) return m;
-              return `${attr}="${wrapUrl(baseUrl + path)}"`;
-            });
-            
-            const blob = new Blob([fixedHtml], { type: 'text/html' });
-            frame.src = URL.createObjectURL(blob);
-            frame.onload = () => {
-              frame.style.display = 'block';
-              msg.style.display = 'none';
-            };
-          })
-          .catch(err => {
-            msg.innerText = 'Failed to load game content.';
-            console.error('Game Load Error:', err);
-          });
-      }, true);
-      win.style.display = 'flex';
+  const fetchAndBlob = async (url) => {
+    const proxyBase = "https://welkin.blueshadows.cl/proxy";
+    const res = await fetch(`${proxyBase}?url=${encodeURIComponent(url)}`);
+    let html = await res.text();
+
+    // Detect thin wrapper pages (just an iframe pointing to the real game)
+    const iframeMatch = html.match(/<iframe[^>]+src=["']([^"'#][^"']*)["']/i);
+    const bodyText = (html.match(/<body[^>]*>([\s\S]*?)<\/body>/i) || [])[1] || html;
+    const stripped = bodyText.replace(/<(script|iframe|style)[\s\S]*?<\/\1>/gi, '').replace(/<[^>]+>/g, '').trim();
+    if (iframeMatch && stripped.length < 50) {
+      const innerSrc = iframeMatch[1];
+      // Resolve innerSrc against the existing <base> tag if present, otherwise against url
+      const baseMatch = html.match(/<base[^>]+href=["']([^"']+)["']/i);
+      const baseHref = baseMatch ? baseMatch[1] : url.substring(0, url.lastIndexOf('/') + 1);
+      const innerUrl = (innerSrc.startsWith('http://') || innerSrc.startsWith('https://')) ? innerSrc : baseHref + innerSrc;
+      return fetchAndBlob(innerUrl);
+    }
+
+    // Strip existing base tags and rewrite all URLs through proxy
+    const baseUrl = url.substring(0, url.lastIndexOf('/') + 1);
+    html = html.replace(/<base[^>]*>/gi, '');
+
+    const proxyify = (path) => {
+      if (!path) return null;
+      if (path.startsWith('data:') || path.startsWith('blob:') || path.startsWith('javascript:') || path.startsWith('#') || path.startsWith('mailto:')) return null;
+      let abs;
+      if (path.startsWith('http://') || path.startsWith('https://')) abs = path;
+      else if (path.startsWith('//')) abs = 'https:' + path;
+      else abs = baseUrl + path;
+      return `${proxyBase}?url=${encodeURIComponent(abs)}`;
     };
-    window.launchWgGame = launchWgGame;
+
+    html = html
+      .replace(/(src|href|action)="([^"]+)"/g, (m, a, p) => { const r = proxyify(p); return r ? `${a}="${r}"` : m; })
+      .replace(/(src|href|action)='([^']+)'/g, (m, a, p) => { const r = proxyify(p); return r ? `${a}='${r}'` : m; })
+      .replace(/url\(['"]?([^'")]+)['"]?\)/g, (m, p) => { const r = proxyify(p); return r ? `url('${r}')` : m; });
+
+    // Force text/html so the iframe renders instead of showing source
+    const blob = new Blob([html], { type: 'text/html' });
+    return URL.createObjectURL(blob);
+  };
+
+  const launchWgGame = async (url, title) => {
+    const gameId = 'wg-game-' + title.replace(/\s+/g, '-').toLowerCase();
+    const win = createWindow(gameId, title, '🕹️', 50, 50, 1100, 650, (container) => {
+      container.style.padding = '0';
+      container.style.background = '#000';
+      container.innerHTML = `
+      <div style="width:100%; height:100%; overflow:hidden; position:relative;">
+        <div id="game-loader-msg" style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; background:#000; color:#fff; z-index:1;">Loading Game...</div>
+        <iframe id="${gameId}-frame" style="width:100%; height:calc(100% + 55px); border:none; margin-top:-55px; position:absolute; top:0; left:0; z-index:2;"></iframe>
+      </div>
+    `;
+
+      const frame = container.querySelector(`#${gameId}-frame`);
+      const msg = container.querySelector('#game-loader-msg');
+
+      fetchAndBlob(url)
+        .then(blobUrl => {
+          frame.src = blobUrl;
+          frame.onload = () => { msg.style.display = 'none'; };
+        })
+        .catch(err => {
+          msg.innerText = 'Failed to load game.';
+          console.error('Game Load Error:', err);
+        });
+    }, true);
+    win.style.display = 'flex';
+  };
+  window.launchWgGame = launchWgGame;
 
   const buildProxy = (container) => {
     container.style.display = 'flex';
@@ -271,14 +301,14 @@
     `;
     const input = container.querySelector('#proxy-url');
     const iframe = container.querySelector('#proxy-frame');
-    
-    input.onfocus = () => { 
-      input.style.background = 'rgba(255,255,255,0.1)'; 
+
+    input.onfocus = () => {
+      input.style.background = 'rgba(255,255,255,0.1)';
       input.style.borderColor = 'rgba(255,255,255,0.2)';
       input.style.boxShadow = '0 0 15px rgba(59, 130, 246, 0.3)';
     };
-    input.onblur = () => { 
-      input.style.background = 'rgba(255,255,255,0.05)'; 
+    input.onblur = () => {
+      input.style.background = 'rgba(255,255,255,0.05)';
       input.style.borderColor = 'rgba(255,255,255,0.1)';
       input.style.boxShadow = 'inset 0 2px 4px rgba(0,0,0,0.2)';
     };
@@ -297,7 +327,7 @@
     container.style.height = '100%';
     container.style.display = 'flex';
     container.style.flexDirection = 'column';
-    
+
     container.innerHTML = `
       <div style="margin-bottom:15px; display:flex; gap:10px;">
         <input type="text" id="sb-search" placeholder="Search 2000+ sounds..." style="flex:1; padding:10px 18px; border-radius:25px; border:1px solid rgba(255,255,255,0.1); background:rgba(0,0,0,0.4); color:#fff; outline:none; font-size:13px; font-family:inherit;">
@@ -461,14 +491,14 @@
     const playSong = (song) => {
       titleEl.innerText = song.name;
       artistEl.innerText = Array.isArray(song.primaryArtists) ? song.primaryArtists.map(a => a.name).join(', ') : (typeof song.primaryArtists === 'object' ? song.primaryArtists.name : (song.primaryArtists || song.artist));
-      
+
       const imgObjs = song.image || [];
       const link = imgObjs[2]?.link || imgObjs[1]?.link || imgObjs[0]?.link;
       artEl.style.backgroundImage = `url('${wrapUrl(link)}')`;
-      
+
       const dlUrls = song.downloadUrl || [];
       const audioUrl = dlUrls[4]?.link || dlUrls[3]?.link || dlUrls[2]?.link || dlUrls[0]?.link;
-      
+
       if (audioUrl) {
         player.src = wrapUrl(audioUrl);
         player.play();

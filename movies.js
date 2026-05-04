@@ -12,9 +12,9 @@
   const SERVERS = {
     vidsrc: {
       name: "VidSrc",
-      movie: (id) => `https://vidsrc.cc/v2/embed/movie/${id}`,
+      movie: (id) => `https://vidlink.pro/movie/${id}`,
       tv: (id, season, ep) =>
-        `https://vidsrc.cc/v2/embed/tv/${id}/${season}/${ep}`,
+        `https://vidlink.pro/tv/${id}/${season}/${ep}`,
     },
     vidsrcme: {
       name: "VidSrcMe",
@@ -163,11 +163,10 @@
     return `
       <article class="movies-card" data-type="${type}" data-id="${item.id}">
         <div class="movies-card-poster-wrap">
-          ${
-            poster
-              ? `<img src="${poster}" alt="" class="movies-card-poster" loading="lazy" width="150" height="225" />`
-              : `<div class="movies-card-poster movies-card-poster--empty"></div>`
-          }
+          ${poster
+        ? `<img src="${poster}" alt="" class="movies-card-poster" loading="lazy" width="150" height="225" />`
+        : `<div class="movies-card-poster movies-card-poster--empty"></div>`
+      }
           <div class="movies-card-hover">
             <span class="movies-card-play" aria-hidden="true">▶</span>
           </div>
@@ -203,10 +202,9 @@
         return `
         <a href="#" class="movies-top10-item" data-type="movie" data-id="${item.id}">
           <span class="movies-top10-rank">${i + 1}</span>
-          ${
-            poster
-              ? `<img src="${poster}" alt="" width="120" height="180" loading="lazy" />`
-              : `<div class="movies-top10-ph"></div>`
+          ${poster
+            ? `<img src="${poster}" alt="" width="120" height="180" loading="lazy" />`
+            : `<div class="movies-top10-ph"></div>`
           }
           <span class="movies-top10-title">${title}</span>
         </a>`;
