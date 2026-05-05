@@ -237,7 +237,6 @@ window.initSidebar = function () {
           <a href="/browse.html" class="sidebar-link">Browse</a>
           <a href="/games_dashboard.html" class="sidebar-link">Games</a>
           <a href="#" class="sidebar-link" id="music-toggle">Music</a>
-          <a href="#" class="sidebar-link" id="discovery-toggle">Discovery</a>
           <a href="#" class="sidebar-link" id="yt-toggle">YouTube</a>
           <a href="/Soundboard/Soundboard.html" class="sidebar-link">Soundboard</a>
           <a href="/retro-bowl.html" class="sidebar-link">Retro Bowl</a>
