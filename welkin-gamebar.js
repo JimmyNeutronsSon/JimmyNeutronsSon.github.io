@@ -351,7 +351,7 @@
     );
     win.style.display = "flex";
   };
-  window.launchWgGame = launchWgGame;
+  // launchWgGame is now called directly via addEventListener, no global needed
 
   const buildProxy = (container) => {
     container.style.display = "flex";
@@ -504,8 +504,8 @@
       );
       grid.innerHTML = filtered
         .map(
-          (g) => `
-        <div class="wg-game-card" onclick="window.launchWgGame('${g.url}', '${g.title.replace(/'/g, "\\'")}')" style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.05); border-radius:15px; padding:10px; cursor:pointer; transition:0.3s; text-align:center;">
+          (g, i) => `
+        <div class="wg-game-card" data-idx="${i}" style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.05); border-radius:15px; padding:10px; cursor:pointer; transition:0.3s; text-align:center;">
           <div style="width:100%; aspect-ratio:16/9; border-radius:10px; background:#111 url('${g.img}') center/cover; margin-bottom:10px; box-shadow:0 5px 15px rgba(0,0,0,0.4);"></div>
           <div style="font-size:13px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding:0 5px;">${g.title}</div>
         </div>
@@ -514,6 +514,9 @@
         .join("");
 
       container.querySelectorAll(".wg-game-card").forEach((c) => {
+        const idx = parseInt(c.getAttribute("data-idx"), 10);
+        const g = filtered[idx];
+        c.addEventListener("click", () => launchWgGame(g.url, g.title));
         c.onmouseover = () => {
           c.style.background = "rgba(255,255,255,0.15)";
           c.style.transform = "translateY(-5px)";
