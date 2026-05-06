@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Not Sophisticated</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="gfb.css" />
+  <style>
+    :root {
+      --primary: #3A8FE0;
+      --accent: #fc2651;
+      --text: #ffffff;
+      --text-muted: #cbd5e1;
+      --bg-image: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      /* The Glass Secret Sauce */
+      --glass-bg: rgba(255, 255, 255, 0.03);
+      --glass-border: rgba(255, 255, 255, 0.1);
+      --glass-blur: blur(12px);
+      --radius: 16px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'SF Pro Display', -apple-system, system-ui, sans-serif;
+      background: var(--bg-image);
+      background-attachment: fixed;
+      color: var(--text);
+      margin: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Glass Header */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(15, 23, 42, 0.7);
+      backdrop-filter: var(--glass-blur);
+      border-bottom: 1px solid var(--glass-border);
+      padding: 0.5rem 0;
+    }
+
+    .vlt-topbar {
+      width: 50%;
+      margin: 0 auto;
+      border-radius: 10px;
+
+    }
+
+    .header-content {
+      max-width: 1300px;
+      margin: 0 auto;
+      padding: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.5rem;
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      background: linear-gradient(to right, #fff, var(--primary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* Minimalist Glass Inputs */
+    #searchBar,
+    #sortOptions,
+    #filterOptions,
+    .control-buttons button {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: var(--glass-blur);
+      color: #fff;
+      border-radius: 10px;
+      padding: 0.75rem 1rem;
+      transition: all 0.2s ease;
+    }
+
+    #searchBar:focus {
+      outline: none;
+      background: rgba(255, 255, 255, 0.1);
+      border-color: var(--primary);
+    }
+
+    /* Grid Layout */
+    main {
+      max-width: 1300px;
+      margin: 0 auto;
+      padding: 2rem 1rem 8rem;
+    }
+
+    summary {
+      margin-bottom: 1.5rem;
+      color: var(--primary);
+    }
+
+    #container,
+    #featuredZones {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 1.5rem;
+    }
+
+    /* Extremely Glassy Cards */
+    .zone-item {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: var(--glass-blur);
+      border-radius: var(--radius);
+      overflow: hidden;
+      transition: transform 0.3s ease, border-color 0.3s ease;
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+    }
+
+    .zone-item:hover {
+      transform: translateY(-5px);
+      border-color: rgba(255, 255, 255, 0.3);
+      background: rgba(255, 255, 255, 0.07);
+    }
+
+    .zone-item img {
+      width: 100%;
+      aspect-ratio: 1;
+      object-fit: cover;
+      filter: brightness(0.9);
+      transition: filter 0.3s ease;
+    }
+
+    .zone-item:hover img {
+      filter: brightness(1.1);
+    }
+
+    .zone-item button {
+      width: 100%;
+      background: transparent;
+      border: none;
+      color: #fff;
+      padding: 1rem;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+
+    /* Glass Popup & Viewer */
+    #zoneViewer,
+    .popup {
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(25px);
+      border: 1px solid var(--glass-border);
+    }
+
+    #zoneFrame {
+      background: #000;
+      border-radius: var(--radius);
+      margin: 1rem auto;
+      display: block;
+    }
+
+    .zone-header {
+      background: transparent;
+      border-bottom: 1px solid var(--glass-border);
+      padding: 1rem 2rem;
+    }
+
+    /* Footer Control */
+    footer {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      background: rgba(15, 23, 42, 0.8);
+      backdrop-filter: var(--glass-blur);
+      border-top: 1px solid var(--glass-border);
+      padding: 1rem;
+      z-index: 100;
+    }
+
+    .footer-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      margin: 0 1rem;
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover {
+      color: var(--primary);
+    }
+
+    /* Responsive Tweaks */
+    @media (max-width: 768px) {
+      .header-content {
+        flex-direction: column;
+      }
+
+      .search-container {
+        width: 100%;
+      }
+
+      #container,
+      #featuredZones {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      }
+    }
+  </style>
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+</head>
+
+<body>
+  <div class="vlt-cloud" style="width: 220px; height: 80px; top: 10%; animation-duration: 40s"></div>
+  <div class="vlt-cloud" style="
+        width: 160px;
+        height: 55px;
+        top: 40%;
+        animation-duration: 54s;
+        animation-delay: 12s;
+      "></div>
+  <div class="vlt-cloud" style="
+        width: 300px;
+        height: 100px;
+        top: 65%;
+        animation-duration: 46s;
+        animation-delay: 24s;
+      "></div>
+
+  <div class="vlt-app">
+    <!-- Center -->
+    <div class="vlt-center">
+      <header class="vlt-topbar">
+        <div class="vlt-search-wrap">
+          <i data-lucide="search" class="vlt-search-icon"></i>
+          <input class="vlt-search-bar" type="text" placeholder="  Search 800+ games, genres, publishers..."
+            id="searchInput" />
+        </div>
+        <button class="vlt-icon-btn" id="library-btn" title="Library">
+          <i data-lucide="library"></i>
+        </button>
+      </header>
+
+      <!-- Library Panel (Hidden by default) -->
+      <div id="vlt-library-panel" class="vlt-library-panel">
+        <div class="vlt-library-header">
+          <h3>Your Library</h3>
+          <button class="vlt-close-library">&times;</button>
+        </div>
+        <div id="vlt-library-items" class="vlt-library-items">
+          <!-- Library items injected here -->
+          <div class="vlt-empty-library">
+            <i data-lucide="bookmark" style="
+                  width: 48px;
+                  height: 48px;
+                  opacity: 0.2;
+                  margin-bottom: 10px;
+                "></i>
+            <p>No games in your library yet.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hero row -->
+      <div class="vlt-hero-row">
+        <div class="vlt-hero-card">
+          <div class="vlt-hero-info">
+            <div class="vlt-hero-badge">✦ Featured Pick</div>
+            <div class="vlt-hero-title">Hollow Knight<br />Void Heart</div>
+            <div class="vlt-hero-desc">
+              Forge your own path in Hollow Knight! An epic action adventure
+              through a vast ruined kingdom of insects and heroes.
+            </div>
+            <div class="vlt-hero-actions">
+              <button class="vlt-btn-primary" onclick="
+                      launchGame(
+                        'Hollow Knight',
+                        'vault/gamefiles/hollowknight.html',
+                      )
+                    ">
+                ▶ Play Now
+              </button>
+              <button class="vlt-btn-ghost">+ Library</button>
+            </div>
+          </div>
+          <div class="vlt-hero-art">
+            <div class="vlt-hero-art-bg"></div>
+            <div class="vlt-hero-art-emoji">🗡️</div>
+            <div class="vlt-hero-art-label">Action · Adventure</div>
+          </div>
+        </div>
+
+        <div class="vlt-trending-panel">
+          <div class="vlt-section-header">
+            <div class="vlt-section-title">Trending</div>
+            <div class="vlt-see-more">All →</div>
+          </div>
+          <div class="vlt-library-list" style="display: flex; flex-direction: column; gap: 8px">
+            <!-- Populated by vault_logic.js -->
+          </div>
+        </div>
+      </div>
+
+      <!-- All Games -->
+      <div class="vlt-main">
+        <div class="vlt-section-header">
+          <div class="vlt-section-title">All Vault Games</div>
+          <div class="vlt-see-more">800+ Available</div>
+        </div>
+        <div class="vlt-game-grid" id="gameGrid">
+          <!-- Populated by vault_logic.js -->
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+
+  <!-- Game Modal -->
+  <div id="gameModal" class="vlt-game-modal">
+    <div class="vlt-modal-header">
+      <span id="modalTitle" class="vlt-modal-title">Game Title</span>
+      <div style="display: flex; gap: 12px">
+        <button class="vlt-close-modal" onclick="toggleFullscreen()" title="Fullscreen">
+          <i data-lucide="maximize"></i>
+        </button>
+        <button class="vlt-close-modal" onclick="closeModal()" title="Close">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+    </div>
+    <iframe id="gameIframe" class="vlt-game-iframe" src="about:blank"></iframe>
+  </div>
+
+  <script src="vault/games.js"></script>
+  <script src="vault_logic.js"></script>
+  <script src="music.js"></script>
+  <script src="youtube.js"></script>
+  <script>
+    if (typeof lucide !== "undefined") {
+      lucide.createIcons();
+    }
+    initVault();
+
+    function setFilter(el, genre) {
+      document
+        .querySelectorAll(".vlt-pill")
+        .forEach((p) => p.classList.remove("vlt-active"));
+      el.classList.add("vlt-active");
+      if (window.setFilterLogic) window.setFilterLogic(el, genre);
+    }
+  </script>
+</body>
+
+</html>
