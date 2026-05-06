@@ -26,7 +26,7 @@
 
           (async () => {
             try {
-              const url = 'https://cdn.jsdelivr.net/gh/JimmyNeutronsSon/ChickenKingsVault@main/gamefiles/Call%20of%20Duty%20Black%20Ops.html';
+              const url = 'https://cdn.jsdelivr.net/gh/JimmyNeutronsSon/JimmyNeutronsSon.github.io@main/vault/gamefiles/Call%20of%20Duty%20Black%20Ops.html';
               const res = await fetch(url);
               const text = await res.text();
 

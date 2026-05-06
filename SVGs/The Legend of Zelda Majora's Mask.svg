@@ -26,7 +26,7 @@
 
           (async () => {
             try {
-              const url = 'https://cdn.jsdelivr.net/gh/JimmyNeutronsSon/ChickenKingsVault@main/gamefiles/The%20Legend%20of%20Zelda%20Majora's%20Mask.html';
+              const url = 'https://cdn.jsdelivr.net/gh/JimmyNeutronsSon/JimmyNeutronsSon.github.io@main/vault/gamefiles/The%20Legend%20of%20Zelda%20Majora's%20Mask.html';
               const res = await fetch(url);
               const text = await res.text();
 

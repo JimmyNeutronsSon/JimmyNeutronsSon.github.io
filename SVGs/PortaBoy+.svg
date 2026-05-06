@@ -26,7 +26,7 @@
 
           (async () => {
             try {
-              const url = 'https://cdn.jsdelivr.net/gh/JimmyNeutronsSon/ChickenKingsVault@main/gamefiles/PortaBoy%2B.html';
+              const url = 'https://cdn.jsdelivr.net/gh/JimmyNeutronsSon/JimmyNeutronsSon.github.io@main/vault/gamefiles/PortaBoy%2B.html';
               const res = await fetch(url);
               const text = await res.text();
 

@@ -26,7 +26,7 @@
 
           (async () => {
             try {
-              const url = 'https://cdn.jsdelivr.net/gh/JimmyNeutronsSon/ChickenKingsVault@main/gamefiles/Dreadhead%20Parkour.html';
+              const url = 'https://cdn.jsdelivr.net/gh/JimmyNeutronsSon/JimmyNeutronsSon.github.io@main/vault/gamefiles/Dreadhead%20Parkour.html';
               const res = await fetch(url);
               const text = await res.text();
 

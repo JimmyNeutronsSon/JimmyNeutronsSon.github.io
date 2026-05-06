@@ -126,26 +126,12 @@
     fullBtn.onmouseout = () => (fullBtn.style.color = "rgba(255,255,255,0.5)");
     fullBtn.onclick = (e) => {
       e.stopPropagation();
-      if (!isMaximized) {
-        oldRect = {
-          top: win.style.top,
-          left: win.style.left,
-          width: win.style.width,
-          height: win.style.height,
-        };
-        win.style.top = "0";
-        win.style.left = "0";
-        win.style.width = "100vw";
-        win.style.height = "100vh";
-        win.style.borderRadius = "0";
-        isMaximized = true;
+      if (!document.fullscreenElement) {
+        const req = win.requestFullscreen || win.webkitRequestFullscreen || win.mozRequestFullScreen || win.msRequestFullscreen;
+        if (req) req.call(win);
       } else {
-        win.style.top = oldRect.top;
-        win.style.left = oldRect.left;
-        win.style.width = oldRect.width;
-        win.style.height = oldRect.height;
-        win.style.borderRadius = "18px";
-        isMaximized = false;
+        const exit = document.exitFullscreen || document.webkitExitFullscreen || document.mozCancelFullScreen || document.msExitFullscreen;
+        if (exit) exit.call(document);
       }
     };
 
@@ -159,18 +145,33 @@
     closeBtn.onclick = (e) => {
       e.stopPropagation();
       if (isTemporary) {
+        const iframe = win.querySelector("iframe");
+        if (iframe) iframe.src = "about:blank";
         win.remove();
         toggle.remove();
         const idx = windows.findIndex((w) => w.id === id);
         if (idx > -1) windows.splice(idx, 1);
-        const iframe = win.querySelector("iframe");
-        if (iframe) iframe.src = "about:blank";
       } else {
-        toggleWindow(id);
+        win.style.display = "none";
+        toggle.style.background = "rgba(255,255,255,0.1)";
       }
     };
 
+    const minBtn = document.createElement("button");
+    minBtn.innerHTML = "─";
+    minBtn.title = "Minimize";
+    minBtn.style.cssText =
+      "background:none; border:none; color:rgba(255,255,255,0.5); cursor:pointer; font-size:16px; padding:5px; transition:0.2s;";
+    minBtn.onmouseover = () => (minBtn.style.color = "#fff");
+    minBtn.onmouseout = () => (minBtn.style.color = "rgba(255,255,255,0.5)");
+    minBtn.onclick = (e) => {
+      e.stopPropagation();
+      win.style.display = "none";
+      toggle.style.background = "rgba(255,255,255,0.1)";
+    };
+
     btnContainer.appendChild(fullBtn);
+    btnContainer.appendChild(minBtn);
     btnContainer.appendChild(closeBtn);
     header.appendChild(btnContainer);
     win.appendChild(header);
@@ -328,24 +329,23 @@
         container.innerHTML = `
       <div style="width:100%; height:100%; overflow:hidden; position:relative;">
         <div id="game-loader-msg" style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; background:#000; color:#fff; z-index:1;">Loading Game...</div>
-        <iframe id="${gameId}-frame" style="width:100%; height:calc(100% + 55px); border:none; margin-top:-55px; position:absolute; top:0; left:0; z-index:2;"></iframe>
+        <iframe id="${gameId}-frame" style="width:100%; height:100%; border:none; position:absolute; top:0; left:0; z-index:2;"></iframe>
       </div>
     `;
 
         const frame = container.querySelector(`#${gameId}-frame`);
         const msg = container.querySelector("#game-loader-msg");
 
-        fetchAndBlob(url)
-          .then((blobUrl) => {
-            frame.src = blobUrl;
-            frame.onload = () => {
-              msg.style.display = "none";
-            };
-          })
-          .catch((err) => {
-            msg.innerText = "Failed to load game.";
-            console.error("Game Load Error:", err);
-          });
+        if (url.toLowerCase().endsWith(".svg")) {
+          // Load SVG directly in iframe as-is, same as opening in browser
+          frame.src = url;
+          frame.onload = () => { msg.style.display = "none"; };
+          frame.onerror = () => { msg.innerText = "Failed to load game."; };
+        } else {
+          frame.src = wrapUrl(url);
+          frame.onload = () => { msg.style.display = "none"; };
+          frame.onerror = () => { msg.innerText = "Failed to load game."; };
+        }
       },
       true,
     );
@@ -527,12 +527,12 @@
 
     fetch(
       wrapUrl(
-        "https://cdn.jsdelivr.net/gh/JimmyNeutronsSon/ChickenKingsVault@main/games.js",
+        "https://cdn.jsdelivr.net/gh/JimmyNeutronsSon/JimmyNeutronsSon.github.io@main/games.js",
       ),
     )
       .then((r) => r.text())
       .then((txt) => {
-        const match = txt.match(/const games =`([\s\S]*?)`/);
+        const match = txt.match(/const games\s*=\s*`([\s\S]*?)`/);
         if (match) {
           const parser = new DOMParser();
           const doc = parser.parseFromString(match[1], "text/html");
@@ -542,7 +542,7 @@
               "https://cdn.jsdelivr.net/gh/JimmyNeutronsSon/JimmyNeutronsSon.github.io@main/" +
               a.getAttribute("href"),
             img:
-              "https://cdn.jsdelivr.net/gh/WanoCapy/ChickenKingsVault@main/" +
+              "https://cdn.jsdelivr.net/gh/JimmyNeutronsSon/JimmyNeutronsSon.github.io@main/" +
               a.querySelector("img")?.getAttribute("src"),
           }));
           render();
@@ -625,7 +625,7 @@
       results.innerHTML =
         '<div style="color:#aaa;text-align:center;padding:20px;">Searching...</div>';
       try {
-        const base = "https://jiosaavn-api-privatecvc2.vercel.app";
+        const base = "http://lowkey-backend.vercel.app/api";
         const [songsRes, albumsRes] = await Promise.all([
           fetchApi(
             `${base}/search/songs?query=${encodeURIComponent(q)}&limit=15`,

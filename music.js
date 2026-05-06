@@ -90,7 +90,7 @@
               .then(() => {
                 updatePlayIconOnRestore();
               })
-              .catch(() => {});
+              .catch(() => { });
           }
           // Also update progress display
           const progressCurrent = document.getElementById("progress-current");
@@ -552,12 +552,12 @@
         const info = infoRes.data;
         const songs = songsRes.data.results || [];
         let albums = albumsRes.data.results || [];
-        
+
         // Fetch second page of albums to show more "all"
         try {
           const albumsRes2 = await fetch(wrapUrl(`${MUSIC_API}/artists/${artistId}/albums?page=2`)).then((r) => r.json());
           if (albumsRes2?.data?.results) albums = [...albums, ...albumsRes2.data.results];
-        } catch(e) {}
+        } catch (e) { }
 
         const img = info.image[2]?.link || info.image[1]?.link || info.image[0]?.link || "";
 

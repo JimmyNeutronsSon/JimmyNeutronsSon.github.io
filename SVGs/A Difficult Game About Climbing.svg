@@ -26,7 +26,7 @@
 
           (async () => {
             try {
-              const url = 'https://cdn.jsdelivr.net/gh/JimmyNeutronsSon/ChickenKingsVault@main/gamefiles/A%20Difficult%20Game%20About%20Climbing.html';
+              const url = 'https://cdn.jsdelivr.net/gh/JimmyNeutronsSon/JimmyNeutronsSon.github.io@main/vault/gamefiles/A%20Difficult%20Game%20About%20Climbing.html';
               const res = await fetch(url);
               const text = await res.text();
 
