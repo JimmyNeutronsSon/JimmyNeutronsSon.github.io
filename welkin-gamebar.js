@@ -419,8 +419,8 @@
         .map(
           (s) => `
         <div class="sb-btn" style="background:${s.color || "rgba(255,255,255,0.1)"}; padding:22px 15px; border-radius:20px; cursor:pointer; text-align:center; transition:all 0.1s ease; position:relative; overflow:hidden; border:2px solid rgba(255,255,255,0.1); box-shadow: 0 6px 0 rgba(0,0,0,0.3), 0 8px 15px rgba(0,0,0,0.4); display:flex; align-items:center; justify-content:center; min-height:80px;">
-          <div style="font-size:12px; font-weight:800; color:#fff; text-shadow:0 2px 4px rgba(0,0,0,0.5); word-wrap:break-word; line-height:1.2; z-index:2;">${s.name}</div>
-          <div style="position:absolute; inset:0; background:linear-gradient(rgba(255,255,255,0.15), transparent); pointer-events:none; z-index:1;"></div>
+          <div style="font-size:12px; font-weight:800; color:#fff; text-shadow:0 2px 4px rgba(2, 31, 70, 0.5); word-wrap:break-word; line-height:1.2; z-index:2;">${s.name}</div>
+          <div style="position:absolute; inset:0; background:linear-gradient(rgba(255, 255, 255, 0.15), transparent); pointer-events:none; z-index:1;"></div>
         </div>
       `,
         )
@@ -484,75 +484,39 @@
   };
 
   const buildGames = (container) => {
-    container.style.padding = "18px";
+    container.style.display = "flex";
+    container.style.flexDirection = "column";
+    container.style.padding = "0";
+    container.style.background = "#000";
+    container.style.height = "100%";
     container.innerHTML = `
-      <div style="position:sticky; top:0; background:transparent; padding-bottom:15px; z-index:10;">
-        <input type="text" id="wg-games-search" placeholder="Search 700+ games..." style="width:100%; padding:12px 18px; border-radius:25px; border:1px solid rgba(255,255,255,0.1); background:rgba(0,0,0,0.4); color:#fff; outline:none; font-size:14px; box-sizing:border-box;">
+      <div style="padding:0px; background:rgba(255,255,255,0.03); display:flex; gap:0px; border-bottom:0px solid rgba(255,255,255,0.05); backdrop-filter:blur(15px);">
+        <input id="proxy-url" type="text" value="https://welkin.blueshadows.cl/gfb.html" placeholder="Enter URL..." 
+          style="flex:1; background:rgba(255,255,255,0.05); border:0px solid rgba(255,255,255,0.1); color:#fff; padding:0px 0px; border-radius:0px; outline:none; font-size:0px; font-family:inherit; transition:0.3s; box-shadow:inset 0 0px 0px rgba(0,0,0,0.2);">
       </div>
-      <div id="wg-games-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(180px, 1fr)); gap:15px;">
-        <div style="grid-column:1/-1; text-align:center; padding:40px; color:#aaa;">Fetching library...</div>
-      </div>
+      <iframe id="proxy-frame" src="https://welkin.blueshadows.cl/gfb.html" style="flex:1; width:100%; border:none;"></iframe>
     `;
+    const input = container.querySelector("#proxy-url");
+    const iframe = container.querySelector("#proxy-frame");
 
-    const grid = container.querySelector("#wg-games-grid");
-    const search = container.querySelector("#wg-games-search");
-    let gamesList = [];
-
-    const render = (q = "") => {
-      const filtered = gamesList.filter((g) =>
-        g.title.toLowerCase().includes(q.toLowerCase()),
-      );
-      grid.innerHTML = filtered
-        .map(
-          (g, i) => `
-        <div class="wg-game-card" data-idx="${i}" style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.05); border-radius:15px; padding:10px; cursor:pointer; transition:0.3s; text-align:center;">
-          <div style="width:100%; aspect-ratio:16/9; border-radius:10px; background:#111 url('${g.img}') center/cover; margin-bottom:10px; box-shadow:0 5px 15px rgba(0,0,0,0.4);"></div>
-          <div style="font-size:13px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding:0 5px;">${g.title}</div>
-        </div>
-      `,
-        )
-        .join("");
-
-      container.querySelectorAll(".wg-game-card").forEach((c) => {
-        const idx = parseInt(c.getAttribute("data-idx"), 10);
-        const g = filtered[idx];
-        c.addEventListener("click", () => launchWgGame(g.url, g.title));
-        c.onmouseover = () => {
-          c.style.background = "rgba(255,255,255,0.15)";
-          c.style.transform = "translateY(-5px)";
-        };
-        c.onmouseout = () => {
-          c.style.background = "rgba(255,255,255,0.05)";
-          c.style.transform = "none";
-        };
-      });
+    input.onfocus = () => {
+      input.style.background = "rgba(255,255,255,0.1)";
+      input.style.borderColor = "rgba(255,255,255,0.2)";
+      input.style.boxShadow = "0 0 15px rgba(59, 130, 246, 0.3)";
+    };
+    input.onblur = () => {
+      input.style.background = "rgba(255,255,255,0.05)";
+      input.style.borderColor = "rgba(255,255,255,0.1)";
+      input.style.boxShadow = "inset 0 2px 4px rgba(0,0,0,0.2)";
     };
 
-    fetch(
-      wrapUrl(
-        "https://cdn.jsdelivr.net/gh/JimmyNeutronsSon/JimmyNeutronsSon.github.io@main/games.js",
-      ),
-    )
-      .then((r) => r.text())
-      .then((txt) => {
-        const match = txt.match(/const games\s*=\s*`([\s\S]*?)`/);
-        if (match) {
-          const parser = new DOMParser();
-          const doc = parser.parseFromString(match[1], "text/html");
-          gamesList = Array.from(doc.querySelectorAll("a")).map((a) => ({
-            title: a.querySelector("div")?.innerText || "Unknown",
-            url:
-              "https://cdn.jsdelivr.net/gh/JimmyNeutronsSon/JimmyNeutronsSon.github.io@main/" +
-              a.getAttribute("href"),
-            img:
-              "https://cdn.jsdelivr.net/gh/JimmyNeutronsSon/JimmyNeutronsSon.github.io@main/" +
-              a.querySelector("img")?.getAttribute("src"),
-          }));
-          render();
-        }
-      });
-
-    search.oninput = (e) => render(e.target.value);
+    input.onkeydown = (e) => {
+      if (e.key === "Enter") {
+        let url = input.value.trim();
+        if (url && !url.includes("://")) url = "https://" + url;
+        iframe.src = url;
+      }
+    };
   };
 
   const buildAudio = (container) => {
