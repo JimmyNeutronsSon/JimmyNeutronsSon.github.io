@@ -30,9 +30,12 @@
       --text-primary: #0b1e3d;
       --text-secondary: #163a6b;
       --text-muted: #8fa4c2;
-      --accent: #1e6cc7;
-      --accent-hover: #3a8fe0;
+      --accent: #3a8fe0;
+      --accent-hover: #5ba4e5;
       --border: #c5d3e8;
+      --header-bg: rgba(15, 25, 45, 0.95);
+      --tab-bg: rgba(255, 255, 255, 0.05);
+      --tab-active: rgba(255, 255, 255, 0.1);
     }
 
     body {
@@ -48,15 +51,26 @@
 
     .browser-header {
       display: flex;
+      justify-content: center;
       align-items: center;
-      padding: 12px 24px;
-      background: rgba(247, 250, 255, 0.6);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.4);
-      box-shadow: 0 4px 16px rgba(10, 45, 110, 0.08);
+      padding: 10px 20px;
+      background: rgba(15, 25, 45, 0.7);
+      backdrop-filter: blur(30px);
+      -webkit-backdrop-filter: blur(30px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      gap: 20px;
+      z-index: 100;
+      height: 52px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .header-central-group {
+      display: flex;
+      align-items: center;
       gap: 16px;
-      z-index: 10;
+      max-width: 1200px;
+      width: 100%;
+      justify-content: center;
     }
 
     .nav-controls {
@@ -64,68 +78,83 @@
       gap: 8px;
     }
 
-    .icon-btn {
-      background: transparent;
-      border: none;
-      width: 36px;
-      height: 36px;
-      border-radius: 8px;
+    .nav-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #fff;
+      cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      transition: all 0.3s ease;
+    }
+
+    .nav-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      transform: scale(1.1);
+    }
+
+    .tabs-container {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .tabs-container::-webkit-scrollbar {
+      display: none;
+    }
+
+    .browser-tab {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 18px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 100px;
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 13px;
       cursor: pointer;
-      color: var(--text-secondary);
-      transition: all 0.2s ease;
+      transition: all 0.3s ease;
+      white-space: nowrap;
     }
 
-    .icon-btn:hover {
-      background: rgba(30, 108, 199, 0.1);
-      color: var(--accent);
+    .browser-tab:hover {
+      background: rgba(255, 255, 255, 0.15);
+      color: #fff;
     }
 
-    #btn-reload img {
-      transition: transform 0.3s ease;
-    }
-
-    #btn-reload:hover img {
-      transform: rotate(190deg);
-    }
-
-    .icon-btn svg {
-      width: 20px;
-      height: 20px;
-      stroke-width: 2;
+    .browser-tab.active {
+      background: rgba(58, 143, 224, 0.2);
+      border-color: rgba(58, 143, 224, 0.4);
+      color: #fff;
+      box-shadow: 0 4px 15px rgba(58, 143, 224, 0.2);
     }
 
     .address-bar-container {
-      flex: 1;
-      display: flex;
+      max-width: 500px;
+      width: 100%;
     }
 
     .address-form {
-      flex: 1;
       display: flex;
-      background: #ffffff;
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 4px 16px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 100px;
+      padding: 6px 20px;
       align-items: center;
-      box-shadow: inset 0 2px 4px rgba(10, 45, 110, 0.02);
-      transition:
-        box-shadow 0.2s ease,
-        border-color 0.2s ease;
+      transition: all 0.3s ease;
     }
 
     .address-form:focus-within {
+      background: rgba(255, 255, 255, 0.15);
       border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(58, 143, 224, 0.15);
-    }
-
-    .address-form svg {
-      color: var(--text-muted);
-      width: 16px;
-      height: 16px;
-      margin-right: 8px;
+      box-shadow: 0 0 20px rgba(58, 143, 224, 0.3);
     }
 
     .address-input {
@@ -133,13 +162,31 @@
       border: none;
       background: transparent;
       outline: none;
-      font-size: 14px;
-      color: var(--text-primary);
+      font-size: 13px;
+      color: #fff;
       font-family: "Inter", sans-serif;
+      text-align: center;
     }
 
-    .address-input::placeholder {
-      color: var(--text-muted);
+    .new-tab-cta {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      flex-shrink: 0;
+    }
+
+    .new-tab-cta:hover {
+      background: var(--accent-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 5px 15px rgba(58, 143, 224, 0.4);
     }
 
     .browser-content {
@@ -288,11 +335,13 @@
       justify-content: center;
       cursor: pointer;
       font-size: 14px;
-      opacity: 0.6;
+      opacity: 0.5;
+      transition: all 0.2s ease;
+      margin-left: 4px;
     }
 
     .tab-close:hover {
-      background: rgba(0, 0, 0, 0.1);
+      background: rgba(255, 255, 255, 0.1);
       opacity: 1;
     }
 
@@ -356,51 +405,40 @@
 
 <body>
   <header class="browser-header">
-    <div class="nav-controls">
-      <button class="icon-btn" id="btn-back" title="Go back">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="15 18 9 12 15 6"></polyline>
-        </svg>
-      </button>
-      <button class="icon-btn" id="btn-forward" title="Go forward">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="9 18 15 12 9 6"></polyline>
-        </svg>
-      </button>
-      <button class="icon-btn" id="btn-reload" title="Reload page">
-        <img src="assets/refresh.png" alt="reload" style="width: 20px; height: 20px" />
-      </button>
-      <button class="icon-btn" id="btn-home" title="Go home" onclick="window.location.href = 'index.html'">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-          <polyline points="9 22 9 12 15 12 15 22"></polyline>
-        </svg>
-      </button>
-    </div>
+    <div class="header-central-group">
+      <div class="nav-controls">
+        <button class="nav-btn" id="btn-back" title="Back"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg></button>
+        <button class="nav-btn" id="btn-forward" title="Forward"><svg width="16" height="16" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg></button>
+        <button class="nav-btn" id="btn-reload" title="Reload"><svg width="16" height="16" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M23 4v6h-6"></path>
+            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+          </svg></button>
+      </div>
 
-    <div class="address-bar-container">
-      <form id="sj-form" class="address-form">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-        </svg>
-        <input type="hidden" id="sj-search-engine" value="https://duckduckgo.com/?q=%s" />
-        <input type="text" id="sj-address" class="address-input" placeholder="Search the web freely"
-          autocomplete="off" />
-      </form>
+      <div class="address-bar-container">
+        <form id="sj-form" class="address-form">
+          <input type="hidden" id="sj-search-engine" value="https://duckduckgo.com/?q=%s" />
+          <input type="text" id="sj-address" class="address-input" placeholder="Search freely..." autocomplete="off" />
+        </form>
+      </div>
+
+      <div class="tabs-container" id="tabs-bar">
+        <!-- Dynamic tabs injected here -->
+      </div>
+
+      <button class="new-tab-cta" id="btn-new-tab" title="New Tab">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+      </button>
     </div>
     <div class="loading-bar" id="loading-bar"></div>
   </header>
-
-  <div class="tabs-bar" id="tabs-bar">
-    <button class="new-tab-btn" id="btn-new-tab" title="New Tab">
-      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"
-        stroke-linecap="round" stroke-linejoin="round">
-        <line x1="12" y1="5" x2="12" y2="19"></line>
-        <line x1="5" y1="12" x2="19" y2="12"></line>
-      </svg>
-    </button>
-  </div>
 
   <main class="browser-content">
     <div class="empty-state" id="empty-state">
@@ -421,16 +459,16 @@
               <path d="M12 15v6"></path>
               <path d="M12 3v6"></path>
             </svg>
-            Google Gemini
+            Gemini
           </div>
-          <div class="ai-shortcut" onclick="window.loadUrlInProxy('https://chatgpt.com')">
+          <div class="ai-shortcut" onclick="window.loadUrlInProxy('https://chat.qwen.ai/')">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
               stroke-linecap="round" stroke-linejoin="round">
               <circle cx="12" cy="12" r="10"></circle>
               <path d="M12 16v-4"></path>
               <path d="M12 8h.01"></path>
             </svg>
-            ChatGPT
+            Qwen
           </div>
         </div>
 

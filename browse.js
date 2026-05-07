@@ -131,8 +131,8 @@ function createTab() {
     tabEl.className = "browser-tab";
     tabEl.id = "tab-" + id;
     tabEl.innerHTML = `
-        <div class="tab-title">New Tab</div>
-        <button class="tab-close">&times;</button>
+        <span class="tab-title">New Tab</span>
+        <button class="tab-close" title="Close">&times;</button>
     `;
     
     tabEl.onclick = (e) => {
@@ -146,7 +146,7 @@ function createTab() {
         closeTab(id);
     };
     
-    tabsBar.insertBefore(tabEl, btnNewTab);
+    tabsBar.appendChild(tabEl);
     switchTab(id);
     return tab;
 }

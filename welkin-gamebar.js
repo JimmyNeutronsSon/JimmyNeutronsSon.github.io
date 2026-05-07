@@ -374,23 +374,23 @@
     container.style.background = "#000";
     container.style.height = "100%";
     container.innerHTML = `
-      <div style="padding:10px; background:rgba(255,255,255,0.03); display:flex; gap:10px; border-bottom:1px solid rgba(255,255,255,0.05); backdrop-filter:blur(15px);">
-        <input id="proxy-url" type="text" value="https://welkin.blueshadows.cl/browse.html" placeholder="Enter URL..." 
-          style="flex:1; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:#fff; padding:8px 16px; border-radius:20px; outline:none; font-size:12px; font-family:inherit; transition:0.3s; box-shadow:inset 0 2px 4px rgba(0,0,0,0.2);">
+      <div style="padding:12px; background:rgba(255,255,255,0.02); display:flex; gap:10px; border-bottom:1px solid rgba(255,255,255,0.05); backdrop-filter:blur(20px);">
+        <input id="proxy-url" type="text" value="https://welkin.blueshadows.cl/browse.html?no_sidebar=true" placeholder="Enter URL or search freely..." 
+          style="flex:1; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); color:#fff; padding:10px 20px; border-radius:100px; outline:none; font-size:12px; font-family:inherit; transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow:inset 0 2px 4px rgba(0,0,0,0.2);">
       </div>
-      <iframe id="proxy-frame" src="https://welkin.blueshadows.cl/browse.html" style="flex:1; width:100%; border:none;"></iframe>
+      <iframe id="proxy-frame" src="https://welkin.blueshadows.cl/browse.html?no_sidebar=true" style="flex:1; width:100%; border:none;"></iframe>
     `;
     const input = container.querySelector("#proxy-url");
     const iframe = container.querySelector("#proxy-frame");
 
     input.onfocus = () => {
-      input.style.background = "rgba(255,255,255,0.1)";
-      input.style.borderColor = "rgba(255,255,255,0.2)";
-      input.style.boxShadow = "0 0 15px rgba(59, 130, 246, 0.3)";
+      input.style.background = "rgba(255,255,255,0.08)";
+      input.style.borderColor = "rgba(58, 143, 224, 0.5)";
+      input.style.boxShadow = "0 0 20px rgba(58, 143, 224, 0.2), inset 0 2px 4px rgba(0,0,0,0.2)";
     };
     input.onblur = () => {
       input.style.background = "rgba(255,255,255,0.05)";
-      input.style.borderColor = "rgba(255,255,255,0.1)";
+      input.style.borderColor = "rgba(255,255,255,0.08)";
       input.style.boxShadow = "inset 0 2px 4px rgba(0,0,0,0.2)";
     };
 
@@ -514,13 +514,13 @@
     const iframe = container.querySelector("#proxy-frame");
 
     input.onfocus = () => {
-      input.style.background = "rgba(255,255,255,0.1)";
-      input.style.borderColor = "rgba(255,255,255,0.2)";
-      input.style.boxShadow = "0 0 15px rgba(59, 130, 246, 0.3)";
+      input.style.background = "rgba(255,255,255,0.08)";
+      input.style.borderColor = "rgba(58, 143, 224, 0.5)";
+      input.style.boxShadow = "0 0 20px rgba(58, 143, 224, 0.2), inset 0 2px 4px rgba(0,0,0,0.2)";
     };
     input.onblur = () => {
       input.style.background = "rgba(255,255,255,0.05)";
-      input.style.borderColor = "rgba(255,255,255,0.1)";
+      input.style.borderColor = "rgba(255,255,255,0.08)";
       input.style.boxShadow = "inset 0 2px 4px rgba(0,0,0,0.2)";
     };
 
