@@ -18,6 +18,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script>
         document.addEventListener("DOMContentLoaded", function() {
+            if (new URLSearchParams(window.location.search).get("no_sidebar") === "true") return;
             var sidebarScript = document.createElement("script");
             sidebarScript.src = window.location.origin + "/sidebar.js";
             document.head.appendChild(sidebarScript);
