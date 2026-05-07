@@ -1,0 +1,284 @@
+import React, { Component, useState, useContext, useEffect, useRef, ReactNode } from 'react';
+import { PlayerContext } from '../../context/PlayerContext';
+
+interface LogoProps {
+  size?: 'small' | 'large';
+}
+
+// Types for visualizer elements
+interface Particle {
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  initialRadius: number;
+  radius: number;
+  life: number;
+  maxLife: number;
+}
+
+interface Star {
+  x: number;
+  y: number;
+  z: number;
+}
+
+
+const Logo: React.FC<LogoProps> = ({ size = 'large' }) => {
+  const { analyser, isPlaying } = useContext(PlayerContext);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const animationFrameId = useRef<number | null>(null);
+  const staticLogoRef = useRef<HTMLDivElement>(null);
+  const isLarge = size === 'large';
+  
+  // Refs for visualizer state to persist across renders
+  const particles = useRef<Particle[]>([]);
+  const stars = useRef<Star[]>([]);
+  const smoothedBass = useRef(0);
+  const smoothedMids = useRef(0);
+  const smoothedTreble = useRef(0);
+  
+  // Beat detection refs
+  const bassHistory = useRef<number[]>([]);
+  const lastKickTime = useRef(0);
+  const emissionCounter = useRef(0);
+
+
+  // This effect runs the canvas animation loop
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas || !analyser) return;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const bufferLength = analyser.frequencyBinCount;
+    const dataArray = new Uint8Array(bufferLength);
+
+    const animate = () => {
+      animationFrameId.current = requestAnimationFrame(animate);
+
+      // Guard against zero-sized canvas to prevent division by zero errors.
+      if (canvas.width === 0 || canvas.height === 0) {
+        return;
+      }
+      
+      analyser.getByteFrequencyData(dataArray);
+      
+      const centerX = canvas.width / 2;
+      const centerY = canvas.height / 2;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // --- Calculate and smooth audio metrics ---
+      const bass = dataArray.slice(0, Math.floor(bufferLength * 0.05)).reduce((a, b) => a + b, 0) / (Math.floor(bufferLength * 0.05)) || 0;
+      const mids = dataArray.slice(Math.floor(bufferLength * 0.2), Math.floor(bufferLength * 0.5)).reduce((a, b) => a + b, 0) / (Math.floor(bufferLength * 0.3)) || 0;
+      const treble = dataArray.slice(Math.floor(bufferLength * 0.5), bufferLength).reduce((a, b) => a + b, 0) / (bufferLength - Math.floor(bufferLength * 0.5)) || 0;
+
+      const smoothingFactor = 0.1;
+      smoothedBass.current += (bass - smoothedBass.current) * smoothingFactor;
+      smoothedMids.current += (mids - smoothedMids.current) * smoothingFactor;
+      smoothedTreble.current += (treble - smoothedTreble.current) * smoothingFactor;
+      
+      // --- Draw Stars (Background) ---
+      stars.current.forEach(star => {
+          star.z -= 0.2;
+          if (star.z <= 0) {
+              star.x = (Math.random() - 0.5) * canvas.width * 1.5;
+              star.y = (Math.random() - 0.5) * canvas.height * 1.5;
+              star.z = canvas.width;
+          }
+
+          const k = 128 / star.z;
+          const px = star.x * k + centerX;
+          const py = star.y * k + centerY;
+
+          if (px > 0 && px < canvas.width && py > 0 && py < canvas.height) {
+              const size = (1 - star.z / canvas.width) * 2;
+              const alpha = (1 - star.z / canvas.width) * (0.3 + (smoothedTreble.current / 255) * 0.7);
+              ctx.fillStyle = `rgba(58, 143, 224, ${alpha})`;
+              ctx.beginPath();
+              ctx.arc(px, py, Math.max(0, size), 0, Math.PI * 2);
+              ctx.fill();
+          }
+      });
+      
+      // --- Draw Central Blob ---
+      const baseRadius = (canvas.width / 7) + (smoothedBass.current / 255) * (canvas.width / 10);
+      
+      const gradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, baseRadius * 1.2);
+      const brightCenter = `hsl(209, 73%, ${55 + (smoothedTreble.current / 255) * 15}%)`;
+      gradient.addColorStop(0, brightCenter);
+      gradient.addColorStop(0.6, '#0A2D6E');
+      gradient.addColorStop(1, `hsl(212, 74%, ${30 + (smoothedBass.current/255) * 10}%)`);
+
+      ctx.fillStyle = gradient;
+
+      ctx.beginPath();
+      const points = 128;
+      for (let i = 0; i <= points; i++) {
+        const angle = (i / points) * Math.PI * 2;
+        const midOffset = Math.sin(angle * 8 + Date.now() * 0.005) * (smoothedMids.current / 255) * (canvas.width / 25);
+        const trebleIndex = Math.floor((i / points) * (bufferLength * 0.5)) + Math.floor(bufferLength * 0.5);
+        const spike = (dataArray[trebleIndex] / 255) * (canvas.width / 8) * (smoothedTreble.current / 255);
+        const radius = baseRadius + midOffset + spike;
+        const x = centerX + Math.cos(angle) * radius;
+        const y = centerY + Math.sin(angle) * radius;
+        if (i === 0) {
+          ctx.moveTo(x, y);
+        } else {
+          ctx.lineTo(x, y);
+        }
+      }
+      ctx.closePath();
+      ctx.fill();
+      
+      const emitParticle = (speedMultiplier = 1) => {
+          const angle = Math.random() * Math.PI * 2;
+          const speed = (0.2 + Math.random() * 0.5) * speedMultiplier;
+          const startRadius = baseRadius * (0.8 + Math.random() * 0.2);
+          const life = 80 + Math.random() * 40;
+          const radius = 1 + Math.random() * 2;
+          particles.current.push({
+              x: centerX + Math.cos(angle) * startRadius,
+              y: centerY + Math.sin(angle) * startRadius,
+              vx: Math.cos(angle) * speed,
+              vy: Math.sin(angle) * speed,
+              initialRadius: radius,
+              radius: radius,
+              life: life,
+              maxLife: life,
+          });
+      };
+
+      const continuousEmissionRate = (smoothedBass.current / 255) * 1.5;
+      emissionCounter.current += continuousEmissionRate;
+      while (emissionCounter.current > 1) {
+          emitParticle(0.5); 
+          emissionCounter.current -= 1;
+      }
+      
+      bassHistory.current.push(bass);
+      if (bassHistory.current.length > 30) bassHistory.current.shift();
+      const avgBass = bassHistory.current.reduce((a, b) => a + b, 0) / bassHistory.current.length;
+      const kickThreshold = 1.25;
+      const cooldown = 120;
+      const now = Date.now();
+      
+      if (bass > avgBass * kickThreshold && now - lastKickTime.current > cooldown) {
+        lastKickTime.current = now;
+        const kickStrength = Math.min(2.5, (bass - avgBass) / 40);
+        const particleCount = Math.floor(1 + kickStrength * 1.5);
+        for (let i = 0; i < particleCount; i++) {
+            emitParticle(1 + kickStrength * 0.5);
+        }
+      }
+      
+      particles.current = particles.current.filter(p => p.life > 0 && p.radius > 0.1);
+      particles.current.forEach(p => {
+          p.life--;
+          
+          const dx = centerX - p.x;
+          const dy = centerY - p.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          
+          const gravity = 0.18;
+          p.vx += (dx / dist) * gravity;
+          p.vy += (dy / dist) * gravity;
+          
+          p.vx *= 0.94;
+          p.vy *= 0.94;
+
+          p.x += p.vx;
+          p.y += p.vy;
+          
+          p.radius = p.initialRadius * (p.life / p.maxLife);
+
+          if (dist < baseRadius * 1.1) {
+              p.radius *= 0.92;
+          }
+          
+          ctx.fillStyle = '#6CB4F0';
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, Math.max(0, p.radius), 0, Math.PI * 2);
+          ctx.fill();
+      });
+    };
+
+    if (isPlaying) {
+        animate();
+    } else {
+        if (animationFrameId.current) {
+            cancelAnimationFrame(animationFrameId.current);
+            animationFrameId.current = null;
+        }
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.current = [];
+        bassHistory.current = [];
+        smoothedBass.current = 0;
+        smoothedMids.current = 0;
+        smoothedTreble.current = 0;
+        emissionCounter.current = 0;
+    }
+
+    return () => {
+      if (animationFrameId.current) {
+        cancelAnimationFrame(animationFrameId.current);
+      }
+    };
+  }, [analyser, isPlaying]);
+  
+   useEffect(() => {
+    const meElement = staticLogoRef.current?.querySelector('.welkin-logo-part');
+    if (!meElement) return;
+    
+    const initStars = (width: number, height: number) => {
+        const starCount = 100;
+        stars.current = [];
+        for (let i = 0; i < starCount; i++) {
+            stars.current.push({
+                x: (Math.random() - 0.5) * width * 1.5,
+                y: (Math.random() - 0.5) * height * 1.5,
+                z: Math.random() * width,
+            });
+        }
+    };
+
+    const resizeObserver = new ResizeObserver(entries => {
+      window.requestAnimationFrame(() => {
+        if (!entries || entries.length === 0) return;
+        const { width, height } = entries[0].contentRect;
+        if (canvasRef.current) {
+          canvasRef.current.width = width;
+          canvasRef.current.height = height;
+          initStars(width, height);
+        }
+      });
+    });
+
+    resizeObserver.observe(meElement);
+    
+    return () => resizeObserver.disconnect();
+  }, []);
+
+  return (
+    <div className={`relative text-center cursor-default select-none flex items-center justify-center ${isLarge ? 'h-20' : 'h-16'}`}>
+      <div ref={staticLogoRef} className="flex items-baseline gap-0" style={{ fontFamily: '"Inter", "Outfit", sans-serif', fontSize: isLarge ? '28px' : '22px', lineHeight: '1' }}>
+         <div className="relative welkin-logo-part">
+            <span className={`font-extrabold text-white tracking-tight transition-all duration-700 ease-in-out ${isPlaying ? 'opacity-0 blur-lg scale-125' : 'opacity-100 blur-0 scale-100'}`}>
+                Welkin
+            </span>
+            <canvas 
+                ref={canvasRef}
+                className={`absolute top-0 left-0 w-full h-full transition-all duration-700 ease-in-out ${isPlaying ? 'opacity-100 scale-100' : 'opacity-0 scale-0'}`}
+            />
+         </div>
+         <span className={`text-[#3A8FE0] font-bold transition-all duration-700 ease-in-out ${isPlaying ? 'opacity-80' : 'opacity-100'}`}>
+            .Music
+         </span>
+      </div>
+    </div>
+  );
+};
+
+export default Logo;

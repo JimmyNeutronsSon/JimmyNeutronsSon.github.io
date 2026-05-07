@@ -1,0 +1,5 @@
+{
+  "name": "Welkin.Music",
+  "description": "A complete music web player — part of the Welkin ecosystem. Listen to, organize, and explore music directly from the browser without an account. Playlists, favorites, and history are saved locally.",
+  "requestFramePermissions": []
+}

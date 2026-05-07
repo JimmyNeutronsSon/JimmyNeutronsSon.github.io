@@ -236,14 +236,13 @@ window.initSidebar = function () {
           <a href="/index.html" class="sidebar-link">Home</a>
           <a href="/browse.html" class="sidebar-link">Browse</a>
           <a href="/games_dashboard.html" class="sidebar-link">Games</a>
-          <a href="#" class="sidebar-link" id="music-toggle">Music</a>
+          <a href="/memusic-webplayer/dist/" class="sidebar-link" id="music-toggle">Music</a>
           <a href="#" class="sidebar-link" id="yt-toggle">YouTube</a>
           <a href="/Soundboard/Soundboard.html" class="sidebar-link">Soundboard</a>
           <a href="/retro-bowl.html" class="sidebar-link">Retro Bowl</a>
           <a href="/movies.html" class="sidebar-link">Movies</a>
-          </nav>
-          <div id="sidebar-music-widget" class="sidebar-music-widget" style="display:none;"></div>
-       </aside>
+        </nav>
+      </aside>
       <div id="sidebar-overlay" class="sidebar-overlay"></div>
     `;
 
@@ -269,19 +268,19 @@ window.initSidebar = function () {
   closeBtn.addEventListener("click", closeSidebar);
   overlay.addEventListener("click", closeSidebar);
 
-  if (musicToggle) {
-    musicToggle.addEventListener("click", (e) => {
-      e.preventDefault();
-      if (window.toggleMusic) window.toggleMusic();
-      closeSidebar();
-    });
-  }
+  // Music link is now a direct navigation to /memusic-webplayer/
 
   const discoveryToggle = document.getElementById("discovery-toggle");
   if (discoveryToggle) {
     discoveryToggle.addEventListener("click", (e) => {
       e.preventDefault();
       if (window.toggleDiscovery) window.toggleDiscovery();
+      closeSidebar();
+    });
+  }
+
+  if (musicToggle) {
+    musicToggle.addEventListener("click", () => {
       closeSidebar();
     });
   }

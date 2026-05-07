@@ -1,0 +1,104 @@
+
+import React, { useContext } from 'react';
+import { Album } from '../../types';
+import { PlayerContext } from '../../context/PlayerContext';
+import { getAlbumDetails } from '../../services/jioSaavnApi';
+import { UserMusicContext } from '../../context/UserMusicContext';
+import { useTranslation } from '../../context/LanguageContext';
+
+interface AlbumCardProps {
+  album: Album;
+  onAlbumClick: (albumId: string) => void;
+  onArtistClick: (artistId: string) => void;
+}
+
+const PlayIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg {...props} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+    <path fillRule="evenodd" d="M4.5 5.653c0-1.426 1.529-2.33 2.779-1.643l11.54 6.648c1.295.742 1.295 2.545 0 3.286L7.279 20.99c-1.25.717-2.779-.217-2.779-1.643V5.653z" clipRule="evenodd" />
+  </svg>
+);
+
+const HeartIcon = (props: React.SVGProps<SVGSVGElement>) => (
+    <svg {...props} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+    </svg>
+);
+
+export const AlbumCard: React.FC<AlbumCardProps> = React.memo(({ album, onAlbumClick, onArtistClick }) => {
+  const imageUrl = album.image?.find(img => img.quality === '500x500')?.url || album.image?.find(img => img.quality === '150x150')?.url || album.image?.[0]?.url;
+  const { playSong, contextId, togglePlay } = useContext(PlayerContext);
+  const { isFavoriteAlbum, toggleFavoriteAlbum } = useContext(UserMusicContext);
+  const { t } = useTranslation();
+  
+  const isFav = isFavoriteAlbum(album.id);
+  const isAlbumCurrentlyPlaying = contextId === album.id;
+
+  const handlePlayClick = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (isAlbumCurrentlyPlaying) {
+        togglePlay();
+        return;
+    }
+    try {
+        const response = await getAlbumDetails(album.id);
+        if(response.success && response.data.songs && response.data.songs.length > 0) {
+            playSong(response.data.songs[0], response.data.songs, { type: 'album', id: album.id });
+        }
+    } catch (error) {
+        console.error("Failed to play album:", error);
+    }
+  };
+  
+  const handleArtistClick = (e: React.MouseEvent, artistId: string) => {
+    e.stopPropagation();
+    onArtistClick(artistId);
+  }
+
+  const handleFavoriteClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    toggleFavoriteAlbum(album);
+  }
+
+  return (
+    <div 
+      className="group relative bg-white/5 p-4 rounded-2xl hover:bg-white/10 transition-all duration-300 cursor-pointer border border-white/5 hover:border-white/10 hover:shadow-2xl hover:-translate-y-1"
+      onClick={() => onAlbumClick(album.id)}
+    >
+       <button
+          onClick={handleFavoriteClick}
+          className="absolute top-3 right-3 p-2 rounded-full bg-black/40 backdrop-blur-md text-white opacity-0 group-hover:opacity-100 transition-all hover:bg-black/60 z-20 hover:scale-110"
+          aria-label={isFav ? t('albumView.removeFromFav') : t('albumView.addToFav')}
+          title={isFav ? t('albumView.removeFromFav') : t('albumView.addToFav')}
+        >
+          <HeartIcon className={`w-5 h-5 transition-all ${isFav ? 'fill-[#3A8FE0] text-[#3A8FE0]' : 'text-gray-300'}`} />
+        </button>
+      <div className="relative w-full aspect-square mb-4 overflow-hidden rounded-xl">
+        <img 
+            src={imageUrl} 
+            alt={album.name} 
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 animate-image-appear" 
+            loading="lazy" 
+        />
+        <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+        <button
+          onClick={handlePlayClick}
+          className="absolute bottom-3 right-3 w-12 h-12 bg-[#3A8FE0] rounded-full flex items-center justify-center text-black shadow-lg shadow-[#3A8FE0]/40 opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 z-20 hover:scale-105 active:scale-95"
+          aria-label={`Play ${album.name}`}
+        >
+            <PlayIcon className="w-6 h-6 ml-1" />
+        </button>
+      </div>
+      <h4 className="font-bold text-white truncate text-lg tracking-tight group-hover:text-[#3A8FE0] transition-colors">{album.name}</h4>
+      <div className="text-sm text-gray-400 truncate mt-1">
+          {album.artists.primary.map((artist, index) => (
+              <React.Fragment key={artist.id}>
+                  <span onClick={(e) => handleArtistClick(e, artist.id)} className="hover:text-white hover:underline transition-colors">
+                      {artist.name}
+                  </span>
+                  {index < album.artists.primary.length - 1 && ', '}
+              </React.Fragment>
+          ))}
+      </div>
+    </div>
+  );
+});

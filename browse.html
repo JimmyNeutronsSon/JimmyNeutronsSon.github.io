@@ -9,8 +9,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="icon" type="image/x-icon" href="warning-hazard-sign-on-transparent-background-free-png.ico" />
-  <link rel="shortcut icon" href="warning-hazard-sign-on-transparent-background-free-png.ico" />
+  <link rel="icon" type="image/x-icon" href="/warning-hazard-sign-on-transparent-background-free-png.ico" />
+  <link rel="icon" type="image/x-icon" href="/warning-hazard-sign-on-transparent-background-free-png.ico" />
   <link rel="stylesheet" href="styles.css" />
 
   <script src="/scram/scramjet.all.js"></script>
@@ -150,12 +150,13 @@
       display: flex;
     }
 
-    #sj-frame {
+    .sj-frame {
       width: 100%;
       height: 100%;
       border: none;
       display: none;
       background: #fff;
+      flex: 1;
     }
 
     .empty-state {
@@ -235,6 +236,122 @@
       z-index: 11;
       opacity: 0;
     }
+
+    .tabs-bar {
+      display: flex;
+      background: rgba(247, 250, 255, 0.8);
+      border-bottom: 1px solid rgba(10, 45, 110, 0.1);
+      padding: 6px 12px 0 12px;
+      gap: 4px;
+      overflow-x: auto;
+    }
+
+    .browser-tab {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      background: rgba(255, 255, 255, 0.5);
+      border: 1px solid transparent;
+      border-bottom: none;
+      border-radius: 8px 8px 0 0;
+      cursor: pointer;
+      font-size: 13px;
+      color: var(--text-secondary);
+      max-width: 200px;
+      min-width: 120px;
+      position: relative;
+    }
+
+    .browser-tab.active {
+      background: #ffffff;
+      border-color: rgba(10, 45, 110, 0.1);
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .tab-title {
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .tab-close {
+      background: transparent;
+      border: none;
+      color: inherit;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 14px;
+      opacity: 0.6;
+    }
+
+    .tab-close:hover {
+      background: rgba(0, 0, 0, 0.1);
+      opacity: 1;
+    }
+
+    .new-tab-btn {
+      background: transparent;
+      border: none;
+      width: 28px;
+      height: 28px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--text-secondary);
+      margin-top: 4px;
+    }
+
+    .new-tab-btn:hover {
+      background: rgba(10, 45, 110, 0.05);
+    }
+
+    .ai-shortcuts {
+      display: flex;
+      gap: 16px;
+      margin-top: 32px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .ai-shortcut {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 24px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 100px;
+      color: #fff;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .ai-shortcut:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    }
+
+    .ai-shortcut img {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+    }
   </style>
 </head>
 
@@ -276,6 +393,16 @@
     <div class="loading-bar" id="loading-bar"></div>
   </header>
 
+  <div class="tabs-bar" id="tabs-bar">
+    <button class="new-tab-btn" id="btn-new-tab" title="New Tab">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round">
+        <line x1="12" y1="5" x2="12" y2="19"></line>
+        <line x1="5" y1="12" x2="19" y2="12"></line>
+      </svg>
+    </button>
+  </div>
+
   <main class="browser-content">
     <div class="empty-state" id="empty-state">
       <div id="canvas-container" class="empty-video-bg"></div>
@@ -286,6 +413,28 @@
           Your gateway to freedom. Enter a URL or search query above to break
           free from restrictions.
         </div>
+
+        <div class="ai-shortcuts">
+          <div class="ai-shortcut" onclick="window.loadUrlInProxy('https://gemini.google.com')">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3 4-3 9-3 9 1.34 9 3Z"></path>
+              <path d="M12 15v6"></path>
+              <path d="M12 3v6"></path>
+            </svg>
+            Google Gemini
+          </div>
+          <div class="ai-shortcut" onclick="window.loadUrlInProxy('https://chatgpt.com')">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <path d="M12 16v-4"></path>
+              <path d="M12 8h.01"></path>
+            </svg>
+            ChatGPT
+          </div>
+        </div>
+
         <p id="sj-error" style="
               color: #ff6b6b;
               margin-top: 20px;

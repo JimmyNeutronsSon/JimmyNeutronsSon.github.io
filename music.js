@@ -1,6 +1,6 @@
 // Welkin Music Player Essentials
 (function () {
-  const MUSIC_API = "https://jiosaavn-api-privatecvc2.vercel.app";
+  const MUSIC_API = "https://jiosaavn.rajputhemant.dev";
   let currentSongs = [];
   let currentIndex = -1;
   let repeatMode = 0; // 0: None, 1: Repeat All, 2: Repeat One
@@ -248,130 +248,7 @@
         </div>
     `;
 
-  const sidebarWidgetHTML = `
-        <div class="sidebar-widget-inner" id="sidebar-widget-inner">
-            <div class="sw-details">
-                <div class="sw-title" id="sw-title">Welkin Music</div>
-                <div class="sw-artist" id="sw-artist">Select a song <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path></svg></div>
-            </div>
-            
-            <div class="sw-controls">
-                <button class="sw-btn" id="sw-prev"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="19 20 9 12 19 4 19 20"></polygon><line x1="5" y1="19" x2="5" y2="5"></line></svg></button>
-                <button class="sw-btn sw-play" id="sw-playpause">
-                    <svg id="sw-play-icon" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
-                    <svg id="sw-pause-icon" style="display:none" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
-                </button>
-                <button class="sw-btn" id="sw-next"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 4 15 12 5 20 5 4"></polygon><line x1="19" y1="5" x2="19" y2="19"></line></svg></button>
-            </div>
-            
-            <div class="sw-progress-wrap">
-                <span class="sw-time" id="sw-time-el">0:00</span>
-                <div class="sw-progress" id="sw-progress-bg">
-                    <div class="sw-progress-fill" id="sw-progress-fill"></div>
-                </div>
-                <span class="sw-time" id="sw-time-total-el">-0:00</span>
-            </div>
-            
-            <div class="sw-right-controls">
-                <button class="sw-btn" id="sw-repeat" style="margin-right:4px; opacity:0.5;" title="Repeat"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 1l4 4-4 4"></path><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><path d="M7 23l-4-4 4-4"></path><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg></button>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
-                <input type="range" class="sw-vol" id="sw-vol" min="0" max="1" step="0.01" value="1">
-                <button class="sw-expand" id="sw-expand"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"></path></svg></button>
-            </div>
-        </div>
-    `;
 
-  function initSidebarWidget() {
-    const swContainer = document.getElementById("sidebar-music-widget");
-    if (swContainer && !swContainer.querySelector(".sidebar-widget-inner")) {
-      swContainer.innerHTML = sidebarWidgetHTML;
-      swContainer.style.display = "block";
-      attachSidebarWidgetListeners();
-    }
-  }
-
-  const observer = new MutationObserver(() => {
-    initSidebarWidget();
-  });
-  if (document.documentElement) {
-    observer.observe(document.documentElement, {
-      childList: true,
-      subtree: true,
-    });
-    initSidebarWidget();
-  }
-
-  function attachSidebarWidgetListeners() {
-    const musicToggle = document.getElementById("music-toggle");
-    if (musicToggle) {
-      musicToggle.addEventListener("click", (e) => {
-        e.preventDefault();
-        if (window.toggleMusic) window.toggleMusic();
-        if (window.closeSidebar) window.closeSidebar();
-      });
-    }
-
-    const swExpand = document.getElementById("sw-expand");
-    if (swExpand) {
-      swExpand.onclick = () => {
-        if (window.closeSidebar) window.closeSidebar();
-        document.getElementById("music-overlay")?.classList.add("open");
-      };
-    }
-
-    const swPlayPause = document.getElementById("sw-playpause");
-    const swNext = document.getElementById("sw-next");
-    const swPrev = document.getElementById("sw-prev");
-    const swVol = document.getElementById("sw-vol");
-    const swProgressBg = document.getElementById("sw-progress-bg");
-
-    if (swPlayPause) {
-      swPlayPause.onclick = () => {
-        if (!audio.src) return;
-        if (audio.paused) {
-          audio.play();
-          window.__updateSwPlayIcon(true);
-        } else {
-          audio.pause();
-          window.__updateSwPlayIcon(false);
-        }
-      };
-    }
-    if (swNext) {
-      swNext.onclick = () => {
-        if (currentIndex < currentSongs.length - 1) {
-          window.__playSong(currentIndex + 1);
-        }
-      };
-    }
-    if (swPrev) {
-      swPrev.onclick = () => {
-        if (currentIndex > 0) {
-          window.__playSong(currentIndex - 1);
-        }
-      };
-    }
-
-    if (swVol) {
-      swVol.oninput = (e) => {
-        audio.volume = e.target.value;
-      };
-    }
-
-    if (swProgressBg) {
-      swProgressBg.onclick = (e) => {
-        const width = swProgressBg.clientWidth;
-        const clickX = e.offsetX;
-        if (audio.duration)
-          audio.currentTime = (clickX / width) * audio.duration;
-      };
-    }
-
-    const swRepeat = document.getElementById("sw-repeat");
-    if (swRepeat) {
-      swRepeat.onclick = () => window.__toggleRepeat();
-    }
-  }
 
   document.addEventListener("DOMContentLoaded", () => {
     document.body.insertAdjacentHTML("beforeend", playerHTML);

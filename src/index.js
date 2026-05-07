@@ -255,6 +255,12 @@ fastify.get("/api/tmdb/tv/:id", (req, reply) => {
 });
 
 fastify.register(fastifyStatic, {
+  root: join(publicPath, "memusic-webplayer", "dist"),
+  prefix: "/memusic-webplayer/",
+  decorateReply: false,
+});
+
+fastify.register(fastifyStatic, {
   root: publicPath,
   decorateReply: true,
 });
