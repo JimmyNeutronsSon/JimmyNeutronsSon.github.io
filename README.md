@@ -5,18 +5,18 @@ A modern, all-in-one web platform combining streaming, browsing, gaming, and AI 
 ## Features
 
 - **Cinema** — Stream movies and TV shows with automatic server fallback
-- **Browser** — Web proxy with Scramjet for bypassing restrictions
-- **Music** — Stream music with Saavn integration
-- **Games** — Retro bowl and puzzle games
-- **AI Assistant** — NVIDIA NIM-powered chat assistant
-- **Soundboard** — Audio clips and sound effects
+- **Browser** — Web proxy with Scramjet for bypassing restrictions, featuring a multi-tab architecture and instant AI shortcuts (ChatGPT, Gemini, Claude)
+- **Music** — A beautiful, React-based Music Webplayer (`memusic-webplayer`) featuring global proxy-routing, JioSaavn integration, rotating hero albums, and lyrics syncing
+- **Games Vault** — Over 1,600+ proxy-ready HTML games, Flash emulators, and Retro Bowl setups all served locally from the `vault/` directory
+- **AI Assistant** — NVIDIA NIM-powered chat assistant natively integrated
+- **Soundboard** — Audio clips and sound effects via the Gamebar
 
 ## Tech Stack
 
-- **Frontend**: Vanilla JS, HTML5, CSS3
+- **Frontend**: Vanilla JS, HTML5, CSS3, React.js (for Music), TailwindCSS
 - **Backend**: Fastify (Node.js)
 - **Proxy**: Scramjet + Wisp + BareMux
-- **APIs**: TMDB, Saavn, NVIDIA NIM
+- **APIs**: TMDB, JioSaavn, NVIDIA NIM
 
 ## Quick Start
 
@@ -26,6 +26,12 @@ git clone https://github.com/JimmyNeutronsSon/JimmyNeutronsSon.github.io.git
 cd JimmyNeutronsSon.github.io
 npm install
 
+# Build the Music Webplayer
+cd memusic-webplayer
+npm install
+npm run build
+cd ..
+
 # Add TMDB API key
 echo TMDB_API_KEY=your_key_here > .env
 
@@ -33,7 +39,7 @@ echo TMDB_API_KEY=your_key_here > .env
 npm start
 ```
 
-Server runs at `http://localhost:8080`
+Server runs at `http://localhost:8080` (or `5000` by default).
 
 ## Streaming Sources
 
@@ -46,19 +52,21 @@ Automatically tries multiple sources with fallback:
 1. Fork this repo
 2. Create new Web Service on Render
 3. Add environment variable: `TMDB_API_KEY`
-4. Deploy — auto-detects `render.yaml`
+4. The backend server automatically serves the React webplayer `dist/` directory without complex routing setups.
+5. Deploy — auto-detects `render.yaml`
 
 ## Project Structure
 
 ```
-├── src/index.js          # Fastify server
-├── movies.js             # Cinema logic
-├── browse.js             # Proxy browser
-├── music.js              # Music streaming
-├── ai.js                 # AI assistant
-├── sw.js                 # Service worker (Scramjet)
-├── render.yaml           # Render config
-└── .env                  # API keys (gitignored)
+├── src/index.js                 # Fastify backend server
+├── memusic-webplayer/           # React codebase for Music
+├── vault/                       # 1,600+ game files and emulators
+├── movies.js                    # Cinema logic
+├── browse.js                    # Proxy browser with tabs
+├── ai.js                        # AI assistant
+├── sw.js                        # Service worker (Scramjet)
+├── render.yaml                  # Render config
+└── .env                         # API keys (gitignored)
 ```
 
 ## License
