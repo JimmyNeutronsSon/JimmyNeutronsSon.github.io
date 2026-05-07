@@ -19,7 +19,11 @@ document.addEventListener('DOMContentLoaded', () => {
   // ── Cycle Landing Phrases ─────────────────────────
   const phrases = [
     "Atharva Joshi is a cutie",
-    "Basketball > Soccer"
+    "Basketball > Soccer",
+    "Robert squirt on dirt",
+    "USE WELKIN LITE",
+    "Prateek peeks at cheeks"
+     
   ];
   let currentPhraseIndex = 0;
   const heroSub = document.getElementById('hero-sub');
