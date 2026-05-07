@@ -6,10 +6,12 @@ A modern, all-in-one web platform combining streaming, browsing, gaming, and AI 
 
 - **Cinema** — Stream movies and TV shows with automatic server fallback
 - **Browser** — Web proxy with Scramjet for bypassing restrictions, featuring a multi-tab architecture and instant AI shortcuts (ChatGPT, Gemini, Claude)
-- **Music** — A beautiful, React-based Music Webplayer (`memusic-webplayer`) featuring global proxy-routing, JioSaavn integration, rotating hero albums, and lyrics syncing
-- **Games Vault** — Over 1,600+ proxy-ready HTML games, Flash emulators, and Retro Bowl setups all served locally from the `vault/` directory
+- **Music** — A beautiful, React-based Music Webplayer (`memusic-webplayer`) featuring global proxy-routing, JioSaavn integration, rotating 3D hero albums (carousel) at a 2s interval, and proxied synced lyrics via LRCLIB
+- **Games Vault** — Over 1,600+ proxy-ready HTML games, Flash emulators, and Retro Bowl setups all served locally from the `vault/` directory. Games now launch in dedicated Gamebar popups for a seamless multi-tasking experience.
 - **AI Assistant** — NVIDIA NIM-powered chat assistant natively integrated
 - **Soundboard** — Audio clips and sound effects via the Gamebar
+- **Mini-Player** — Specialized compact mode for the music player when used within the Gamebar, now featuring an integrated search bar
+- **Bookmarklet Overlay** — A portable "Game Bar" that can be injected into any website by dragging the cloud icon on the landing page to your bookmarks bar
 
 ## Tech Stack
 

@@ -537,7 +537,7 @@
     container.style.height = "100%";
     container.style.background = "#0B1E3D";
     container.innerHTML = `
-      <iframe src="/memusic-webplayer/dist/index.html?no_sidebar=true" style="width:100%; height:100%; border:none;"></iframe>
+      <iframe src="/memusic-webplayer/dist/index.html?no_sidebar=true&mini=true" style="width:100%; height:100%; border:none;"></iframe>
     `;
   };
 

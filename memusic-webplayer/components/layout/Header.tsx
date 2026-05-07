@@ -41,7 +41,8 @@ const GlobalSearchBar: React.FC<{
     onSearch: (query: string) => void;
     searchHistory: string[];
     setAppState: (updater: (draft: AppState) => void) => void;
-}> = ({ onSearch, searchHistory, setAppState }) => {
+    isMini?: boolean;
+}> = ({ onSearch, searchHistory, setAppState, isMini }) => {
     const { t } = useTranslation();
     const [query, setQuery] = React.useState('');
     const [isFocused, setIsFocused] = React.useState(false);
@@ -97,15 +98,15 @@ const GlobalSearchBar: React.FC<{
                         onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleSearch(query); } }} 
                         onFocus={() => setIsFocused(true)} 
                         placeholder={t('search.placeholder')} 
-                        className={`w-full py-4 pl-14 pr-12 rounded-2xl text-lg font-medium placeholder-gray-500 text-white border transition-all duration-300 shadow-lg
+                        className={`w-full ${isMini ? 'py-2 pl-10 pr-8 text-sm' : 'py-4 pl-14 pr-12 text-lg'} font-medium placeholder-gray-500 text-white border transition-all duration-300 shadow-lg rounded-2xl
                             ${isFocused 
                                 ? 'bg-[#0B1E3D] border-[#3A8FE0]/30 shadow-[0_10px_40px_-10px_rgba(58,143,224,0.2)]' 
                                 : 'bg-[#0B1E3D] border-white/5 hover:bg-[#202020] hover:border-white/10'
                             }
                         `}
                     />
-                    <div className={`absolute inset-y-0 left-0 flex items-center pl-5 pointer-events-none transition-colors duration-300 ${isFocused ? 'text-[#3A8FE0]' : 'text-gray-400'}`}>
-                        <SearchIcon className="h-6 w-6" />
+                    <div className={`absolute inset-y-0 left-0 flex items-center ${isMini ? 'pl-3' : 'pl-5'} pointer-events-none transition-colors duration-300 ${isFocused ? 'text-[#3A8FE0]' : 'text-gray-400'}`}>
+                        <SearchIcon className={`${isMini ? 'h-4 w-4' : 'h-6 w-6'}`} />
                     </div>
                     {query && (
                         <button 
@@ -150,10 +151,21 @@ interface HeaderProps {
     canGoBack: boolean; canGoForward: boolean; goBack: () => void; goForward: () => void;
     onSearch: (query: string) => void; activeView: View; setActiveView: (view: View) => void;
     searchHistory: string[]; setAppState: (updater: (draft: AppState) => void) => void;
+    isMini?: boolean;
 }
 
-export const Header: React.FC<HeaderProps> = ({ canGoBack, canGoForward, goBack, goForward, onSearch, setActiveView, searchHistory, setAppState }) => {
+export const Header: React.FC<HeaderProps> = ({ canGoBack, canGoForward, goBack, goForward, onSearch, setActiveView, searchHistory, setAppState, isMini }) => {
     const { imageUrl } = React.useContext(ProfileContext);
+
+    if (isMini) {
+        return (
+            <header className="h-16 bg-[#0B1E3D]/90 backdrop-blur-xl px-4 flex items-center gap-4 z-40 flex-shrink-0 border-b border-white/5">
+                <div className="flex-1 min-w-0">
+                    <GlobalSearchBar onSearch={onSearch} searchHistory={searchHistory} setAppState={setAppState} isMini={true} />
+                </div>
+            </header>
+        );
+    }
 
     return (
         <header className="h-24 bg-[#0B1E3D]/80 backdrop-blur-xl px-4 flex items-center gap-6 z-40 flex-shrink-0 border-b border-white/5 md:grid md:grid-cols-[16rem_1fr_auto] md:px-8 shadow-sm">

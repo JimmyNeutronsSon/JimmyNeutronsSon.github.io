@@ -1,4 +1,4 @@
-import React, { Component, useState, useContext, useEffect, ReactNode, useCallback, lazy, Suspense, ErrorInfo } from 'react';
+import React, { Component, useState, useContext, useEffect, ReactNode, useCallback, useMemo, lazy, Suspense, ErrorInfo } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { Sidebar } from './components/layout/Sidebar';
 import { Player } from './components/layout/Player';
@@ -150,6 +150,8 @@ const MainApp: React.FC<MainAppProps> = ({ searchHistory, setAppState }) => {
   const [modalContent, setModalContent] = useState<{ title?: string; content: ReactNode; size?: 'md' | 'lg' | 'xl'; } | null>(null);
   const { t } = useTranslation();
   const [wasInParty, setWasInParty] = useState(false);
+  const isMini = useMemo(() => new URLSearchParams(window.location.search).get('mini') === 'true', []);
+
 
   useEffect(() => {
     if (partyState && !wasInParty) {
@@ -257,9 +259,10 @@ const MainApp: React.FC<MainAppProps> = ({ searchHistory, setAppState }) => {
             setActiveView={changeView}
             searchHistory={searchHistory}
             setAppState={setAppState}
+            isMini={isMini}
           />
           <div className="flex flex-1 overflow-hidden relative">
-              <Sidebar activeView={currentViewEntry.view} setActiveView={changeView} navigateToPlaylist={navigateToPlaylist} />
+              {!isMini && <Sidebar activeView={currentViewEntry.view} setActiveView={changeView} navigateToPlaylist={navigateToPlaylist} />}
               
               <div className="relative flex-1 flex flex-col overflow-hidden min-w-0">
                   <main className="flex-1 overflow-y-auto custom-scrollbar pb-36 md:pb-0 relative z-0">
@@ -282,7 +285,7 @@ const MainApp: React.FC<MainAppProps> = ({ searchHistory, setAppState }) => {
                 <Player navigateToArtist={navigateToArtist} />
               </div>
           </div>
-           <BottomNavBar activeView={currentViewEntry.view} setActiveView={changeView} />
+          {!isMini && <BottomNavBar activeView={currentViewEntry.view} setActiveView={changeView} />}
         </div>
         <EphemeralReactions />
         

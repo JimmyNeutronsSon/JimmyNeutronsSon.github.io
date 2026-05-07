@@ -1,4 +1,6 @@
 
+import { wrapUrl } from './jioSaavnApi';
+
 interface LrcLibResponse {
   id: number;
   trackName: string;
@@ -23,7 +25,7 @@ export const getSyncedLyrics = async (
     url.searchParams.append('album_name', albumName);
     url.searchParams.append('duration', duration.toString());
 
-    const response = await fetch(url.toString());
+    const response = await fetch(wrapUrl(url.toString()));
     
     if (!response.ok) {
       throw new Error(`Lyrics not found: ${response.status}`);
@@ -35,7 +37,7 @@ export const getSyncedLyrics = async (
         const searchUrl = new URL('https://lrclib.net/api/search');
         searchUrl.searchParams.append('q', `${trackName} ${artistName}`);
         
-        const searchRes = await fetch(searchUrl.toString());
+        const searchRes = await fetch(wrapUrl(searchUrl.toString()));
         if (!searchRes.ok) throw error;
         
         const searchData = await searchRes.json();
