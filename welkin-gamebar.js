@@ -352,6 +352,7 @@
     win.style.display = "flex";
   };
   // launchWgGame is now called directly via addEventListener, no global needed
+  window.launchWgGame = launchWgGame;
 
   const buildProxy = (container) => {
     container.style.display = "flex";

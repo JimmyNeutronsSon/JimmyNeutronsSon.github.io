@@ -211,6 +211,12 @@ function setFilterLogic(el, genre) {
 }
 
 function launchGame(name, url) {
+  // If we are inside the Welkin Game Bar, use its window manager
+  if (window.parent && typeof window.parent.launchWgGame === 'function') {
+    window.parent.launchWgGame(url, name);
+    return;
+  }
+
   const modal = document.getElementById('gameModal');
   const iframe = document.getElementById('gameIframe');
   const title = document.getElementById('modalTitle');
