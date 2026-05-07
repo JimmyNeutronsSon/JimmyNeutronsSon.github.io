@@ -14,8 +14,21 @@
 
   const wrapUrl = (url) => {
     if (!url) return "";
-    const proxyBase = "https://welkin.blueshadows.cl/proxy";
-    return `${proxyBase}?url=${encodeURIComponent(url)}`;
+    const WELKIN_DOMAIN = "https://welkin.blueshadows.cl";
+
+    // If it's a relative path, make it absolute against the Welkin domain
+    if (!url.startsWith("http") && !url.startsWith("//") && !url.startsWith("data:")) {
+      return WELKIN_DOMAIN + (url.startsWith("/") ? "" : "/") + url;
+    }
+
+    // Only proxy external absolute URLs to avoid breaking local Welkin paths
+    if (url.startsWith("http") || url.startsWith("//")) {
+      // Don't proxy if it's already a Welkin domain URL to save overhead
+      if (url.includes("welkin.blueshadows.cl") || url.includes("localhost")) return url;
+      const proxyBase = WELKIN_DOMAIN + "/proxy";
+      return `${proxyBase}?url=${encodeURIComponent(url)}`;
+    }
+    return url;
   };
 
   const root = document.createElement("div");
