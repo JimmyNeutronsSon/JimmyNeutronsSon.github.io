@@ -310,17 +310,20 @@ fastify.get("/health", async (request, reply) => {
 });
 
 // ── NVIDIA NIM Proxy Route ───────────────────────────
-const NVIDIA_API_KEY =
+const DEFAULT_NVIDIA_API_KEY =
   "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";
 const NVIDIA_API_URL = "https://integrate.api.nvidia.com/v1/chat/completions";
 
 fastify.post("/api/nim", async (request, reply) => {
   try {
+    const userApiKey = request.headers.authorization;
+    const apiKey = userApiKey || `Bearer ${DEFAULT_NVIDIA_API_KEY}`;
+    
     const res = await fetch(NVIDIA_API_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${NVIDIA_API_KEY}`,
+        Authorization: apiKey,
       },
       body: JSON.stringify(request.body),
     });
@@ -336,6 +339,24 @@ fastify.post("/api/nim", async (request, reply) => {
     return reply.code(500).send({ error: "Proxy error" });
   }
 });
+
+fastify.post("/api/gemini", async (request, reply) => {
+  try {
+    const { model, key, contents } = request.body;
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`;
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ contents }),
+    });
+    const data = await res.json();
+    return reply.code(res.status).send(data);
+  } catch (err) {
+    console.error("Gemini Proxy Error:", err);
+    return reply.code(500).send({ error: "Proxy error" });
+  }
+});
+
 
 fastify.setNotFoundHandler((res, reply) => {
   return reply.code(404).type("text/html").sendFile("404.html");
