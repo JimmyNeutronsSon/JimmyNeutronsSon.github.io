@@ -1,19 +1,26 @@
 <!doctype html>
 <html lang="en">
-
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Not Sophisticated</title>
-  <link rel="icon" type="image/x-icon" href="/warning-hazard-sign-on-transparent-background-free-png.ico" />
-  <meta name="description"
-    content="Welkin is dedicated to giving you the best experience at school. Surf the web freely and play games without restrictions." />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
-    rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=3" />
-  <script type="importmap">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Not Sophisticated</title>
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="/warning-hazard-sign-on-transparent-background-free-png.ico"
+    />
+    <meta
+      name="description"
+      content="Welkin is dedicated to giving you the best experience at school. Surf the web freely and play games without restrictions."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css?v=3" />
+    <script type="importmap">
       {
         "imports": {
           "three": "/lib/three.module.js",
@@ -21,130 +28,157 @@
         }
       }
     </script>
-  <style>
-    .hero {
-      flex: 1;
-    }
+    <style>
+      .hero {
+        flex: 1;
+      }
 
-    .btn-music-flash {
-      background: rgba(255, 255, 255, 0.05) !important;
-      backdrop-filter: blur(10px) !important;
-      -webkit-backdrop-filter: blur(10px) !important;
-      color: white !important;
-      border: 1px solid rgba(255, 255, 255, 0.2) !important;
-      font-weight: 800 !important;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-      transition: all 0.3s ease-in-out !important;
-    }
+      .btn-music-flash {
+        background: rgba(255, 255, 255, 0.05) !important;
+        backdrop-filter: blur(10px) !important;
+        -webkit-backdrop-filter: blur(10px) !important;
+        color: white !important;
+        border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        font-weight: 800 !important;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        transition: all 0.3s ease-in-out !important;
+      }
 
-    .btn-music-flash:hover {
-      background: rgba(255, 255, 255, 0.1) !important;
-      border-color: rgba(255, 255, 255, 0.4) !important;
-    }
-  </style>
-</head>
+      .btn-music-flash:hover {
+        background: rgba(255, 255, 255, 0.1) !important;
+        border-color: rgba(255, 255, 255, 0.4) !important;
+      }
+    </style>
+  </head>
 
-<body>
-  <!-- ═══════════════════════════════════════════════ -->
-  <!-- HERO SECTION (HOME PAGE CONTENT)              -->
-  <!-- ═══════════════════════════════════════════════ -->
-  <section class="hero" id="hero">
-    <div class="hero-bg" id="canvas-container"></div>
-    <div class="hero-content">
-      <div class="hero-badge" id="hero-badge">
-        <span class="badge-dot"></span>
-        <span id="online-counter">Currently Online: --</span>
-      </div>
-      <h1 class="hero-heading" id="hero-heading">Welkin.</h1>
-      <p class="hero-sub landing-phrases" id="hero-sub" style="transition: opacity 0.5s ease; min-height: 2em">
-        Kanye the GOAT
-      </p>
-      <div class="hero-ctas" id="hero-ctas" style="flex-direction: column; align-items: center; gap: 1rem">
-        <div style="display: flex; gap: 1rem">
-          <a href="/browse.html" class="btn btn-primary" id="btn-surf">
-            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-              stroke-linecap="round" stroke-linejoin="round">
-              <line x1="7" y1="17" x2="17" y2="7" />
-              <polyline points="7 7 17 7 17 17" />
-            </svg>
-            Surf the Web
-          </a>
-          <a href="/games_dashboard.html" class="btn btn-outline" id="btn-games">Play Games</a>
-          <a href="/memusic-webplayer/dist/index.html" class="btn btn-music-flash" id="btn-music">Listen to Music</a>
+  <body>
+    <!-- ═══════════════════════════════════════════════ -->
+    <!-- HERO SECTION (HOME PAGE CONTENT)              -->
+    <!-- ═══════════════════════════════════════════════ -->
+    <section class="hero" id="hero">
+      <div class="hero-bg" id="canvas-container"></div>
+      <div class="hero-content">
+        <div class="hero-badge" id="hero-badge">
+          <span class="badge-dot"></span>
+          <span id="online-counter">Currently Online: --</span>
         </div>
-        <a href="#" class="btn btn-outline" id="btn-bookmarklet" style="
+        <h1 class="hero-heading" id="hero-heading">Welkin.</h1>
+        <p
+          class="hero-sub landing-phrases"
+          id="hero-sub"
+          style="transition: opacity 0.5s ease; min-height: 2em"
+        >
+          Kanye the GOAT
+        </p>
+        <div
+          class="hero-ctas"
+          id="hero-ctas"
+          style="flex-direction: column; align-items: center; gap: 1rem"
+        >
+          <div style="display: flex; gap: 1rem">
+            <a href="/browse.html" class="btn btn-primary" id="btn-surf">
+              <svg
+                class="btn-icon"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <line x1="7" y1="17" x2="17" y2="7" />
+                <polyline points="7 7 17 7 17 17" />
+              </svg>
+              Surf the Web
+            </a>
+            <a
+              href="/games_dashboard.html"
+              class="btn btn-outline"
+              id="btn-games"
+              >Play Games</a
+            >
+            <a
+              href="/memusic-webplayer/dist/index.html"
+              class="btn btn-music-flash"
+              id="btn-music"
+              >Listen to Music</a
+            >
+          </div>
+          <a
+            href="#"
+            class="btn btn-outline"
+            id="btn-bookmarklet"
+            style="
               cursor: grab;
               border-color: rgba(59, 130, 246, 0.5);
               color: #fff;
               padding: 0.5rem 1rem;
               font-size: 13px;
-            " title="Drag me to your bookmarks bar!">☁️</a>
+            "
+            title="Drag me to your bookmarks bar!"
+            >☁️</a
+          >
+        </div>
       </div>
-    </div>
-    <div class="scroll-indicator" id="scroll-indicator">
-      <div class="scroll-line"></div>
-    </div>
-  </section>
+      <div class="scroll-indicator" id="scroll-indicator">
+        <div class="scroll-line"></div>
+      </div>
+    </section>
 
-  <footer id="footer">
-    <div class="footer-inner">
-      <span class="footer-logo">Welkin<span class="logo-dot">.</span></span>
-      <span class="footer-copy">&copy; 2026 Welkin. All rights reserved.</span>
-    </div>
-  </footer>
+    <footer id="footer">
+      <div class="footer-inner">
+        <span class="footer-logo">Welkin<span class="logo-dot">.</span></span>
+        <span class="footer-copy"
+          >&copy; 2026 Welkin. All rights reserved.</span
+        >
+      </div>
+    </footer>
 
-  <!-- Persistent Music Player (injected by music.js) -->
+    <!-- Persistent Music Player (injected by music.js) -->
 
-  <script type="module" src="3d-cloud.js"></script>
-  <script>
-    (function () {
-      const counter = document.getElementById("online-counter");
-      const isLocalhost =
-        window.location.hostname === "localhost" ||
-        window.location.hostname === "127.0.0.1";
+    <script type="module" src="3d-cloud.js"></script>
+    <script>
+      (function () {
+        const counter = document.getElementById("online-counter");
+        const isLocalhost =
+          window.location.hostname === "localhost" ||
+          window.location.hostname === "127.0.0.1";
 
-      if (isLocalhost) {
-        counter.textContent = "Currently Online: 1";
-      } else {
-        const siteId = window.location.hostname;
-        const wsUrl = `wss://liveuser.cmliussss.com/ws?siteId=${siteId}`;
-        let ws;
+        if (isLocalhost) {
+          counter.textContent = "Currently Online: 1";
+        } else {
+          const ns = "welkin-online-" + window.location.hostname;
 
-        function connect() {
-          ws = new WebSocket(wsUrl);
+          function updateCount() {
+            fetch(`https://api.countapi.xyz/get/${ns}/count`)
+              .then((res) => res.json())
+              .then((data) => {
+                counter.textContent = "Currently Online: " + data.value;
+              })
+              .catch(() => {
+                fetch(
+                  `https://api.countapi.xyz/create/${ns}/count?enable_reset=0&update_upperbound=1000`,
+                )
+                  .then((res) => res.json())
+                  .then((data) => {
+                    counter.textContent = "Currently Online: " + data.value;
+                  });
+              });
+          }
 
-          ws.onopen = () => {
-            console.log("Connected to LiveUser");
-          };
-
-          ws.onmessage = (event) => {
-            const data = JSON.parse(event.data);
-            if (data.online !== undefined) {
-              counter.textContent = "Currently Online: " + data.online;
-            }
-          };
-
-          ws.onclose = () => {
-            setTimeout(connect, 3000);
-          };
-
-          ws.onerror = () => {
-            ws.close();
-          };
+          fetch(`https://api.countapi.xyz/hit/${ns}/count`);
+          updateCount();
+          setInterval(updateCount, 15000);
         }
-
-        connect();
-      }
-    })();
-  </script>
-  <script src="main.js"></script>
-  <script src="music.js"></script>
-  <script src="music_v2.js"></script>
-  <script src="sidebar.js"></script>
-  <script src="youtube.js"></script>
-  <script src="/ai.js"></script>
-</body>
-
+      })();
+    </script>
+    <script src="main.js"></script>
+    <script src="music.js"></script>
+    <script src="music_v2.js"></script>
+    <script src="sidebar.js"></script>
+    <script src="youtube.js"></script>
+    <script src="/ai.js"></script>
+  </body>
 </html>
