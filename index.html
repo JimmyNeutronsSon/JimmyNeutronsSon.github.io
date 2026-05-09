@@ -155,21 +155,26 @@
             fetch(`https://api.countapi.xyz/get/${ns}/count`)
               .then((res) => res.json())
               .then((data) => {
-                counter.textContent = "Currently Online: " + data.value;
+                counter.textContent = "Currently Online: " + (data.value || 1);
               })
-              .catch(() => {
+              .catch((e) => {
+                console.log("CountAPI error:", e);
                 fetch(
                   `https://api.countapi.xyz/create/${ns}/count?enable_reset=0&update_upperbound=1000`,
                 )
                   .then((res) => res.json())
                   .then((data) => {
-                    counter.textContent = "Currently Online: " + data.value;
+                    counter.textContent =
+                      "Currently Online: " + (data.value || 1);
+                  })
+                  .catch(() => {
+                    counter.textContent = "Currently Online: 1";
                   });
               });
           }
 
-          fetch(`https://api.countapi.xyz/hit/${ns}/count`);
-          updateCount();
+          fetch(`https://api.countapi.xyz/hit/${ns}/count`).catch(() => {});
+          setTimeout(updateCount, 1000);
           setInterval(updateCount, 15000);
         }
       })();
