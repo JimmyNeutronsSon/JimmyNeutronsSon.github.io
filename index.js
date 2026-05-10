@@ -355,7 +355,10 @@ function initSocketIO() {
 
 	io.on("connection", (socket) => {
 		onlineCount++;
-		io.emit("online-count", onlineCount);
+		// Send current count to the newly connected client immediately
+		socket.emit("online-count", onlineCount);
+		// Broadcast updated count to everyone else
+		socket.broadcast.emit("online-count", onlineCount);
 
 		socket.on("disconnect", () => {
 			onlineCount--;
