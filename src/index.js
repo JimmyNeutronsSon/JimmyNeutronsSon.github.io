@@ -6,6 +6,7 @@ import { hostname } from "node:os";
 import { server as wisp, logging } from "@mercuryworkshop/wisp-js/server";
 import Fastify from "fastify";
 import fastifyStatic from "@fastify/static";
+import { Server as SocketIOServer } from "socket.io";
 
 import { scramjetPath } from "@mercuryworkshop/scramjet/path";
 import { libcurlPath } from "@mercuryworkshop/libcurl-transport";
@@ -13,7 +14,6 @@ import { baremuxPath } from "@mercuryworkshop/bare-mux/node";
 
 const publicPath = fileURLToPath(new URL("../", import.meta.url));
 
-/** TMDB "API Read Access Token" (JWT) uses Bearer; v3 API Key uses ?api_key= */
 function tmdbCredentialIsBearer(token) {
   if (!token || typeof token !== "string") return false;
   const parts = token.trim().split(".");
@@ -26,7 +26,6 @@ function base64UrlToUtf8(b64url) {
   return Buffer.from(b64 + "=".repeat(pad), "base64").toString("utf8");
 }
 
-/** `aud` from JWT payload (same as v3 API Key on the dashboard) */
 function tmdbJwtAud(token) {
   try {
     const parts = token.trim().split(".");
@@ -38,10 +37,6 @@ function tmdbJwtAud(token) {
   }
 }
 
-/**
- * Some `.env` lines accidentally append the v3 API Key after the JWT signature
- * (duplicate of `aud`). That breaks Bearer auth → 401. Strip that suffix.
- */
 function normalizeTmdbJwt(token) {
   const trimmed = token.trim();
   const parts = trimmed.split(".");
@@ -52,7 +47,6 @@ function normalizeTmdbJwt(token) {
   return `${parts[0]}.${parts[1]}.${sig}`;
 }
 
-/** Optional project-root `.env` (TMDB_API_KEY=...) without extra dependencies */
 function loadEnvFile() {
   try {
     const p = join(publicPath, ".env");
@@ -81,28 +75,13 @@ loadEnvFile();
 
 const TMDB_API = "https://api.themoviedb.org/3";
 const TMDB_IMG_SIZES = new Set([
-  "w92",
-  "w154",
-  "w185",
-  "w342",
-  "w500",
-  "w780",
-  "w1280",
-  "original",
+  "w92", "w154", "w185", "w342", "w500", "w780", "w1280", "original",
 ]);
 
-/**
- * COOP + COEP (cross-origin isolation) is required for the in-browser proxy
- * stack on browse.html (e.g. SharedArrayBuffer / WASM). Applying it site-wide
- * breaks normal pages: cross-origin images (TMDB), iframes (Vidking), etc.
- * respond with ERR_BLOCKED_BY_RESPONSE under require-corp.
- */
 function needsCrossOriginIsolation(urlPath) {
   const path = urlPath.split("?")[0];
   return path === "/browse.html";
 }
-
-// Wisp Configuration: Refer to the documentation at https://www.npmjs.com/package/@mercuryworkshop/wisp-js
 
 logging.set_level(logging.NONE);
 Object.assign(wisp.options, {
@@ -123,7 +102,7 @@ const fastify = Fastify({
       })
       .on("upgrade", (req, socket, head) => {
         if (req.url.endsWith("/wisp/")) wisp.routeRequest(req, socket, head);
-        else socket.end();
+        else if (!req.url.startsWith("/socket.io/")) socket.end();
       });
   },
 });
@@ -135,14 +114,12 @@ function applyTmdbQuery(u, query) {
   }
 }
 
-// ── TMDB API proxy (key stays on server) — see https://developer.themoviedb.org/reference/getting-started
 async function tmdbForward(relPath, query, reply) {
   const raw = process.env.TMDB_API_KEY?.trim();
   if (!raw) {
     return reply.code(503).send({
       ok: false,
-      error:
-        "TMDB_API_KEY is not set. Add it to a .env file in the project root or your environment. Get a key at https://developer.themoviedb.org/",
+      error: "TMDB_API_KEY is not set.",
     });
   }
 
@@ -177,23 +154,14 @@ async function tmdbForward(relPath, query, reply) {
   return reply.code(res.status).type(ct).send(buf);
 }
 
-/** Same-origin TMDB images (avoids COEP / CORP issues with image.tmdb.org) */
 fastify.get("/api/img/tmdb", async (request, reply) => {
-  const imgPath = Array.isArray(request.query.path)
-    ? request.query.path[0]
-    : request.query.path;
+  const imgPath = Array.isArray(request.query.path) ? request.query.path[0] : request.query.path;
   const sizeRaw = request.query.size || "w500";
   const size = Array.isArray(sizeRaw) ? sizeRaw[0] : sizeRaw;
-  if (
-    typeof imgPath !== "string" ||
-    !imgPath.startsWith("/") ||
-    imgPath.includes("..")
-  ) {
+  if (typeof imgPath !== "string" || !imgPath.startsWith("/") || imgPath.includes("..")) {
     return reply.code(400).send("Invalid path");
   }
-  if (!TMDB_IMG_SIZES.has(String(size))) {
-    return reply.code(400).send("Invalid size");
-  }
+  if (!TMDB_IMG_SIZES.has(String(size))) return reply.code(400).send("Invalid size");
   const url = `https://image.tmdb.org/t/p/${size}${imgPath}`;
   const res = await fetch(url);
   if (!res.ok) return reply.code(res.status).send();
@@ -205,81 +173,34 @@ fastify.get("/api/img/tmdb", async (request, reply) => {
     .send(Buffer.from(await res.arrayBuffer()));
 });
 
-fastify.get("/api/tmdb/trending/movie/day", (req, reply) =>
-  tmdbForward("/trending/movie/day", req.query, reply),
-);
-fastify.get("/api/tmdb/trending/tv/day", (req, reply) =>
-  tmdbForward("/trending/tv/day", req.query, reply),
-);
-fastify.get("/api/tmdb/movie/popular", (req, reply) =>
-  tmdbForward("/movie/popular", req.query, reply),
-);
-fastify.get("/api/tmdb/movie/top_rated", (req, reply) =>
-  tmdbForward("/movie/top_rated", req.query, reply),
-);
-fastify.get("/api/tmdb/movie/now_playing", (req, reply) =>
-  tmdbForward("/movie/now_playing", req.query, reply),
-);
-fastify.get("/api/tmdb/movie/upcoming", (req, reply) =>
-  tmdbForward("/movie/upcoming", req.query, reply),
-);
-fastify.get("/api/tmdb/tv/popular", (req, reply) =>
-  tmdbForward("/tv/popular", req.query, reply),
-);
-fastify.get("/api/tmdb/tv/top_rated", (req, reply) =>
-  tmdbForward("/tv/top_rated", req.query, reply),
-);
-fastify.get("/api/tmdb/genre/movie/list", (req, reply) =>
-  tmdbForward("/genre/movie/list", req.query, reply),
-);
-fastify.get("/api/tmdb/search/movie", (req, reply) =>
-  tmdbForward("/search/movie", req.query, reply),
-);
-fastify.get("/api/tmdb/search/tv", (req, reply) =>
-  tmdbForward("/search/tv", req.query, reply),
-);
-fastify.get("/api/tmdb/discover/movie", (req, reply) =>
-  tmdbForward("/discover/movie", req.query, reply),
-);
+fastify.get("/api/tmdb/trending/movie/day", (req, reply) => tmdbForward("/trending/movie/day", req.query, reply));
+fastify.get("/api/tmdb/trending/tv/day", (req, reply) => tmdbForward("/trending/tv/day", req.query, reply));
+fastify.get("/api/tmdb/movie/popular", (req, reply) => tmdbForward("/movie/popular", req.query, reply));
+fastify.get("/api/tmdb/movie/top_rated", (req, reply) => tmdbForward("/movie/top_rated", req.query, reply));
+fastify.get("/api/tmdb/movie/now_playing", (req, reply) => tmdbForward("/movie/now_playing", req.query, reply));
+fastify.get("/api/tmdb/movie/upcoming", (req, reply) => tmdbForward("/movie/upcoming", req.query, reply));
+fastify.get("/api/tmdb/tv/popular", (req, reply) => tmdbForward("/tv/popular", req.query, reply));
+fastify.get("/api/tmdb/tv/top_rated", (req, reply) => tmdbForward("/tv/top_rated", req.query, reply));
+fastify.get("/api/tmdb/genre/movie/list", (req, reply) => tmdbForward("/genre/movie/list", req.query, reply));
+fastify.get("/api/tmdb/search/movie", (req, reply) => tmdbForward("/search/movie", req.query, reply));
+fastify.get("/api/tmdb/search/tv", (req, reply) => tmdbForward("/search/tv", req.query, reply));
+fastify.get("/api/tmdb/discover/movie", (req, reply) => tmdbForward("/discover/movie", req.query, reply));
 
 fastify.get("/api/tmdb/movie/:id", (req, reply) => {
-  if (!/^\d+$/.test(req.params.id))
-    return reply.code(400).send({ ok: false, error: "Invalid movie id" });
+  if (!/^\d+$/.test(req.params.id)) return reply.code(400).send({ ok: false, error: "Invalid movie id" });
   return tmdbForward(`/movie/${req.params.id}`, req.query, reply);
 });
 
 fastify.get("/api/tmdb/tv/:id", (req, reply) => {
-  if (!/^\d+$/.test(req.params.id))
-    return reply.code(400).send({ ok: false, error: "Invalid tv id" });
+  if (!/^\d+$/.test(req.params.id)) return reply.code(400).send({ ok: false, error: "Invalid tv id" });
   return tmdbForward(`/tv/${req.params.id}`, req.query, reply);
 });
 
+fastify.register(fastifyStatic, { root: publicPath, decorateReply: true });
+fastify.register(fastifyStatic, { root: scramjetPath, prefix: "/scram/", decorateReply: false });
+fastify.register(fastifyStatic, { root: libcurlPath, prefix: "/libcurl/", decorateReply: false });
+fastify.register(fastifyStatic, { root: baremuxPath, prefix: "/baremux/", decorateReply: false });
 
-fastify.register(fastifyStatic, {
-  root: publicPath,
-  decorateReply: true,
-});
-
-fastify.register(fastifyStatic, {
-  root: scramjetPath,
-  prefix: "/scram/",
-  decorateReply: false,
-});
-
-fastify.register(fastifyStatic, {
-  root: libcurlPath,
-  prefix: "/libcurl/",
-  decorateReply: false,
-});
-
-fastify.register(fastifyStatic, {
-  root: baremuxPath,
-  prefix: "/baremux/",
-  decorateReply: false,
-});
-
-// ── Music Proxy Route ───────────────────────────
-// To bypass COEP/CORS specifically for Saavn resources
 fastify.get("/proxy", async (request, reply) => {
   const url = request.query.url;
   if (!url) return reply.code(400).send("No URL provided");
@@ -287,53 +208,36 @@ fastify.get("/proxy", async (request, reply) => {
     const res = await fetch(url);
     const contentType = res.headers.get("content-type");
     const data = await res.arrayBuffer();
-    reply
-      .type(contentType)
-      .header("Access-Control-Allow-Origin", "*")
-      .header("Cross-Origin-Resource-Policy", "cross-origin")
-      .send(Buffer.from(data));
+    reply.type(contentType).header("Access-Control-Allow-Origin", "*").header("Cross-Origin-Resource-Policy", "cross-origin").send(Buffer.from(data));
   } catch (err) {
     reply.code(500).send("Proxy error");
   }
 });
 
-// ── Health Check ──────────────────────────────
 fastify.get("/health", async (request, reply) => {
   const checks = {
     tmdb: !!process.env.TMDB_API_KEY,
-    scramjet: require("fs").existsSync(
-      require("@mercuryworkshop/scramjet/path").scramjetPath,
-    ),
+    scramjet: require("fs").existsSync(require("@mercuryworkshop/scramjet/path").scramjetPath),
   };
   const ok = Object.values(checks).every(Boolean);
   return reply.code(ok ? 200 : 503).send({ ok, checks });
 });
 
-// ── NVIDIA NIM Proxy Route ───────────────────────────
-const DEFAULT_NVIDIA_API_KEY =
-  "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";
+const DEFAULT_NVIDIA_API_KEY = "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";
 const NVIDIA_API_URL = "https://integrate.api.nvidia.com/v1/chat/completions";
 
 fastify.post("/api/nim", async (request, reply) => {
   try {
     const userApiKey = request.headers.authorization;
     const apiKey = userApiKey || `Bearer ${DEFAULT_NVIDIA_API_KEY}`;
-    
     const res = await fetch(NVIDIA_API_URL, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: apiKey,
-      },
+      headers: { "Content-Type": "application/json", Authorization: apiKey },
       body: JSON.stringify(request.body),
     });
     const contentType = res.headers.get("content-type");
     const data = await res.arrayBuffer();
-    return reply
-      .code(res.status)
-      .type(contentType)
-      .header("Access-Control-Allow-Origin", "*")
-      .send(Buffer.from(data));
+    return reply.code(res.status).type(contentType).header("Access-Control-Allow-Origin", "*").send(Buffer.from(data));
   } catch (err) {
     console.error("NIM Proxy Error:", err);
     return reply.code(500).send({ error: "Proxy error" });
@@ -357,7 +261,6 @@ fastify.post("/api/gemini", async (request, reply) => {
   }
 });
 
-
 fastify.setNotFoundHandler((res, reply) => {
   return reply.code(404).type("text/html").sendFile("404.html");
 });
@@ -378,11 +281,38 @@ function shutdown() {
 
 const envPort = parseInt(process.env.PORT || "", 10);
 const startPort = Number.isFinite(envPort) && envPort > 0 ? envPort : 8080;
+
+// ── Socket.io — live online user counter ────────────────────────────────────
+// Must be initialized after fastify.listen() so fastify.server is the live bound server.
+let io;
+let onlineCount = 0;
+
+function initSocketIO() {
+  io = new SocketIOServer(fastify.server, {
+    cors: { origin: "*" },
+    path: "/socket.io/",
+  });
+
+  io.on("connection", (socket) => {
+    onlineCount++;
+    socket.emit("online-count", onlineCount);        // tell the new client their count
+    socket.broadcast.emit("online-count", onlineCount); // tell everyone else
+
+    socket.on("disconnect", () => {
+      onlineCount--;
+      io.emit("online-count", onlineCount);
+    });
+  });
+
+  console.log("Socket.io attached to server");
+}
+
 async function startServer() {
   for (let i = 0; i < 20; i++) {
     const port = startPort + i;
     try {
       await fastify.listen({ port, host: "0.0.0.0" });
+      initSocketIO();
       return;
     } catch (err) {
       if (err && err.code === "EADDRINUSE") continue;
@@ -390,6 +320,7 @@ async function startServer() {
     }
   }
 }
+
 startServer().catch((err) => {
   console.error(err);
   process.exit(1);
