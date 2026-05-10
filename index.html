@@ -55,7 +55,7 @@
     <div class="hero-content">
       <div class="hero-badge" id="hero-badge">
         <span class="badge-dot"></span>
-        <span id="online-counter1">v3.1</span>
+        <span id="online-counter">Currently Online: 🐻</span>
       </div>
       <h1 class="hero-heading" id="hero-heading">Welkin.</h1>
       <p class="hero-sub landing-phrases" id="hero-sub" style="transition: opacity 0.5s ease; min-height: 2em">
@@ -99,46 +99,37 @@
   <!-- Persistent Music Player (injected by music.js) -->
 
   <script type="module" src="3d-cloud.js"></script>
+
+  <!-- Socket.io client -->
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
   <script>
     (function () {
       const counter = document.getElementById("online-counter");
-      const isLocalhost =
-        window.location.hostname === "localhost" ||
-        window.location.hostname === "127.0.0.1";
 
-      if (isLocalhost) {
+      // On local static dev servers (e.g. live-server, vite, etc.) the Fastify
+      // backend isn't running, so skip the socket entirely and show a static label.
+      const isLocalDev =
+        (window.location.hostname === "localhost" ||
+          window.location.hostname === "127.0.0.1") &&
+        window.location.port !== "8080"; // change if your Fastify port differs
+
+      if (isLocalDev) {
         counter.textContent = "Currently Online: 1";
-      } else {
-        const ns = "welkin-online-" + window.location.hostname;
-
-        function updateCount() {
-          fetch(`https://api.countapi.xyz/get/${ns}/count`)
-            .then((res) => res.json())
-            .then((data) => {
-              counter.textContent = "Currently Online: " + (data.value || 1);
-            })
-            .catch((e) => {
-              console.log("CountAPI error:", e);
-              fetch(
-                `https://api.countapi.xyz/create/${ns}/count?enable_reset=0&update_upperbound=1000`,
-              )
-                .then((res) => res.json())
-                .then((data) => {
-                  counter.textContent =
-                    "Currently Online: " + (data.value || 1);
-                })
-                .catch(() => {
-                  counter.textContent = "Currently Online: 1";
-                });
-            });
-        }
-
-        fetch(`https://api.countapi.xyz/hit/${ns}/count`).catch(() => { });
-        setTimeout(updateCount, 1000);
-        setInterval(updateCount, 15000);
+        return;
       }
+
+      const socket = io(window.location.origin, { path: "/socket.io/" });
+
+      socket.on("online-count", function (count) {
+        counter.textContent = "Currently Online: " + count;
+      });
+
+      socket.on("disconnect", function () {
+        counter.textContent = "Currently Online: —";
+      });
     })();
   </script>
+
   <script src="main.js"></script>
   <script src="music.js"></script>
   <script src="music_v2.js"></script>

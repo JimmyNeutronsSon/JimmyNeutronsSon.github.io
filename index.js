@@ -6,6 +6,7 @@ import { hostname } from "node:os";
 import { server as wisp, logging } from "@mercuryworkshop/wisp-js/server";
 import Fastify from "fastify";
 import fastifyStatic from "@fastify/static";
+import { Server as SocketIOServer } from "socket.io";
 
 import { scramjetPath } from "@mercuryworkshop/scramjet/path";
 import { libcurlPath } from "@mercuryworkshop/libcurl-transport";
@@ -123,7 +124,7 @@ const fastify = Fastify({
 			})
 			.on("upgrade", (req, socket, head) => {
 				if (req.url.endsWith("/wisp/")) wisp.routeRequest(req, socket, head);
-				else socket.end();
+				else if (!req.url.startsWith("/socket.io/")) socket.end();
 			});
 	},
 });
@@ -286,21 +287,21 @@ fastify.register(fastifyStatic, {
 // ── Music Proxy Route ───────────────────────────
 // To bypass COEP/CORS specifically for Saavn resources
 fastify.get("/proxy", async (request, reply) => {
-  const url = request.query.url;
-  if (!url) return reply.code(400).send("No URL provided");
-  
-  try {
-    const res = await fetch(url);
-    const contentType = res.headers.get("content-type");
-    const data = await res.arrayBuffer();
-    
-    reply.type(contentType)
-         .header("Access-Control-Allow-Origin", "*")
-         .header("Cross-Origin-Resource-Policy", "cross-origin")
-         .send(Buffer.from(data));
-  } catch (err) {
-    reply.code(500).send("Proxy error");
-  }
+	const url = request.query.url;
+	if (!url) return reply.code(400).send("No URL provided");
+
+	try {
+		const res = await fetch(url);
+		const contentType = res.headers.get("content-type");
+		const data = await res.arrayBuffer();
+
+		reply.type(contentType)
+			.header("Access-Control-Allow-Origin", "*")
+			.header("Cross-Origin-Resource-Policy", "cross-origin")
+			.send(Buffer.from(data));
+	} catch (err) {
+		reply.code(500).send("Proxy error");
+	}
 });
 
 fastify.setNotFoundHandler((res, reply) => {
@@ -322,8 +323,7 @@ fastify.server.on("listening", () => {
 	console.log(`\thttp://localhost:${address.port}`);
 	console.log(`\thttp://${hostname()}:${address.port}`);
 	console.log(
-		`\thttp://${
-			address.family === "IPv6" ? `[${address.address}]` : address.address
+		`\thttp://${address.family === "IPv6" ? `[${address.address}]` : address.address
 		}:${address.port}`
 	);
 });
@@ -339,8 +339,32 @@ function shutdown() {
 
 const envPort = parseInt(process.env.PORT || "", 10);
 const startPort =
-	Number.isFinite(envPort) && envPort > 0 ? envPort : 5000;
+	Number.isFinite(envPort) && envPort > 0 ? envPort : 8080;
 const PORT_ATTEMPTS = 20;
+
+// ── Socket.io — live online user counter ────────────────────────────────────
+// Initialized after fastify.listen() so fastify.server exists and is bound.
+let io;
+let onlineCount = 0;
+
+function initSocketIO() {
+	io = new SocketIOServer(fastify.server, {
+		cors: { origin: "*" },
+		path: "/socket.io/",
+	});
+
+	io.on("connection", (socket) => {
+		onlineCount++;
+		io.emit("online-count", onlineCount);
+
+		socket.on("disconnect", () => {
+			onlineCount--;
+			io.emit("online-count", onlineCount);
+		});
+	});
+
+	console.log("Socket.io attached to server");
+}
 
 async function startServer() {
 	let lastErr;
@@ -348,6 +372,7 @@ async function startServer() {
 		const port = startPort + i;
 		try {
 			await fastify.listen({ port, host: "0.0.0.0" });
+			initSocketIO(); // attach after server is live
 			if (i > 0) {
 				console.warn(
 					`Port ${startPort} was in use (EADDRINUSE). Listening on ${port} instead.`,
