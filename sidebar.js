@@ -302,3 +302,46 @@ if (document.readyState === "loading") {
 }
 
 // Navigation is handled by router.js for SPA
+
+// ── Online counter (shared across all pages) ────────────────────────────────
+// index.html has its own inline socket block, so we skip it here to avoid
+// double-counting. Every other page gets the counter wired up automatically.
+(function () {
+  const isIndex =
+    window.location.pathname === "/" ||
+    window.location.pathname.endsWith("/index.html") ||
+    window.location.pathname.endsWith("/index");
+
+  if (isIndex) return; // index.html handles this itself
+
+  // Wait for socket.io client to be available, then connect.
+  function connectCounter() {
+    if (typeof io === "undefined") {
+      // socket.io script not loaded yet — retry shortly
+      setTimeout(connectCounter, 200);
+      return;
+    }
+
+    const socket = io(window.location.origin, { path: "/socket.io/" });
+
+    socket.on("online-count", function (count) {
+      const el = document.getElementById("online-counter");
+      if (el) el.textContent = "Currently Online: " + count;
+    });
+
+    socket.on("disconnect", function () {
+      const el = document.getElementById("online-counter");
+      if (el) el.textContent = "Currently Online: —";
+    });
+  }
+
+  // Inject socket.io client script if it isn't already on the page
+  if (typeof io === "undefined" && !document.querySelector('script[src*="socket.io"]')) {
+    const s = document.createElement("script");
+    s.src = "https://cdn.socket.io/4.7.5/socket.io.min.js";
+    s.onload = connectCounter;
+    document.head.appendChild(s);
+  } else {
+    connectCounter();
+  }
+})();
