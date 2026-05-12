@@ -26,6 +26,129 @@
       flex: 1;
     }
 
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    @keyframes fadeOutDown {
+      from {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+
+      to {
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
+      }
+    }
+
+    .update-popup {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      background: rgba(11, 30, 61, 0.6);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .update-popup.hiding {
+      animation: fadeOutDown 0.4s cubic-bezier(0.7, 0, 0.3, 1) forwards;
+    }
+
+    .update-card {
+      background: linear-gradient(180deg,
+          rgba(10, 45, 110, 0.6),
+          rgba(22, 58, 107, 0.7));
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(108, 180, 240, 0.25);
+      border-radius: 20px;
+      padding: 2.5rem 3rem;
+      max-width: 480px;
+      text-align: center;
+      box-shadow: 0 25px 50px -12px rgba(10, 45, 110, 0.4);
+      position: relative;
+    }
+
+    .update-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: 20px;
+      padding: 1px;
+      background: linear-gradient(135deg,
+          rgba(108, 180, 240, 0.4),
+          transparent 60%,
+          rgba(58, 143, 224, 0.2));
+      -webkit-mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+    }
+
+    .update-icon {
+      width: 64px;
+      height: 64px;
+      background: linear-gradient(180deg, #1e6cc7 0%, #0a2d6e 100%);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.5rem;
+      font-size: 28px;
+      box-shadow: 0 10px 30px rgba(30, 108, 199, 0.4);
+    }
+
+    .update-title {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #f7faff;
+      margin-bottom: 1rem;
+      letter-spacing: -0.02em;
+    }
+
+    .update-desc {
+      color: #d6e5f5;
+      font-size: 1rem;
+      line-height: 1.6;
+      margin-bottom: 2rem;
+    }
+
+    .update-desc strong {
+      color: #f7faff;
+    }
+
+    .update-btn {
+      background: linear-gradient(180deg, #3a8fe0 0%, #1e6cc7 100%);
+      border: none;
+      color: #f7faff;
+      padding: 0.875rem 2.5rem;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: 12px;
+      cursor: pointer;
+      transition:
+        transform 0.2s,
+        box-shadow 0.2s;
+    }
+
     .btn-music-flash {
       background: rgba(255, 255, 255, 0.05) !important;
       backdrop-filter: blur(10px) !important;
@@ -63,6 +186,7 @@
       </p>
       <div class="hero-ctas" id="hero-ctas" style="flex-direction: column; align-items: center; gap: 1rem">
         <div style="display: flex; gap: 1rem">
+          <a href="/chat.html" class="btn btn-outline" id="btn-chat">Chat</a>
           <a href="/browse.html" class="btn btn-primary" id="btn-surf">
             <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
               stroke-linecap="round" stroke-linejoin="round">
@@ -102,6 +226,46 @@
 
   <!-- Socket.io client -->
   <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <script>
+    (function () {
+      if (localStorage.getItem("updatePopupSeen")) return;
+
+      const popup = document.createElement("div");
+      popup.className = "update-popup";
+      popup.innerHTML = `
+        <div class="update-card">
+          <div class="update-icon">💬</div>
+          <h2 class="update-title">⚠️BETA⚠️
+            <br>
+            New Chat System!</h2>
+          <p class="update-desc">
+            <strong>This is a one time message</strong><br><br>
+            Create an account to chat with friends and even hop on voice chat.<br><br>
+            DMs and Friends are comming soon!
+          </p>
+          <button class="update-btn" id="update-close">Got it!</button>
+        </div>
+      `;
+
+      document.body.appendChild(popup);
+
+      document
+        .getElementById("update-close")
+        .addEventListener("click", function () {
+          popup.classList.add("hiding");
+          setTimeout(() => popup.remove(), 400);
+          localStorage.setItem("updatePopupSeen", "true");
+        });
+
+      popup.addEventListener("click", function (e) {
+        if (e.target === popup) {
+          popup.classList.add("hiding");
+          setTimeout(() => popup.remove(), 400);
+          localStorage.setItem("updatePopupSeen", "true");
+        }
+      });
+    })();
+  </script>
   <script>
     (function () {
       const counter = document.getElementById("online-counter");

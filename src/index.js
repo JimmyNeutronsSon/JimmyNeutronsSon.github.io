@@ -1,5 +1,7 @@
 import { createServer } from "node:http";
+import { createHash } from "node:crypto";
 import { readFileSync, existsSync } from "node:fs";
+import { writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { fileURLToPath } from "url";
 import { hostname } from "node:os";
@@ -105,6 +107,10 @@ const fastify = Fastify({
         else if (!req.url.startsWith("/socket.io/")) socket.end();
       });
   },
+});
+
+fastify.addContentTypeParser('application/json', { parseAs: 'string' }, (req, body, done) => {
+  try { done(null, JSON.parse(body)); } catch (e) { done(e); }
 });
 
 function applyTmdbQuery(u, query) {
@@ -282,10 +288,192 @@ function shutdown() {
 const envPort = parseInt(process.env.PORT || "", 10);
 const startPort = Number.isFinite(envPort) && envPort > 0 ? envPort : 8080;
 
-// ── Socket.io — live online user counter ────────────────────────────────────
-// Must be initialized after fastify.listen() so fastify.server is the live bound server.
+// ── Socket.io — auth + chat + voice ─────────────────────────────────────────
 let io;
-let onlineCount = 0;
+
+const CHAT_FILE = join(publicPath, "chat-history.json");
+const USERS_FILE = join(publicPath, "chat-users.json");
+const MAX_HISTORY = 100;
+
+// ── Persistent chat history ──
+const chatHistory = (() => {
+  try { if (existsSync(CHAT_FILE)) return JSON.parse(readFileSync(CHAT_FILE, "utf8")); }
+  catch { /* start fresh */ }
+  return [];
+})();
+
+let saveTimer = null;
+function saveHistory() {
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(async () => {
+    try { await writeFile(CHAT_FILE, JSON.stringify(chatHistory), "utf8"); }
+    catch (err) { console.error("chat: failed to save history:", err); }
+  }, 2000);
+}
+
+function pushMsg(msg) {
+  chatHistory.push(msg);
+  if (chatHistory.length > MAX_HISTORY) chatHistory.shift();
+  saveHistory();
+}
+
+// ── User accounts: { username → { passwordHash, token } } ──
+// Simple SHA-256 hash — no bcrypt dependency needed
+function hashPassword(pw) {
+  return createHash("sha256").update("welkin-salt-" + pw).digest("hex");
+}
+function makeToken() {
+  return createHash("sha256").update(Math.random().toString() + Date.now()).digest("hex");
+}
+
+
+const DM_FILE = join(publicPath, "chat-dms.json");
+const MAX_DM = 200;
+const dmHistory = (() => {
+  try { if (existsSync(DM_FILE)) return JSON.parse(readFileSync(DM_FILE, "utf8")); } catch { }
+  return {};
+})();
+let dmSaveTimer = null;
+function saveDMs() {
+  clearTimeout(dmSaveTimer);
+  dmSaveTimer = setTimeout(async () => {
+    try { await writeFile(DM_FILE, JSON.stringify(dmHistory), "utf8"); } catch (e) { }
+  }, 2000);
+}
+function dmKey(a, b) { return [a, b].sort().join("|"); }
+function pushDM(a, b, msg) {
+  const k = dmKey(a, b);
+  if (!dmHistory[k]) dmHistory[k] = [];
+  dmHistory[k].push(msg);
+  if (dmHistory[k].length > MAX_DM) dmHistory[k].shift();
+  saveDMs();
+}
+const users = (() => {
+  try { if (existsSync(USERS_FILE)) return JSON.parse(readFileSync(USERS_FILE, "utf8")); }
+  catch { /* start fresh */ }
+  return {};
+})();
+
+async function saveUsers() {
+  try { await writeFile(USERS_FILE, JSON.stringify(users), "utf8"); }
+  catch (err) { console.error("chat: failed to save users:", err); }
+}
+
+// ── Auth REST endpoints (called by the login form before WS connect) ──
+fastify.post("/api/chat/register", async (req, reply) => {
+  const { username, password } = req.body || {};
+  if (!username || !password || typeof username !== "string" || typeof password !== "string")
+    return reply.code(400).send({ ok: false, error: "Invalid input" });
+  const name = username.trim().slice(0, 24);
+  if (!name || name.length < 2) return reply.code(400).send({ ok: false, error: "Username too short" });
+  if (password.length < 4) return reply.code(400).send({ ok: false, error: "Password too short (min 4)" });
+  if (users[name.toLowerCase()]) return reply.code(409).send({ ok: false, error: "Username taken" });
+  const token = makeToken();
+  users[name.toLowerCase()] = { username: name, passwordHash: hashPassword(password), token };
+  await saveUsers();
+  return reply.send({ ok: true, username: name, token });
+});
+
+fastify.post("/api/chat/login", async (req, reply) => {
+  const { username, password } = req.body || {};
+  if (!username || !password) return reply.code(400).send({ ok: false, error: "Missing fields" });
+  const record = users[username.trim().toLowerCase()];
+  if (!record || record.passwordHash !== hashPassword(password))
+    return reply.code(401).send({ ok: false, error: "Wrong username or password" });
+  // Rotate token on login
+  record.token = makeToken();
+  await saveUsers();
+  return reply.send({ ok: true, username: record.username, token: record.token });
+});
+
+fastify.post("/api/chat/resume", async (req, reply) => {
+  const { token } = req.body || {};
+  if (!token) return reply.code(400).send({ ok: false, error: "No token" });
+  const record = Object.values(users).find(u => u.token === token);
+  if (!record) return reply.code(401).send({ ok: false, error: "Invalid session" });
+  return reply.send({ ok: true, username: record.username });
+});
+
+
+// ── Friends endpoints ──
+fastify.get("/api/chat/friends", async (req, reply) => {
+  const me = Object.values(users).find(u => u.token === req.headers["x-token"]);
+  if (!me) return reply.code(401).send({ ok: false, error: "Unauthorized" });
+  return reply.send({ ok: true, friends: me.friends || [], incoming: me.incoming || [], outgoing: me.outgoing || [] });
+});
+
+fastify.post("/api/chat/friends/request", async (req, reply) => {
+  const me = Object.values(users).find(u => u.token === req.headers["x-token"]);
+  if (!me) return reply.code(401).send({ ok: false, error: "Unauthorized" });
+  const { username } = req.body || {};
+  const them = users[username?.trim().toLowerCase()];
+  if (!them) return reply.code(404).send({ ok: false, error: "User not found" });
+  if (them.username === me.username) return reply.code(400).send({ ok: false, error: "Can't add yourself" });
+  me.friends = me.friends || []; me.outgoing = me.outgoing || []; me.incoming = me.incoming || [];
+  them.friends = them.friends || []; them.incoming = them.incoming || []; them.outgoing = them.outgoing || [];
+  if (me.friends.includes(them.username)) return reply.code(409).send({ ok: false, error: "Already friends" });
+  if (me.outgoing.includes(them.username)) return reply.code(409).send({ ok: false, error: "Request already sent" });
+  if (me.incoming.includes(them.username)) {
+    // auto-accept mutual request
+    me.friends.push(them.username); them.friends.push(me.username);
+    me.incoming = me.incoming.filter(n => n !== them.username);
+    them.outgoing = them.outgoing.filter(n => n !== me.username);
+  } else {
+    me.outgoing.push(them.username); them.incoming.push(me.username);
+    const sid = [...liveMembers.entries()].find(([, n]) => n === them.username)?.[0];
+    if (sid && io) io.to(sid).emit("friends:request", { from: me.username });
+  }
+  await saveUsers();
+  return reply.send({ ok: true });
+});
+
+fastify.post("/api/chat/friends/accept", async (req, reply) => {
+  const me = Object.values(users).find(u => u.token === req.headers["x-token"]);
+  if (!me) return reply.code(401).send({ ok: false, error: "Unauthorized" });
+  const { username } = req.body || {};
+  const them = users[username?.trim().toLowerCase()];
+  if (!them) return reply.code(404).send({ ok: false, error: "User not found" });
+  me.incoming = (me.incoming || []).filter(n => n !== them.username);
+  them.outgoing = (them.outgoing || []).filter(n => n !== me.username);
+  me.friends = me.friends || []; them.friends = them.friends || [];
+  if (!me.friends.includes(them.username)) me.friends.push(them.username);
+  if (!them.friends.includes(me.username)) them.friends.push(me.username);
+  await saveUsers();
+  const sid = [...liveMembers.entries()].find(([, n]) => n === them.username)?.[0];
+  if (sid && io) io.to(sid).emit("friends:accepted", { from: me.username });
+  return reply.send({ ok: true });
+});
+
+fastify.post("/api/chat/friends/remove", async (req, reply) => {
+  const me = Object.values(users).find(u => u.token === req.headers["x-token"]);
+  if (!me) return reply.code(401).send({ ok: false, error: "Unauthorized" });
+  const { username } = req.body || {};
+  const them = users[username?.trim().toLowerCase()];
+  if (!them) return reply.code(404).send({ ok: false, error: "User not found" });
+  const rm = (arr, v) => (arr || []).filter(n => n !== v);
+  me.friends = rm(me.friends, them.username); them.friends = rm(them.friends, me.username);
+  me.incoming = rm(me.incoming, them.username); me.outgoing = rm(me.outgoing, them.username);
+  them.incoming = rm(them.incoming, me.username); them.outgoing = rm(them.outgoing, me.username);
+  await saveUsers();
+  return reply.send({ ok: true });
+});
+
+fastify.get("/api/chat/dm/:other", async (req, reply) => {
+  const me = Object.values(users).find(u => u.token === req.headers["x-token"]);
+  if (!me) return reply.code(401).send({ ok: false, error: "Unauthorized" });
+  const other = users[req.params.other?.toLowerCase()];
+  if (!other) return reply.code(404).send({ ok: false, error: "User not found" });
+  return reply.send({ ok: true, messages: dmHistory[dmKey(me.username, other.username)] || [] });
+});
+
+// ── Live members map: socketId → username ──
+const liveMembers = new Map();
+
+function broadcastMembers() {
+  const list = [...new Set(liveMembers.values())].sort();
+  io.emit("members:update", list);
+  io.emit("online-count", list.length);
+}
 
 function initSocketIO() {
   io = new SocketIOServer(fastify.server, {
@@ -294,19 +482,104 @@ function initSocketIO() {
   });
 
   io.on("connection", (socket) => {
-    onlineCount++;
-    socket.emit("online-count", onlineCount);        // tell the new client their count
-    socket.broadcast.emit("online-count", onlineCount); // tell everyone else
 
     socket.on("disconnect", () => {
-      onlineCount--;
-      io.emit("online-count", onlineCount);
+      const name = liveMembers.get(socket.id);
+      liveMembers.delete(socket.id);
+      if (name) {
+        // Only show "left" if no other socket for same user is still connected
+        const stillOnline = [...liveMembers.values()].includes(name);
+        if (!stillOnline) {
+          const msg = { type: "system", text: `${name} left`, ts: Date.now() };
+          pushMsg(msg);
+          io.emit("chat:message", msg);
+        }
+      }
+      broadcastMembers();
     });
+
+    // ── Auth: join with token ──
+    socket.on("chat:join", ({ token }) => {
+      const record = Object.values(users).find(u => u.token === token);
+      if (!record) { socket.emit("chat:auth-error"); return; }
+      const name = record.username;
+      socket.chatName = name;
+
+      const alreadyOnline = [...liveMembers.values()].includes(name);
+      liveMembers.set(socket.id, name);
+
+      socket.emit("chat:history", chatHistory);
+      broadcastMembers();
+
+      if (!alreadyOnline) {
+        const msg = { type: "system", text: `${name} joined`, ts: Date.now() };
+        pushMsg(msg);
+        io.emit("chat:message", msg);
+      }
+    });
+
+    // ── Chat: send message ──
+    socket.on("chat:send", ({ text }) => {
+      if (!socket.chatName) return;
+      if (!text || typeof text !== "string") return;
+      text = text.trim().slice(0, 500);
+      if (!text) return;
+      const msg = { name: socket.chatName, text, ts: Date.now() };
+      pushMsg(msg);
+      io.emit("chat:message", msg);
+    });
+
+
+    // ── DM: send direct message ──
+    socket.on("dm:send", ({ to, text }) => {
+      if (!socket.chatName || !to || !text) return;
+      text = String(text).trim().slice(0, 500);
+      if (!text) return;
+      const msg = { from: socket.chatName, to, text, ts: Date.now() };
+      pushDM(socket.chatName, to, msg);
+      socket.emit("dm:message", msg);
+      [...liveMembers.entries()].filter(([, n]) => n === to).forEach(([sid]) => io.to(sid).emit("dm:message", msg));
+    });
+
+    // ── Friends: push current data to this socket ──
+    socket.on("friends:refresh", () => {
+      const me = Object.values(users).find(u => u.username === socket.chatName);
+      if (me) socket.emit("friends:data", { friends: me.friends || [], incoming: me.incoming || [], outgoing: me.outgoing || [] });
+    });
+    // ── Voice: WebRTC signaling ──
+    // Each socket can join a voice room; we relay offer/answer/ice between peers
+    socket.on("voice:join", () => {
+      if (!socket.chatName) return;
+      socket.join("voice");
+      // Tell everyone else a new peer joined so they can initiate offer
+      socket.to("voice").emit("voice:peer-joined", { peerId: socket.id, name: socket.chatName });
+      // Send this peer the list of existing voice members so it can show the UI
+      const voicePeers = [...io.sockets.adapter.rooms.get("voice") || []]
+        .filter(id => id !== socket.id)
+        .map(id => ({ peerId: id, name: liveMembers.get(id) || "?" }));
+      socket.emit("voice:peers", voicePeers);
+      io.emit("voice:members", getVoiceMembers());
+    });
+
+    socket.on("voice:leave", () => {
+      socket.leave("voice");
+      socket.to("voice").emit("voice:peer-left", { peerId: socket.id });
+      io.emit("voice:members", getVoiceMembers());
+    });
+
+    socket.on("voice:offer", ({ to, offer }) => io.to(to).emit("voice:offer", { from: socket.id, name: socket.chatName, offer }));
+    socket.on("voice:answer", ({ to, answer }) => io.to(to).emit("voice:answer", { from: socket.id, answer }));
+    socket.on("voice:ice", ({ to, candidate }) => io.to(to).emit("voice:ice", { from: socket.id, candidate }));
   });
 
   console.log("Socket.io attached to server");
 }
 
+function getVoiceMembers() {
+  const room = io?.sockets?.adapter?.rooms?.get("voice");
+  if (!room) return [];
+  return [...room].map(id => ({ peerId: id, name: liveMembers.get(id) || "?" }));
+}
 async function startServer() {
   for (let i = 0; i < 20; i++) {
     const port = startPort + i;
