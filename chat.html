@@ -1,2420 +1,2156 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Welkin Chat</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=DM+Sans:wght@400;500&display=swap"
-      rel="stylesheet"
-    />
-    <script src="/socket.io/socket.io.js"></script>
-    <script>
-      var sidebarScript = document.createElement("script");
-      sidebarScript.src = window.location.origin + "/sidebar.js";
-      document.head.appendChild(sidebarScript);
-    </script>
-    <style>
-      :root {
-        --stratosphere: #0a2d6e;
-        --azure: #1e6cc7;
-        --cerulean: #3a8fe0;
-        --daylight: #6cb4f0;
-        --cumulus: #f7faff;
-        --cirrus: #e8eff8;
-        --stratus: #c5d3e8;
-        --nimbus: #8fa4c2;
-        --abyss: #0b1e3d;
-        --twilight: #163a6b;
-        --mist: #b8cbe4;
-        --horizon: #d6e5f5;
-        --shadow-sm: 0 2px 8px rgba(10, 45, 110, 0.1);
-        --shadow-md: 0 4px 16px rgba(10, 45, 110, 0.15);
-        --shadow-lg: 0 8px 32px rgba(10, 45, 110, 0.2);
-        --shadow-glow: 0 0 20px rgba(58, 143, 224, 0.35);
-        --sidebar-w: 240px;
-        --members-w: 220px;
-      }
-
-      * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
-
-      body {
-        font-family: "DM Sans", sans-serif;
-        background: var(--abyss);
-        color: var(--cumulus);
-        height: 100vh;
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-      }
-
-      #app {
-        display: flex;
-        height: 100vh;
-        overflow: hidden;
-      }
-
-      /* ── SIDEBAR ── */
-      #sidebar {
-        width: var(--sidebar-w);
-        background: linear-gradient(180deg, #0a2d6e 0%, #0b1e3d 100%);
-        display: flex;
-        flex-direction: column;
-        flex-shrink: 0;
-        border-right: 1px solid rgba(255, 255, 255, 0.06);
-        overflow: hidden;
-      }
-
-      #server-header {
-        padding: 16px 16px 14px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        background: rgba(255, 255, 255, 0.04);
-        backdrop-filter: blur(10px);
-        flex-shrink: 0;
-      }
-
-      #server-header .server-icon {
-        width: 32px;
-        height: 32px;
-        background: linear-gradient(
-          180deg,
-          #0a2d6e 0%,
-          #1e6cc7 40%,
-          #6cb4f0 100%
-        );
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 16px;
-        box-shadow: var(--shadow-sm);
-        flex-shrink: 0;
-      }
-
-      #server-header .server-name {
-        font-family: "Outfit", sans-serif;
-        font-weight: 700;
-        font-size: 15px;
-        color: var(--cumulus);
-        letter-spacing: 0.3px;
-      }
-
-      #logout-btn {
-        background: none;
-        border: none;
-        color: var(--nimbus);
-        cursor: pointer;
-        font-size: 14px;
-        padding: 4px 6px;
-        border-radius: 6px;
-        transition: all 0.15s;
-        margin-left: auto;
-        flex-shrink: 0;
-      }
-
-      #logout-btn:hover {
-        color: #f04747;
-        background: rgba(240, 71, 71, 0.12);
-      }
-
-      #channels-label {
-        padding: 16px 16px 6px;
-        font-family: "Outfit", sans-serif;
-        font-size: 10px;
-        font-weight: 700;
-        letter-spacing: 1.5px;
-        text-transform: uppercase;
-        color: var(--nimbus);
-        flex-shrink: 0;
-      }
-
-      #channels-list {
-        flex: 1;
-        overflow-y: auto;
-        padding: 0 8px 8px;
-      }
-
-      #channels-list::-webkit-scrollbar {
-        width: 3px;
-      }
-
-      #channels-list::-webkit-scrollbar-thumb {
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 2px;
-      }
-
-      .channel-item {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 6px 10px;
-        border-radius: 8px;
-        font-size: 14px;
-        color: var(--nimbus);
-        cursor: pointer;
-        transition: all 0.15s ease;
-        margin-bottom: 1px;
-        font-weight: 500;
-      }
-
-      .channel-item:hover {
-        background: rgba(108, 180, 240, 0.08);
-        color: var(--mist);
-      }
-
-      .channel-item.active {
-        background: rgba(58, 143, 224, 0.18);
-        color: var(--cumulus);
-      }
-
-      .channel-item .hash {
-        font-size: 16px;
-        color: var(--nimbus);
-        font-weight: 400;
-        flex-shrink: 0;
-      }
-
-      .channel-item.active .hash {
-        color: var(--daylight);
-      }
-
-      /* Voice channel in sidebar */
-      #voice-channel-btn {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 6px 10px;
-        border-radius: 8px;
-        font-size: 14px;
-        color: var(--nimbus);
-        cursor: pointer;
-        transition: all 0.15s ease;
-        margin: 4px 8px 0;
-        font-weight: 500;
-        border: 1px solid transparent;
-      }
-
-      #voice-channel-btn:hover {
-        background: rgba(108, 180, 240, 0.08);
-        color: var(--mist);
-      }
-
-      #voice-channel-btn.in-voice {
-        background: rgba(67, 201, 155, 0.12);
-        border-color: rgba(67, 201, 155, 0.25);
-        color: #43c99b;
-      }
-
-      #voice-channel-btn .vc-icon {
-        font-size: 15px;
-        flex-shrink: 0;
-      }
-
-      #voice-members-sidebar {
-        padding: 0 8px;
-        margin-top: 4px;
-      }
-
-      .voice-member-chip {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        padding: 3px 8px;
-        font-size: 12px;
-        color: var(--nimbus);
-        margin-bottom: 2px;
-      }
-
-      .voice-member-chip .vm-dot {
-        width: 6px;
-        height: 6px;
-        background: #43c99b;
-        border-radius: 50%;
-        flex-shrink: 0;
-      }
-
-      .voice-member-chip.speaking .vm-dot {
-        box-shadow: 0 0 5px #43c99b;
-        background: #43c99b;
-      }
-
-      /* ── MAIN ── */
-      #main {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        background: var(--abyss);
-        overflow: hidden;
-        min-width: 0;
-      }
-
-      #channel-header {
-        height: 52px;
-        background: rgba(11, 30, 61, 0.95);
-        backdrop-filter: blur(12px);
-        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-        display: flex;
-        align-items: center;
-        padding: 0 20px;
-        gap: 10px;
-        flex-shrink: 0;
-        box-shadow: var(--shadow-sm);
-      }
-
-      #channel-header .hash {
-        color: var(--daylight);
-        font-size: 20px;
-        font-weight: 300;
-      }
-
-      #channel-header .channel-name {
-        font-family: "Outfit", sans-serif;
-        font-weight: 600;
-        font-size: 15px;
-        color: var(--cumulus);
-      }
-
-      #channel-header .divider {
-        width: 1px;
-        height: 20px;
-        background: rgba(255, 255, 255, 0.12);
-        margin: 0 6px;
-      }
-
-      #channel-header .channel-desc {
-        font-size: 13px;
-        color: var(--nimbus);
-      }
-
-      #online-pill {
-        margin-left: auto;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        padding: 4px 12px;
-        background: rgba(58, 143, 224, 0.12);
-        border: 1px solid rgba(58, 143, 224, 0.2);
-        border-radius: 20px;
-        font-size: 12px;
-        color: var(--daylight);
-        font-weight: 500;
-      }
-
-      #online-pill .dot {
-        width: 7px;
-        height: 7px;
-        background: #43c99b;
-        border-radius: 50%;
-        box-shadow: 0 0 6px rgba(67, 201, 155, 0.6);
-        animation: pulse 2s infinite;
-      }
-
-      @keyframes pulse {
-        0%,
-        100% {
-          opacity: 1;
-        }
-
-        50% {
-          opacity: 0.4;
-        }
-      }
-
-      /* ── MESSAGES ── */
-      #messages-area {
-        flex: 1;
-        overflow-y: auto;
-        padding: 20px 0 8px;
-        display: flex;
-        flex-direction: column;
-        scroll-behavior: smooth;
-      }
-
-      #messages-area::-webkit-scrollbar {
-        width: 5px;
-      }
-
-      #messages-area::-webkit-scrollbar-thumb {
-        background: rgba(108, 180, 240, 0.15);
-        border-radius: 3px;
-      }
-
-      #welcome-banner {
-        padding: 24px 20px 16px;
-        margin-bottom: 8px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-      }
-
-      #welcome-banner h2 {
-        font-family: "Outfit", sans-serif;
-        font-size: 26px;
-        font-weight: 700;
-        color: var(--cumulus);
-        margin-bottom: 4px;
-      }
-
-      #welcome-banner p {
-        font-size: 14px;
-        color: var(--nimbus);
-      }
-
-      .msg-group {
-        display: flex;
-        gap: 14px;
-        padding: 2px 20px;
-        transition: background 0.1s;
-        position: relative;
-      }
-
-      .msg-group:hover {
-        background: rgba(255, 255, 255, 0.02);
-      }
-
-      .msg-group.has-header {
-        padding-top: 14px;
-        margin-top: 2px;
-      }
-
-      .msg-avatar {
-        width: 38px;
-        height: 38px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-family: "Outfit", sans-serif;
-        font-weight: 700;
-        font-size: 14px;
-        flex-shrink: 0;
-        margin-top: 1px;
-        box-shadow: var(--shadow-sm);
-      }
-
-      .msg-group.grouped .msg-avatar {
-        visibility: hidden;
-      }
-
-      .msg-body {
-        flex: 1;
-        min-width: 0;
-      }
-
-      .msg-meta {
-        display: flex;
-        align-items: baseline;
-        gap: 8px;
-        margin-bottom: 3px;
-      }
-
-      .msg-group.grouped .msg-meta {
-        display: none;
-      }
-
-      .msg-name {
-        font-family: "Outfit", sans-serif;
-        font-weight: 600;
-        font-size: 14px;
-      }
-
-      .msg-time {
-        font-size: 11px;
-        color: var(--nimbus);
-      }
-
-      .msg-text {
-        font-size: 14px;
-        line-height: 1.55;
-        color: var(--cirrus);
-        word-break: break-word;
-      }
-
-      .hover-time {
-        display: none;
-        position: absolute;
-        left: 20px;
-        top: 50%;
-        transform: translateY(-50%);
-        font-size: 10px;
-        color: var(--nimbus);
-      }
-
-      .msg-group.grouped:hover .hover-time {
-        display: block;
-      }
-
-      .msg-system {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 8px 20px;
-        margin: 6px 0;
-      }
-
-      .msg-system::before,
-      .msg-system::after {
-        content: "";
-        flex: 1;
-        height: 1px;
-        background: rgba(255, 255, 255, 0.06);
-      }
-
-      .msg-system span {
-        font-size: 11px;
-        color: var(--nimbus);
-        white-space: nowrap;
-        padding: 2px 10px;
-        background: rgba(108, 180, 240, 0.06);
-        border-radius: 10px;
-        border: 1px solid rgba(108, 180, 240, 0.1);
-      }
-
-      #typing-bar {
-        height: 18px;
-        padding: 0 20px;
-        font-size: 12px;
-        color: var(--nimbus);
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        flex-shrink: 0;
-      }
-
-      /* ── INPUT ── */
-      #input-wrap {
-        padding: 0 20px 20px;
-        flex-shrink: 0;
-      }
-
-      #input-box {
-        background: rgba(22, 58, 107, 0.5);
-        border: 1px solid rgba(108, 180, 240, 0.15);
-        border-radius: 14px;
-        display: flex;
-        align-items: flex-end;
-        backdrop-filter: blur(10px);
-        transition:
-          border-color 0.2s,
-          box-shadow 0.2s;
-        overflow: hidden;
-      }
-
-      #input-box:focus-within {
-        border-color: rgba(58, 143, 224, 0.4);
-        box-shadow: 0 0 0 3px rgba(58, 143, 224, 0.08);
-      }
-
-      #msg-input {
-        flex: 1;
-        padding: 13px 16px;
-        background: transparent;
-        border: none;
-        color: var(--cumulus);
-        font-size: 14px;
-        font-family: "DM Sans", sans-serif;
-        outline: none;
-        resize: none;
-        line-height: 1.5;
-        max-height: 120px;
-      }
-
-      #msg-input::placeholder {
-        color: var(--nimbus);
-      }
-
-      #send-btn {
-        margin: 8px;
-        padding: 7px 18px;
-        background: linear-gradient(135deg, var(--azure), var(--cerulean));
-        border: none;
-        border-radius: 8px;
-        color: #fff;
-        font-size: 13px;
-        font-family: "Outfit", sans-serif;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.2s;
-        flex-shrink: 0;
-        box-shadow: 0 2px 8px rgba(30, 108, 199, 0.4);
-      }
-
-      #send-btn:hover {
-        background: linear-gradient(135deg, var(--cerulean), var(--daylight));
-        box-shadow: var(--shadow-glow);
-        transform: translateY(-1px);
-      }
-
-      #send-btn:active {
-        transform: translateY(0);
-      }
-
-      /* ── MEMBERS PANEL ── */
-      #members-panel {
-        width: var(--members-w);
-        background: linear-gradient(180deg, #0a2d6e 0%, #0b1e3d 100%);
-        border-left: 1px solid rgba(255, 255, 255, 0.06);
-        display: flex;
-        flex-direction: column;
-        flex-shrink: 0;
-        overflow: hidden;
-      }
-
-      #members-header {
-        padding: 16px 14px 10px;
-        font-family: "Outfit", sans-serif;
-        font-size: 10px;
-        font-weight: 700;
-        letter-spacing: 1.5px;
-        text-transform: uppercase;
-        color: var(--nimbus);
-        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-        flex-shrink: 0;
-      }
-
-      #members-list {
-        flex: 1;
-        overflow-y: auto;
-        padding: 8px;
-      }
-
-      #members-list::-webkit-scrollbar {
-        width: 3px;
-      }
-
-      #members-list::-webkit-scrollbar-thumb {
-        background: rgba(255, 255, 255, 0.08);
-        border-radius: 2px;
-      }
-
-      .member-item {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        padding: 6px 8px;
-        border-radius: 8px;
-        cursor: pointer;
-        transition: background 0.15s;
-        margin-bottom: 1px;
-      }
-
-      .member-item:hover {
-        background: rgba(108, 180, 240, 0.08);
-      }
-
-      .member-avatar {
-        width: 30px;
-        height: 30px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-family: "Outfit", sans-serif;
-        font-weight: 700;
-        font-size: 12px;
-        flex-shrink: 0;
-        position: relative;
-      }
-
-      .member-avatar::after {
-        content: "";
-        position: absolute;
-        bottom: -1px;
-        right: -1px;
-        width: 10px;
-        height: 10px;
-        background: #43c99b;
-        border: 2px solid #0a2d6e;
-        border-radius: 50%;
-        box-shadow: 0 0 5px rgba(67, 201, 155, 0.4);
-      }
-
-      .member-name {
-        font-size: 13px;
-        font-weight: 500;
-        color: var(--mist);
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-
-      .member-handle {
-        font-size: 11px;
-        color: var(--nimbus);
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-
-      /* ── VOICE BAR (bottom of screen when in call) ── */
-      #voice-bar {
-        display: none;
-        position: fixed;
-        bottom: 0;
-        left: var(--sidebar-w);
-        right: var(--members-w);
-        height: 52px;
-        background: rgba(10, 45, 110, 0.95);
-        backdrop-filter: blur(12px);
-        border-top: 1px solid rgba(108, 180, 240, 0.2);
-        align-items: center;
-        padding: 0 16px;
-        gap: 12px;
-        z-index: 50;
-      }
-
-      #voice-bar.active {
-        display: flex;
-      }
-
-      #voice-status {
-        font-size: 13px;
-        color: #43c99b;
-        font-weight: 600;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-      }
-
-      #voice-status::before {
-        content: "";
-        width: 8px;
-        height: 8px;
-        background: #43c99b;
-        border-radius: 50%;
-        box-shadow: 0 0 6px #43c99b;
-        display: inline-block;
-      }
-
-      #voice-peers-bar {
-        flex: 1;
-        display: flex;
-        gap: 8px;
-        overflow: hidden;
-      }
-
-      .vpeer-chip {
-        display: flex;
-        align-items: center;
-        gap: 5px;
-        padding: 4px 10px;
-        background: rgba(255, 255, 255, 0.06);
-        border-radius: 20px;
-        font-size: 12px;
-        color: var(--mist);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-      }
-
-      .vpeer-chip.speaking {
-        border-color: #43c99b;
-        color: #43c99b;
-        background: rgba(67, 201, 155, 0.08);
-      }
-
-      #voice-mute-btn,
-      #voice-leave-btn {
-        padding: 6px 14px;
-        border: none;
-        border-radius: 8px;
-        font-size: 12px;
-        font-family: "Outfit", sans-serif;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.2s;
-        flex-shrink: 0;
-      }
-
-      #voice-mute-btn {
-        background: rgba(255, 255, 255, 0.08);
-        color: var(--cumulus);
-      }
-
-      #voice-mute-btn:hover {
-        background: rgba(255, 255, 255, 0.14);
-      }
-
-      #voice-mute-btn.muted {
-        background: rgba(240, 71, 71, 0.2);
-        color: #f04747;
-        border: 1px solid rgba(240, 71, 71, 0.3);
-      }
-
-      #voice-leave-btn {
-        background: rgba(240, 71, 71, 0.2);
-        color: #f04747;
-        border: 1px solid rgba(240, 71, 71, 0.3);
-      }
-
-      #voice-leave-btn:hover {
-        background: rgba(240, 71, 71, 0.35);
-      }
-
-      /* ── LOGIN OVERLAY ── */
-      #login-overlay {
-        position: fixed;
-        inset: 0;
-        background: linear-gradient(
-          180deg,
-          #0b1e3d 0%,
-          #0a2d6e 60%,
-          #1e6cc7 100%
-        );
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 100;
-        padding: 24px;
-      }
-
-      #login-overlay::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background:
-          radial-gradient(
-            ellipse 80% 50% at 20% 80%,
-            rgba(214, 229, 245, 0.15) 0%,
-            transparent 60%
-          ),
-          radial-gradient(
-            ellipse 60% 40% at 80% 70%,
-            rgba(108, 180, 240, 0.12) 0%,
-            transparent 60%
-          ),
-          radial-gradient(
-            ellipse 100% 60% at 50% 100%,
-            rgba(247, 250, 255, 0.08) 0%,
-            transparent 50%
-          );
-        pointer-events: none;
-      }
-
-      #login-card {
-        background: rgba(247, 250, 255, 0.08);
-        backdrop-filter: blur(24px);
-        -webkit-backdrop-filter: blur(24px);
-        border: 1px solid rgba(255, 255, 255, 0.18);
-        border-radius: 20px;
-        padding: 40px 36px;
-        width: 100%;
-        max-width: 400px;
-        box-shadow: 0 16px 48px rgba(10, 45, 110, 0.4);
-        text-align: center;
-        position: relative;
-        animation: cardIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
-      }
-
-      @keyframes cardIn {
-        from {
-          opacity: 0;
-          transform: translateY(24px) scale(0.96);
-        }
-
-        to {
-          opacity: 1;
-          transform: translateY(0) scale(1);
-        }
-      }
-
-      #login-card .logo {
-        width: 56px;
-        height: 56px;
-        background: linear-gradient(
-          180deg,
-          #0a2d6e 0%,
-          #1e6cc7 40%,
-          #6cb4f0 100%
-        );
-        border-radius: 16px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 28px;
-        margin: 0 auto 20px;
-        box-shadow: var(--shadow-glow);
-      }
-
-      #login-card h1 {
-        font-family: "Outfit", sans-serif;
-        font-size: 26px;
-        font-weight: 700;
-        color: var(--cumulus);
-        margin-bottom: 6px;
-      }
-
-      #login-card p {
-        font-size: 14px;
-        color: var(--mist);
-        margin-bottom: 20px;
-        line-height: 1.6;
-      }
-
-      .auth-tabs {
-        display: flex;
-        gap: 0;
-        margin-bottom: 20px;
-        background: rgba(255, 255, 255, 0.06);
-        border-radius: 10px;
-        padding: 3px;
-      }
-
-      .auth-tab {
-        flex: 1;
-        padding: 8px;
-        border: none;
-        background: transparent;
-        color: var(--nimbus);
-        font-size: 14px;
-        font-family: "Outfit", sans-serif;
-        font-weight: 600;
-        cursor: pointer;
-        border-radius: 8px;
-        transition: all 0.2s;
-      }
-
-      .auth-tab.active {
-        background: rgba(58, 143, 224, 0.25);
-        color: var(--cumulus);
-      }
-
-      .auth-input {
-        width: 100%;
-        padding: 12px 16px;
-        background: rgba(255, 255, 255, 0.08);
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        border-radius: 10px;
-        color: var(--cumulus);
-        font-size: 14px;
-        font-family: "DM Sans", sans-serif;
-        outline: none;
-        margin-bottom: 10px;
-        transition:
-          border-color 0.2s,
-          box-shadow 0.2s;
-      }
-
-      .auth-input::placeholder {
-        color: rgba(184, 203, 228, 0.5);
-      }
-
-      .auth-input:focus {
-        border-color: rgba(58, 143, 224, 0.5);
-        box-shadow: 0 0 0 3px rgba(58, 143, 224, 0.12);
-        background: rgba(255, 255, 255, 0.12);
-      }
-
-      #auth-btn {
-        width: 100%;
-        padding: 13px;
-        background: linear-gradient(
-          135deg,
-          var(--azure) 0%,
-          var(--cerulean) 100%
-        );
-        border: none;
-        border-radius: 10px;
-        color: #fff;
-        font-size: 15px;
-        font-family: "Outfit", sans-serif;
-        font-weight: 600;
-        cursor: pointer;
-        box-shadow: 0 4px 20px rgba(30, 108, 199, 0.45);
-        transition: all 0.2s;
-        margin-top: 4px;
-      }
-
-      #auth-btn:hover {
-        background: linear-gradient(
-          135deg,
-          var(--cerulean) 0%,
-          var(--daylight) 100%
-        );
-        box-shadow: var(--shadow-glow);
-        transform: translateY(-1px);
-      }
-
-      #auth-btn:active {
-        transform: translateY(0);
-      }
-
-      #auth-btn:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-        transform: none;
-      }
-
-      #auth-error {
-        font-size: 13px;
-        color: #f04747;
-        margin-top: 8px;
-        min-height: 18px;
-      }
-
-      /* Avatars */
-      .av-0 {
-        background: linear-gradient(135deg, #1e6cc7, #3a8fe0);
-        color: #fff;
-      }
-
-      .av-1 {
-        background: linear-gradient(135deg, #0a2d6e, #1e6cc7);
-        color: #fff;
-      }
-
-      .av-2 {
-        background: linear-gradient(135deg, #3a8fe0, #6cb4f0);
-        color: #fff;
-      }
-
-      .av-3 {
-        background: linear-gradient(135deg, #163a6b, #3a8fe0);
-        color: #fff;
-      }
-
-      .av-4 {
-        background: linear-gradient(135deg, #6cb4f0, #b8cbe4);
-        color: #0a2d6e;
-      }
-
-      .av-5 {
-        background: linear-gradient(135deg, #0b1e3d, #163a6b);
-        color: #6cb4f0;
-      }
-
-      .av-6 {
-        background: linear-gradient(135deg, #1e6cc7, #6cb4f0);
-        color: #fff;
-      }
-
-      .av-7 {
-        background: linear-gradient(135deg, #3a8fe0, #b8cbe4);
-        color: #0a2d6e;
-      }
-
-      .nc-0 {
-        color: #6cb4f0;
-      }
-
-      .nc-1 {
-        color: #3a8fe0;
-      }
-
-      .nc-2 {
-        color: #90ccf8;
-      }
-
-      .nc-3 {
-        color: #5aaae8;
-      }
-
-      .nc-4 {
-        color: #b8cbe4;
-      }
-
-      .nc-5 {
-        color: #4d9fd8;
-      }
-
-      .nc-6 {
-        color: #7dc0f5;
-      }
-
-      .nc-7 {
-        color: #a5d4f7;
-      }
-
-      /* ── FRIENDS & DM ── */
-      .sb-section-add {
-        background: none;
-        border: none;
-        color: var(--nimbus);
-        cursor: pointer;
-        font-size: 15px;
-        padding: 0 2px;
-        border-radius: 4px;
-        transition: color 0.15s;
-        line-height: 1;
-      }
-
-      .sb-section-add:hover {
-        color: var(--daylight);
-      }
-
-      .dm-item {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 5px 10px;
-        border-radius: 8px;
-        font-size: 13px;
-        color: var(--nimbus);
-        cursor: pointer;
-        transition: all 0.15s;
-        margin: 0 8px 1px;
-        font-weight: 500;
-      }
-
-      .dm-item:hover {
-        background: rgba(108, 180, 240, 0.08);
-        color: var(--mist);
-      }
-
-      .dm-item.active {
-        background: rgba(58, 143, 224, 0.18);
-        color: var(--cumulus);
-      }
-
-      .dm-av {
-        width: 22px;
-        height: 22px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-family: "Outfit", sans-serif;
-        font-weight: 700;
-        font-size: 9px;
-        flex-shrink: 0;
-      }
-
-      .dm-section-label {
-        padding: 10px 16px 4px;
-        font-family: "Outfit", sans-serif;
-        font-size: 10px;
-        font-weight: 700;
-        letter-spacing: 1.5px;
-        text-transform: uppercase;
-        color: var(--nimbus);
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-      }
-
-      .dm-unread {
-        width: 8px;
-        height: 8px;
-        background: var(--cerulean);
-        border-radius: 50%;
-        margin-left: auto;
-        flex-shrink: 0;
-      }
-
-      .member-dm-btn {
-        display: none;
-        background: rgba(58, 143, 224, 0.15);
-        border: 1px solid rgba(58, 143, 224, 0.25);
-        border-radius: 6px;
-        color: var(--daylight);
-        font-size: 11px;
-        padding: 2px 8px;
-        cursor: pointer;
-        transition: all 0.15s;
-        margin-left: auto;
-        flex-shrink: 0;
-        font-family: "Outfit", sans-serif;
-        font-weight: 600;
-      }
-
-      .member-item:hover .member-dm-btn {
-        display: block;
-      }
-
-      .member-dm-btn:hover {
-        background: rgba(58, 143, 224, 0.3);
-      }
-
-      #friends-modal {
-        display: none;
-        position: fixed;
-        inset: 0;
-        background: rgba(11, 30, 61, 0.7);
-        backdrop-filter: blur(6px);
-        z-index: 200;
-        align-items: center;
-        justify-content: center;
-        padding: 24px;
-      }
-
-      #friends-modal.open {
-        display: flex;
-      }
-
-      #friends-card {
-        background: linear-gradient(180deg, #0a2d6e 0%, #0b1e3d 100%);
-        border: 1px solid rgba(108, 180, 240, 0.2);
-        border-radius: 16px;
-        width: 100%;
-        max-width: 420px;
-        max-height: 80vh;
-        display: flex;
-        flex-direction: column;
-        box-shadow: 0 16px 48px rgba(10, 45, 110, 0.5);
-        overflow: hidden;
-      }
-
-      #friends-card-header {
-        padding: 16px 20px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        flex-shrink: 0;
-      }
-
-      #friends-card-header h2 {
-        font-family: "Outfit", sans-serif;
-        font-size: 16px;
-        font-weight: 700;
-        color: var(--cumulus);
-      }
-
-      #friends-close {
-        background: none;
-        border: none;
-        color: var(--nimbus);
-        font-size: 20px;
-        cursor: pointer;
-        line-height: 1;
-        padding: 0;
-      }
-
-      #friends-close:hover {
-        color: var(--cumulus);
-      }
-
-      #friends-add-row {
-        padding: 12px 16px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-        display: flex;
-        gap: 8px;
-        flex-shrink: 0;
-      }
-
-      #friends-add-input {
-        flex: 1;
-        padding: 8px 12px;
-        background: rgba(255, 255, 255, 0.07);
-        border: 1px solid rgba(255, 255, 255, 0.12);
-        border-radius: 8px;
-        color: var(--cumulus);
-        font-size: 13px;
-        font-family: "DM Sans", sans-serif;
-        outline: none;
-      }
-
-      #friends-add-input:focus {
-        border-color: rgba(58, 143, 224, 0.4);
-      }
-
-      #friends-add-input::placeholder {
-        color: var(--nimbus);
-      }
-
-      #friends-add-btn {
-        padding: 8px 16px;
-        background: linear-gradient(135deg, var(--azure), var(--cerulean));
-        border: none;
-        border-radius: 8px;
-        color: #fff;
-        font-size: 13px;
-        font-family: "Outfit", sans-serif;
-        font-weight: 600;
-        cursor: pointer;
-        white-space: nowrap;
-      }
-
-      #friends-add-btn:hover {
-        background: linear-gradient(135deg, var(--cerulean), var(--daylight));
-      }
-
-      #friends-add-msg {
-        padding: 4px 16px;
-        font-size: 12px;
-        min-height: 18px;
-        flex-shrink: 0;
-      }
-
-      #friends-tabs {
-        display: flex;
-        padding: 0 16px;
-        gap: 4px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-        flex-shrink: 0;
-      }
-
-      .ftab {
-        padding: 8px 12px;
-        background: none;
-        border: none;
-        color: var(--nimbus);
-        font-size: 13px;
-        font-family: "Outfit", sans-serif;
-        font-weight: 600;
-        cursor: pointer;
-        border-bottom: 2px solid transparent;
-        transition: all 0.15s;
-        position: relative;
-      }
-
-      .ftab.active {
-        color: var(--daylight);
-        border-bottom-color: var(--daylight);
-      }
-
-      .ftab .ftab-badge {
-        position: absolute;
-        top: 4px;
-        right: 2px;
-        background: #f04747;
-        color: #fff;
-        font-size: 9px;
-        font-weight: 700;
-        border-radius: 8px;
-        padding: 1px 4px;
-        min-width: 14px;
-        text-align: center;
-      }
-
-      #friends-list {
-        flex: 1;
-        overflow-y: auto;
-        padding: 8px;
-      }
-
-      #friends-list::-webkit-scrollbar {
-        width: 3px;
-      }
-
-      #friends-list::-webkit-scrollbar-thumb {
-        background: rgba(255, 255, 255, 0.08);
-        border-radius: 2px;
-      }
-
-      .friend-item {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        padding: 8px 10px;
-        border-radius: 8px;
-        transition: background 0.15s;
-      }
-
-      .friend-item:hover {
-        background: rgba(108, 180, 240, 0.06);
-      }
-
-      .friend-av {
-        width: 34px;
-        height: 34px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-family: "Outfit", sans-serif;
-        font-weight: 700;
-        font-size: 13px;
-        flex-shrink: 0;
-      }
-
-      .friend-name {
-        font-size: 14px;
-        font-weight: 500;
-        color: var(--mist);
-        flex: 1;
-        min-width: 0;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
-
-      .friend-actions {
-        display: flex;
-        gap: 6px;
-        flex-shrink: 0;
-      }
-
-      .friend-actions button {
-        padding: 4px 10px;
-        border-radius: 6px;
-        font-size: 12px;
-        font-family: "Outfit", sans-serif;
-        font-weight: 600;
-        cursor: pointer;
-        border: none;
-        transition: all 0.15s;
-      }
-
-      .btn-accept {
-        background: rgba(67, 201, 155, 0.2);
-        color: #43c99b;
-      }
-
-      .btn-accept:hover {
-        background: rgba(67, 201, 155, 0.35);
-      }
-
-      .btn-decline,
-      .btn-remove {
-        background: rgba(240, 71, 71, 0.15);
-        color: #f04747;
-      }
-
-      .btn-decline:hover,
-      .btn-remove:hover {
-        background: rgba(240, 71, 71, 0.3);
-      }
-
-      .btn-dm {
-        background: rgba(58, 143, 224, 0.15);
-        color: var(--daylight);
-      }
-
-      .btn-dm:hover {
-        background: rgba(58, 143, 224, 0.3);
-      }
-
-      .friend-empty {
-        padding: 24px;
-        text-align: center;
-        font-size: 13px;
-        color: var(--nimbus);
-      }
-
-      .dm-banner {
-        padding: 24px 20px 16px;
-        margin-bottom: 8px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-      }
-
-      .dm-banner-av {
-        width: 56px;
-        height: 56px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-family: "Outfit", sans-serif;
-        font-weight: 700;
-        font-size: 22px;
-        margin-bottom: 10px;
-      }
-
-      .dm-banner h2 {
-        font-family: "Outfit", sans-serif;
-        font-size: 20px;
-        font-weight: 700;
-        color: var(--cumulus);
-        margin-bottom: 4px;
-      }
-
-      .dm-banner p {
-        font-size: 13px;
-        color: var(--nimbus);
-      }
 
-      #toast {
-        position: fixed;
-        bottom: 80px;
-        right: 20px;
-        background: linear-gradient(135deg, var(--azure), var(--cerulean));
-        color: #fff;
-        padding: 10px 16px;
-        border-radius: 10px;
-        font-size: 13px;
-        font-family: "Outfit", sans-serif;
-        font-weight: 600;
-        box-shadow: var(--shadow-lg);
-        z-index: 300;
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welkin Chat</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=DM+Sans:wght@400;500&display=swap"
+    rel="stylesheet">
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    var sidebarScript = document.createElement("script");
+    sidebarScript.src = window.location.origin + "/sidebar.js";
+    document.head.appendChild(sidebarScript);
+  </script>
+  <style>
+    :root {
+      --stratosphere: #0A2D6E;
+      --azure: #1E6CC7;
+      --cerulean: #3A8FE0;
+      --daylight: #6CB4F0;
+      --cumulus: #F7FAFF;
+      --cirrus: #E8EFF8;
+      --stratus: #C5D3E8;
+      --nimbus: #8FA4C2;
+      --abyss: #0B1E3D;
+      --twilight: #163A6B;
+      --mist: #B8CBE4;
+      --horizon: #D6E5F5;
+      --shadow-sm: 0 2px 8px rgba(10, 45, 110, .10);
+      --shadow-md: 0 4px 16px rgba(10, 45, 110, .15);
+      --shadow-lg: 0 8px 32px rgba(10, 45, 110, .20);
+      --shadow-glow: 0 0 20px rgba(58, 143, 224, .35);
+      --sidebar-w: 240px;
+      --members-w: 220px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--abyss);
+      color: var(--cumulus);
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column
+    }
+
+    #app {
+      display: flex;
+      height: 100vh;
+      overflow: hidden
+    }
+
+    /* ── SIDEBAR ── */
+    #sidebar {
+      width: var(--sidebar-w);
+      background: linear-gradient(180deg, #0A2D6E 0%, #0B1E3D 100%);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      border-right: 1px solid rgba(255, 255, 255, .06);
+      overflow: hidden
+    }
+
+    #server-header {
+      padding: 16px 16px 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, .08);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255, 255, 255, .04);
+      backdrop-filter: blur(10px);
+      flex-shrink: 0
+    }
+
+    #server-header .server-icon {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(180deg, #0A2D6E 0%, #1E6CC7 40%, #6CB4F0 100%);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      box-shadow: var(--shadow-sm);
+      flex-shrink: 0
+    }
+
+    #server-header .server-name {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--cumulus);
+      letter-spacing: .3px
+    }
+
+    #logout-btn {
+      background: none;
+      border: none;
+      color: var(--nimbus);
+      cursor: pointer;
+      font-size: 14px;
+      padding: 4px 6px;
+      border-radius: 6px;
+      transition: all .15s;
+      margin-left: auto;
+      flex-shrink: 0
+    }
+
+    #logout-btn:hover {
+      color: #f04747;
+      background: rgba(240, 71, 71, .12)
+    }
+
+    #channels-label {
+      padding: 16px 16px 6px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--nimbus);
+      flex-shrink: 0
+    }
+
+    #channels-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0 8px 8px
+    }
+
+    #channels-list::-webkit-scrollbar {
+      width: 3px
+    }
+
+    #channels-list::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, .1);
+      border-radius: 2px
+    }
+
+    .channel-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-size: 14px;
+      color: var(--nimbus);
+      cursor: pointer;
+      transition: all .15s ease;
+      margin-bottom: 1px;
+      font-weight: 500
+    }
+
+    .channel-item:hover {
+      background: rgba(108, 180, 240, .08);
+      color: var(--mist)
+    }
+
+    .channel-item.active {
+      background: rgba(58, 143, 224, .18);
+      color: var(--cumulus)
+    }
+
+    .channel-item .hash {
+      font-size: 16px;
+      color: var(--nimbus);
+      font-weight: 400;
+      flex-shrink: 0
+    }
+
+    .channel-item.active .hash {
+      color: var(--daylight)
+    }
+
+    /* Voice channel in sidebar */
+    #voice-channel-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-size: 14px;
+      color: var(--nimbus);
+      cursor: pointer;
+      transition: all .15s ease;
+      margin: 4px 8px 0;
+      font-weight: 500;
+      border: 1px solid transparent
+    }
+
+    #voice-channel-btn:hover {
+      background: rgba(108, 180, 240, .08);
+      color: var(--mist)
+    }
+
+    #voice-channel-btn.in-voice {
+      background: rgba(67, 201, 155, .12);
+      border-color: rgba(67, 201, 155, .25);
+      color: #43c99b
+    }
+
+    #voice-channel-btn .vc-icon {
+      font-size: 15px;
+      flex-shrink: 0
+    }
+
+    #voice-members-sidebar {
+      padding: 0 8px;
+      margin-top: 4px
+    }
+
+    .voice-member-chip {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 8px;
+      font-size: 12px;
+      color: var(--nimbus);
+      margin-bottom: 2px
+    }
+
+    .voice-member-chip .vm-dot {
+      width: 6px;
+      height: 6px;
+      background: #43c99b;
+      border-radius: 50%;
+      flex-shrink: 0
+    }
+
+    .voice-member-chip.speaking .vm-dot {
+      box-shadow: 0 0 5px #43c99b;
+      background: #43c99b
+    }
+
+    /* ── MAIN ── */
+    #main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: var(--abyss);
+      overflow: hidden;
+      min-width: 0
+    }
+
+    #channel-header {
+      height: 52px;
+      background: rgba(11, 30, 61, .95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255, 255, 255, .06);
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      gap: 10px;
+      flex-shrink: 0;
+      box-shadow: var(--shadow-sm)
+    }
+
+    #channel-header .hash {
+      color: var(--daylight);
+      font-size: 20px;
+      font-weight: 300
+    }
+
+    #channel-header .channel-name {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 600;
+      font-size: 15px;
+      color: var(--cumulus)
+    }
+
+    #channel-header .divider {
+      width: 1px;
+      height: 20px;
+      background: rgba(255, 255, 255, .12);
+      margin: 0 6px
+    }
+
+    #channel-header .channel-desc {
+      font-size: 13px;
+      color: var(--nimbus)
+    }
+
+    #online-pill {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      background: rgba(58, 143, 224, .12);
+      border: 1px solid rgba(58, 143, 224, .2);
+      border-radius: 20px;
+      font-size: 12px;
+      color: var(--daylight);
+      font-weight: 500
+    }
+
+    #online-pill .dot {
+      width: 7px;
+      height: 7px;
+      background: #43c99b;
+      border-radius: 50%;
+      box-shadow: 0 0 6px rgba(67, 201, 155, .6);
+      animation: pulse 2s infinite
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1
+      }
+
+      50% {
+        opacity: .4
+      }
+    }
+
+    /* ── MESSAGES ── */
+    #messages-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px 0 8px;
+      display: flex;
+      flex-direction: column;
+      scroll-behavior: smooth
+    }
+
+    #messages-area::-webkit-scrollbar {
+      width: 5px
+    }
+
+    #messages-area::-webkit-scrollbar-thumb {
+      background: rgba(108, 180, 240, .15);
+      border-radius: 3px
+    }
+
+    #welcome-banner {
+      padding: 24px 20px 16px;
+      margin-bottom: 8px;
+      border-bottom: 1px solid rgba(255, 255, 255, .06)
+    }
+
+    #welcome-banner h2 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--cumulus);
+      margin-bottom: 4px
+    }
+
+    #welcome-banner p {
+      font-size: 14px;
+      color: var(--nimbus)
+    }
+
+    .msg-group {
+      display: flex;
+      gap: 14px;
+      padding: 2px 20px;
+      transition: background .1s;
+      position: relative
+    }
+
+    .msg-group:hover {
+      background: rgba(255, 255, 255, .02)
+    }
+
+    .msg-group.has-header {
+      padding-top: 14px;
+      margin-top: 2px
+    }
+
+    .msg-avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 14px;
+      flex-shrink: 0;
+      margin-top: 1px;
+      box-shadow: var(--shadow-sm)
+    }
+
+    .msg-group.grouped .msg-avatar {
+      visibility: hidden
+    }
+
+    .msg-body {
+      flex: 1;
+      min-width: 0
+    }
+
+    .msg-meta {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      margin-bottom: 3px
+    }
+
+    .msg-group.grouped .msg-meta {
+      display: none
+    }
+
+    .msg-name {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 600;
+      font-size: 14px
+    }
+
+    .msg-time {
+      font-size: 11px;
+      color: var(--nimbus)
+    }
+
+    .msg-text {
+      font-size: 14px;
+      line-height: 1.55;
+      color: var(--cirrus);
+      word-break: break-word
+    }
+
+    .hover-time {
+      display: none;
+      position: absolute;
+      left: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 10px;
+      color: var(--nimbus)
+    }
+
+    .msg-group.grouped:hover .hover-time {
+      display: block
+    }
+
+    .msg-system {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 20px;
+      margin: 6px 0
+    }
+
+    .msg-system::before,
+    .msg-system::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(255, 255, 255, .06)
+    }
+
+    .msg-system span {
+      font-size: 11px;
+      color: var(--nimbus);
+      white-space: nowrap;
+      padding: 2px 10px;
+      background: rgba(108, 180, 240, .06);
+      border-radius: 10px;
+      border: 1px solid rgba(108, 180, 240, .1)
+    }
+
+    #typing-bar {
+      height: 18px;
+      padding: 0 20px;
+      font-size: 12px;
+      color: var(--nimbus);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0
+    }
+
+    /* ── INPUT ── */
+    #input-wrap {
+      padding: 0 20px 20px;
+      flex-shrink: 0
+    }
+
+    #input-box {
+      background: rgba(22, 58, 107, .5);
+      border: 1px solid rgba(108, 180, 240, .15);
+      border-radius: 14px;
+      display: flex;
+      align-items: flex-end;
+      backdrop-filter: blur(10px);
+      transition: border-color .2s, box-shadow .2s;
+      overflow: hidden
+    }
+
+    #input-box:focus-within {
+      border-color: rgba(58, 143, 224, .4);
+      box-shadow: 0 0 0 3px rgba(58, 143, 224, .08)
+    }
+
+    #msg-input {
+      flex: 1;
+      padding: 13px 16px;
+      background: transparent;
+      border: none;
+      color: var(--cumulus);
+      font-size: 14px;
+      font-family: 'DM Sans', sans-serif;
+      outline: none;
+      resize: none;
+      line-height: 1.5;
+      max-height: 120px
+    }
+
+    #msg-input::placeholder {
+      color: var(--nimbus)
+    }
+
+    #send-btn {
+      margin: 8px;
+      padding: 7px 18px;
+      background: linear-gradient(135deg, var(--azure), var(--cerulean));
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      font-size: 13px;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .2s;
+      flex-shrink: 0;
+      box-shadow: 0 2px 8px rgba(30, 108, 199, .4)
+    }
+
+    #send-btn:hover {
+      background: linear-gradient(135deg, var(--cerulean), var(--daylight));
+      box-shadow: var(--shadow-glow);
+      transform: translateY(-1px)
+    }
+
+    #send-btn:active {
+      transform: translateY(0)
+    }
+
+    /* ── MEMBERS PANEL ── */
+    #members-panel {
+      width: var(--members-w);
+      background: linear-gradient(180deg, #0A2D6E 0%, #0B1E3D 100%);
+      border-left: 1px solid rgba(255, 255, 255, .06);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      overflow: hidden
+    }
+
+    #members-header {
+      padding: 16px 14px 10px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--nimbus);
+      border-bottom: 1px solid rgba(255, 255, 255, .06);
+      flex-shrink: 0
+    }
+
+    #members-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px
+    }
+
+    #members-list::-webkit-scrollbar {
+      width: 3px
+    }
+
+    #members-list::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, .08);
+      border-radius: 2px
+    }
+
+    .member-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 8px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background .15s;
+      margin-bottom: 1px
+    }
+
+    .member-item:hover {
+      background: rgba(108, 180, 240, .08)
+    }
+
+    .member-avatar {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 12px;
+      flex-shrink: 0;
+      position: relative
+    }
+
+    .member-avatar::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      right: -1px;
+      width: 10px;
+      height: 10px;
+      background: #43c99b;
+      border: 2px solid #0A2D6E;
+      border-radius: 50%;
+      box-shadow: 0 0 5px rgba(67, 201, 155, .4)
+    }
+
+    .member-name {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--mist);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis
+    }
+
+    .member-handle {
+      font-size: 11px;
+      color: var(--nimbus);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis
+    }
+
+    /* ── VOICE BAR (bottom of screen when in call) ── */
+    #voice-bar {
+      display: none;
+      position: fixed;
+      bottom: 0;
+      left: var(--sidebar-w);
+      right: var(--members-w);
+      height: 52px;
+      background: rgba(10, 45, 110, .95);
+      backdrop-filter: blur(12px);
+      border-top: 1px solid rgba(108, 180, 240, .2);
+      align-items: center;
+      padding: 0 16px;
+      gap: 12px;
+      z-index: 50
+    }
+
+    #voice-bar.active {
+      display: flex
+    }
+
+    #voice-status {
+      font-size: 13px;
+      color: #43c99b;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px
+    }
+
+    #voice-status::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      background: #43c99b;
+      border-radius: 50%;
+      box-shadow: 0 0 6px #43c99b;
+      display: inline-block
+    }
+
+    #voice-peers-bar {
+      flex: 1;
+      display: flex;
+      gap: 8px;
+      overflow: hidden
+    }
+
+    .vpeer-chip {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      background: rgba(255, 255, 255, .06);
+      border-radius: 20px;
+      font-size: 12px;
+      color: var(--mist);
+      border: 1px solid rgba(255, 255, 255, .08)
+    }
+
+    .vpeer-chip.speaking {
+      border-color: #43c99b;
+      color: #43c99b;
+      background: rgba(67, 201, 155, .08)
+    }
+
+    #voice-mute-btn,
+    #voice-leave-btn {
+      padding: 6px 14px;
+      border: none;
+      border-radius: 8px;
+      font-size: 12px;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .2s;
+      flex-shrink: 0
+    }
+
+    #voice-mute-btn {
+      background: rgba(255, 255, 255, .08);
+      color: var(--cumulus)
+    }
+
+    #voice-mute-btn:hover {
+      background: rgba(255, 255, 255, .14)
+    }
+
+    #voice-mute-btn.muted {
+      background: rgba(240, 71, 71, .2);
+      color: #f04747;
+      border: 1px solid rgba(240, 71, 71, .3)
+    }
+
+    #voice-leave-btn {
+      background: rgba(240, 71, 71, .2);
+      color: #f04747;
+      border: 1px solid rgba(240, 71, 71, .3)
+    }
+
+    #voice-leave-btn:hover {
+      background: rgba(240, 71, 71, .35)
+    }
+
+    /* ── LOGIN OVERLAY ── */
+    #login-overlay {
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(180deg, #0B1E3D 0%, #0A2D6E 60%, #1E6CC7 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      padding: 24px
+    }
+
+    #login-overlay::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 50% at 20% 80%, rgba(214, 229, 245, .15) 0%, transparent 60%), radial-gradient(ellipse 60% 40% at 80% 70%, rgba(108, 180, 240, .12) 0%, transparent 60%), radial-gradient(ellipse 100% 60% at 50% 100%, rgba(247, 250, 255, .08) 0%, transparent 50%);
+      pointer-events: none
+    }
+
+    #login-card {
+      background: rgba(247, 250, 255, .08);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 255, 255, .18);
+      border-radius: 20px;
+      padding: 40px 36px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 16px 48px rgba(10, 45, 110, .4);
+      text-align: center;
+      position: relative;
+      animation: cardIn .4s cubic-bezier(.34, 1.56, .64, 1) both
+    }
+
+    @keyframes cardIn {
+      from {
         opacity: 0;
-        transform: translateY(8px);
-        transition: all 0.25s;
-        pointer-events: none;
+        transform: translateY(24px) scale(.96)
       }
 
-      #toast.show {
+      to {
         opacity: 1;
-        transform: translateY(0);
+        transform: translateY(0) scale(1)
+      }
+    }
+
+    #login-card .logo {
+      width: 56px;
+      height: 56px;
+      background: linear-gradient(180deg, #0A2D6E 0%, #1E6CC7 40%, #6CB4F0 100%);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      margin: 0 auto 20px;
+      box-shadow: var(--shadow-glow)
+    }
+
+    #login-card h1 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--cumulus);
+      margin-bottom: 6px
+    }
+
+    #login-card p {
+      font-size: 14px;
+      color: var(--mist);
+      margin-bottom: 20px;
+      line-height: 1.6
+    }
+
+    .auth-tabs {
+      display: flex;
+      gap: 0;
+      margin-bottom: 20px;
+      background: rgba(255, 255, 255, .06);
+      border-radius: 10px;
+      padding: 3px
+    }
+
+    .auth-tab {
+      flex: 1;
+      padding: 8px;
+      border: none;
+      background: transparent;
+      color: var(--nimbus);
+      font-size: 14px;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 600;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: all .2s
+    }
+
+    .auth-tab.active {
+      background: rgba(58, 143, 224, .25);
+      color: var(--cumulus)
+    }
+
+    .auth-input {
+      width: 100%;
+      padding: 12px 16px;
+      background: rgba(255, 255, 255, .08);
+      border: 1px solid rgba(255, 255, 255, .15);
+      border-radius: 10px;
+      color: var(--cumulus);
+      font-size: 14px;
+      font-family: 'DM Sans', sans-serif;
+      outline: none;
+      margin-bottom: 10px;
+      transition: border-color .2s, box-shadow .2s
+    }
+
+    .auth-input::placeholder {
+      color: rgba(184, 203, 228, .5)
+    }
+
+    .auth-input:focus {
+      border-color: rgba(58, 143, 224, .5);
+      box-shadow: 0 0 0 3px rgba(58, 143, 224, .12);
+      background: rgba(255, 255, 255, .12)
+    }
+
+    #auth-btn {
+      width: 100%;
+      padding: 13px;
+      background: linear-gradient(135deg, var(--azure) 0%, var(--cerulean) 100%);
+      border: none;
+      border-radius: 10px;
+      color: #fff;
+      font-size: 15px;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(30, 108, 199, .45);
+      transition: all .2s;
+      margin-top: 4px
+    }
+
+    #auth-btn:hover {
+      background: linear-gradient(135deg, var(--cerulean) 0%, var(--daylight) 100%);
+      box-shadow: var(--shadow-glow);
+      transform: translateY(-1px)
+    }
+
+    #auth-btn:active {
+      transform: translateY(0)
+    }
+
+    #auth-btn:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+      transform: none
+    }
+
+    #auth-error {
+      font-size: 13px;
+      color: #f04747;
+      margin-top: 8px;
+      min-height: 18px
+    }
+
+    /* Avatars */
+    .av-0 {
+      background: linear-gradient(135deg, #1E6CC7, #3A8FE0);
+      color: #fff
+    }
+
+    .av-1 {
+      background: linear-gradient(135deg, #0A2D6E, #1E6CC7);
+      color: #fff
+    }
+
+    .av-2 {
+      background: linear-gradient(135deg, #3A8FE0, #6CB4F0);
+      color: #fff
+    }
+
+    .av-3 {
+      background: linear-gradient(135deg, #163A6B, #3A8FE0);
+      color: #fff
+    }
+
+    .av-4 {
+      background: linear-gradient(135deg, #6CB4F0, #B8CBE4);
+      color: #0A2D6E
+    }
+
+    .av-5 {
+      background: linear-gradient(135deg, #0B1E3D, #163A6B);
+      color: #6CB4F0
+    }
+
+    .av-6 {
+      background: linear-gradient(135deg, #1E6CC7, #6CB4F0);
+      color: #fff
+    }
+
+    .av-7 {
+      background: linear-gradient(135deg, #3A8FE0, #B8CBE4);
+      color: #0A2D6E
+    }
+
+    .nc-0 {
+      color: #6CB4F0
+    }
+
+    .nc-1 {
+      color: #3A8FE0
+    }
+
+    .nc-2 {
+      color: #90ccf8
+    }
+
+    .nc-3 {
+      color: #5aaae8
+    }
+
+    .nc-4 {
+      color: #B8CBE4
+    }
+
+    .nc-5 {
+      color: #4d9fd8
+    }
+
+    .nc-6 {
+      color: #7dc0f5
+    }
+
+    .nc-7 {
+      color: #a5d4f7
+    }
+
+
+    /* ── FRIENDS & DM ── */
+    .sb-section-add {
+      background: none;
+      border: none;
+      color: var(--nimbus);
+      cursor: pointer;
+      font-size: 15px;
+      padding: 0 2px;
+      border-radius: 4px;
+      transition: color .15s;
+      line-height: 1
+    }
+
+    .sb-section-add:hover {
+      color: var(--daylight)
+    }
+
+    .dm-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-size: 14px;
+      color: var(--nimbus);
+      cursor: pointer;
+      transition: all .15s;
+      margin: 0 8px 1px;
+      font-weight: 500
+    }
+
+    .dm-item:hover {
+      background: rgba(108, 180, 240, .08);
+      color: var(--mist)
+    }
+
+    .dm-item.active {
+      background: rgba(58, 143, 224, .18);
+      color: var(--cumulus)
+    }
+
+    .dm-av {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: "Outfit", sans-serif;
+      font-weight: 700;
+      font-size: 9px;
+      flex-shrink: 0
+    }
+
+    .dm-section-label {
+      padding: 10px 16px 4px;
+      font-family: "Outfit", sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--nimbus);
+      display: flex;
+      align-items: center;
+      justify-content: space-between
+    }
+
+    .dm-unread {
+      width: 8px;
+      height: 8px;
+      background: var(--cerulean);
+      border-radius: 50%;
+      margin-left: auto;
+      flex-shrink: 0
+    }
+
+    .member-dm-btn {
+      display: none;
+      background: rgba(58, 143, 224, .15);
+      border: 1px solid rgba(58, 143, 224, .25);
+      border-radius: 6px;
+      color: var(--daylight);
+      font-size: 11px;
+      padding: 2px 8px;
+      cursor: pointer;
+      transition: all .15s;
+      margin-left: auto;
+      flex-shrink: 0;
+      font-family: "Outfit", sans-serif;
+      font-weight: 600
+    }
+
+    .member-item:hover .member-dm-btn {
+      display: block
+    }
+
+    .member-dm-btn:hover {
+      background: rgba(58, 143, 224, .3)
+    }
+
+    #friends-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(11, 30, 61, .7);
+      backdrop-filter: blur(6px);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+      padding: 24px
+    }
+
+    #friends-modal.open {
+      display: flex
+    }
+
+    #friends-card {
+      background: linear-gradient(180deg, #0A2D6E 0%, #0B1E3D 100%);
+      border: 1px solid rgba(108, 180, 240, .2);
+      border-radius: 16px;
+      width: 100%;
+      max-width: 420px;
+      max-height: 80vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 16px 48px rgba(10, 45, 110, .5);
+      overflow: hidden
+    }
+
+    #friends-card-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, .06);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0
+    }
+
+    #friends-card-header h2 {
+      font-family: "Outfit", sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--cumulus)
+    }
+
+    #friends-close {
+      background: none;
+      border: none;
+      color: var(--nimbus);
+      font-size: 20px;
+      cursor: pointer;
+      line-height: 1;
+      padding: 0
+    }
+
+    #friends-close:hover {
+      color: var(--cumulus)
+    }
+
+    #friends-add-row {
+      padding: 12px 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, .06);
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0
+    }
+
+    #friends-add-input {
+      flex: 1;
+      padding: 8px 12px;
+      background: rgba(255, 255, 255, .07);
+      border: 1px solid rgba(255, 255, 255, .12);
+      border-radius: 8px;
+      color: var(--cumulus);
+      font-size: 13px;
+      font-family: "DM Sans", sans-serif;
+      outline: none
+    }
+
+    #friends-add-input:focus {
+      border-color: rgba(58, 143, 224, .4)
+    }
+
+    #friends-add-input::placeholder {
+      color: var(--nimbus)
+    }
+
+    #friends-add-btn {
+      padding: 8px 16px;
+      background: linear-gradient(135deg, var(--azure), var(--cerulean));
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      font-size: 13px;
+      font-family: "Outfit", sans-serif;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap
+    }
+
+    #friends-add-btn:hover {
+      background: linear-gradient(135deg, var(--cerulean), var(--daylight))
+    }
+
+    #friends-add-msg {
+      padding: 4px 16px;
+      font-size: 12px;
+      min-height: 18px;
+      flex-shrink: 0
+    }
+
+    #friends-tabs {
+      display: flex;
+      padding: 0 16px;
+      gap: 4px;
+      border-bottom: 1px solid rgba(255, 255, 255, .06);
+      flex-shrink: 0
+    }
+
+    .ftab {
+      padding: 8px 12px;
+      background: none;
+      border: none;
+      color: var(--nimbus);
+      font-size: 13px;
+      font-family: "Outfit", sans-serif;
+      font-weight: 600;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all .15s;
+      position: relative
+    }
+
+    .ftab.active {
+      color: var(--daylight);
+      border-bottom-color: var(--daylight)
+    }
+
+    .ftab .ftab-badge {
+      position: absolute;
+      top: 4px;
+      right: 2px;
+      background: #f04747;
+      color: #fff;
+      font-size: 9px;
+      font-weight: 700;
+      border-radius: 8px;
+      padding: 1px 4px;
+      min-width: 14px;
+      text-align: center
+    }
+
+    #friends-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px
+    }
+
+    #friends-list::-webkit-scrollbar {
+      width: 3px
+    }
+
+    #friends-list::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, .08);
+      border-radius: 2px
+    }
+
+    .friend-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      transition: background .15s
+    }
+
+    .friend-item:hover {
+      background: rgba(108, 180, 240, .06)
+    }
+
+    .friend-av {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: "Outfit", sans-serif;
+      font-weight: 700;
+      font-size: 13px;
+      flex-shrink: 0
+    }
+
+    .friend-name {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--mist);
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap
+    }
+
+    .friend-actions {
+      display: flex;
+      gap: 6px;
+      flex-shrink: 0
+    }
+
+    .friend-actions button {
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-family: "Outfit", sans-serif;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all .15s
+    }
+
+    .btn-accept {
+      background: rgba(67, 201, 155, .2);
+      color: #43c99b
+    }
+
+    .btn-accept:hover {
+      background: rgba(67, 201, 155, .35)
+    }
+
+    .btn-decline,
+    .btn-remove {
+      background: rgba(240, 71, 71, .15);
+      color: #f04747
+    }
+
+    .btn-decline:hover,
+    .btn-remove:hover {
+      background: rgba(240, 71, 71, .3)
+    }
+
+    .btn-dm {
+      background: rgba(58, 143, 224, .15);
+      color: var(--daylight)
+    }
+
+    .btn-dm:hover {
+      background: rgba(58, 143, 224, .3)
+    }
+
+    .friend-empty {
+      padding: 24px;
+      text-align: center;
+      font-size: 13px;
+      color: var(--nimbus)
+    }
+
+    .dm-banner {
+      padding: 24px 20px 16px;
+      margin-bottom: 8px;
+      border-bottom: 1px solid rgba(255, 255, 255, .06)
+    }
+
+    .dm-banner-av {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: "Outfit", sans-serif;
+      font-weight: 700;
+      font-size: 22px;
+      margin-bottom: 10px
+    }
+
+    .dm-banner h2 {
+      font-family: "Outfit", sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--cumulus);
+      margin-bottom: 4px
+    }
+
+    .dm-banner p {
+      font-size: 13px;
+      color: var(--nimbus)
+    }
+
+    #toast {
+      position: fixed;
+      bottom: 80px;
+      right: 20px;
+      background: linear-gradient(135deg, var(--azure), var(--cerulean));
+      color: #fff;
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-family: "Outfit", sans-serif;
+      font-weight: 600;
+      box-shadow: var(--shadow-lg);
+      z-index: 300;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: all .25s;
+      pointer-events: none
+    }
+
+    #toast.show {
+      opacity: 1;
+      transform: translateY(0)
+    }
+
+    @keyframes msgIn {
+      from {
+        opacity: 0;
+        transform: translateY(5px)
       }
 
-      @keyframes msgIn {
-        from {
-          opacity: 0;
-          transform: translateY(5px);
-        }
-
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
+      to {
+        opacity: 1;
+        transform: translateY(0)
       }
+    }
 
-      .msg-new {
-        animation: msgIn 0.18s ease both;
-      }
-    </style>
-  </head>
+    .msg-new {
+      animation: msgIn .18s ease both
+    }
+  </style>
+</head>
 
-  <body>
-    <!-- LOGIN -->
-    <div id="login-overlay">
-      <div id="login-card">
-        <div class="logo">☁️</div>
-        <h1>Welkin Chat</h1>
-        <p>Sign in or create an account<br />to join the community</p>
-        <div class="auth-tabs">
-          <button
-            class="auth-tab active"
-            id="tab-login"
-            onclick="switchTab('login')"
-          >
-            Sign In
-          </button>
-          <button
-            class="auth-tab"
-            id="tab-register"
-            onclick="switchTab('register')"
-          >
-            Register
-          </button>
+<body>
+
+  <!-- LOGIN -->
+  <div id="login-overlay">
+    <div id="login-card">
+      <div class="logo">☁️</div>
+      <h1>Welkin Chat</h1>
+      <p>Sign in or create an account<br>to join the community</p>
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tab-login" onclick="switchTab('login')">Sign In</button>
+        <button class="auth-tab" id="tab-register" onclick="switchTab('register')">Register</button>
+      </div>
+      <input class="auth-input" id="auth-username" type="text" placeholder="Username" maxlength="24" autocomplete="off"
+        spellcheck="false">
+      <input class="auth-input" id="auth-password" type="password" placeholder="Password" maxlength="64">
+      <div id="auth-error"></div>
+      <button id="auth-btn">Sign In</button>
+    </div>
+  </div>
+
+  <!-- APP -->
+  <div id="app">
+    <!-- LEFT SIDEBAR -->
+    <div id="sidebar">
+      <div id="server-header">
+        <div class="server-icon">☁️</div>
+        <div class="server-name">Welkin<strong style="color: #1E6CC7;">.Chat</strong></div>
+        <button id="logout-btn" onclick="logout()" title="Sign out">Log Out</button>
+      </div>
+      <div id="channels-label">Text Channels</div>
+      <div id="channels-list">
+        <div class="channel-item active"><span class="hash">#</span>general</div>
+      </div>
+      <!-- DMs -->
+      <!--
+      <div class="dm-section-label">Direct Messages <button class="sb-section-add" onclick="openFriendsModal()"
+          title="Friends">👥</button></div>
+      <div id="dm-list"></div>
+      -->
+      <div
+        style="padding:12px 16px 6px;font-family:'Outfit',sans-serif;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--nimbus);">
+        Voice Channels</div>
+      <div id="voice-channel-btn"><span class="vc-icon">🔊</span>General Voice</div>
+      <div id="voice-members-sidebar"></div>
+    </div>
+
+    <!-- MAIN -->
+    <div id="main">
+      <div id="channel-header">
+        <span class="hash">#</span>
+        <span class="channel-name">general</span>
+        <span class="divider"></span>
+        <span class="channel-desc">Welcome to Welkin</span>
+        <div id="online-pill">
+          <span class="dot"></span>
+          <span id="online-num">—</span> online
         </div>
-        <input
-          class="auth-input"
-          id="auth-username"
-          type="text"
-          placeholder="Username"
-          maxlength="24"
-          autocomplete="off"
-          spellcheck="false"
-        />
-        <input
-          class="auth-input"
-          id="auth-password"
-          type="password"
-          placeholder="Password"
-          maxlength="64"
-        />
-        <div id="auth-error"></div>
-        <button id="auth-btn">Sign In</button>
+      </div>
+      <div id="messages-area">
+        <div id="welcome-banner">
+          <h2>☁️ #general</h2>
+          <p>The beginning of the #general channel. Say hello!</p>
+        </div>
+      </div>
+      <div id="typing-bar"></div>
+      <div id="input-wrap">
+        <div id="input-box">
+          <textarea id="msg-input" placeholder="Message #general" rows="1" maxlength="500"></textarea>
+          <button id="send-btn">Send</button>
+        </div>
       </div>
     </div>
 
-    <!-- APP -->
-    <div id="app">
-      <!-- LEFT SIDEBAR -->
-      <div id="sidebar">
-        <div id="server-header">
-          <div class="server-icon">☁️</div>
-          <div class="server-name">
-            Welkin<b style="color: #3886e0">.Chat</b>
-          </div>
-          <button id="logout-btn" onclick="logout()" title="Sign out">
-            Log Out
-          </button>
-        </div>
-        <div id="channels-label">Text Channels</div>
-        <div id="channels-list">
-          <div class="channel-item active">
-            <span class="hash">#</span>general
-          </div>
-        </div>
-        <!-- DMs -->
-        <!-- <div class="dm-section-label">Direct Messages <button class="sb-section-add" onclick="openFriendsModal()"
-                    title="Friends">👥</button></div>
-            <div id="dm-list"></div> -->
-        <div
-          style="
-            padding: 12px 16px 6px;
-            font-family: &quot;Outfit&quot;, sans-serif;
-            font-size: 10px;
-            font-weight: 700;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            color: var(--nimbus);
-          "
-        >
-          Voice Channels
-        </div>
-        <div id="voice-channel-btn">
-          <span class="vc-icon">🔊</span>General Voice
-        </div>
-        <div id="voice-members-sidebar"></div>
-      </div>
-
-      <!-- MAIN -->
-      <div id="main">
-        <div id="channel-header">
-          <span class="hash">#</span>
-          <span class="channel-name">general</span>
-          <span class="divider"></span>
-          <span class="channel-desc">Welcome to Welkin</span>
-          <div id="online-pill">
-            <span class="dot"></span>
-            <span id="online-num">—</span> online
-          </div>
-        </div>
-        <div id="messages-area">
-          <div id="welcome-banner">
-            <h2>☁️ #general</h2>
-            <p>The beginning of the #general channel. Say hello!</p>
-          </div>
-        </div>
-        <div id="typing-bar"></div>
-        <div id="input-wrap">
-          <div id="input-box">
-            <textarea
-              id="msg-input"
-              placeholder="Message #general"
-              rows="1"
-              maxlength="500"
-            ></textarea>
-            <button id="send-btn">Send</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- MEMBERS -->
-      <div id="members-panel">
-        <div id="members-header">Online — <span id="member-count">0</span></div>
-        <div id="members-list"></div>
-      </div>
+    <!-- MEMBERS -->
+    <div id="members-panel">
+      <div id="members-header">Online — <span id="member-count">0</span></div>
+      <div id="members-list"></div>
     </div>
+  </div>
 
-    <!-- VOICE BAR -->
-    <div id="voice-bar">
-      <div id="voice-status">Voice Connected</div>
-      <div id="voice-peers-bar"></div>
-      <button id="voice-mute-btn" onclick="toggleMute()">🎤 Mute</button>
-      <button id="voice-leave-btn" onclick="leaveVoice()">Leave</button>
-    </div>
+  <!-- VOICE BAR -->
+  <div id="voice-bar">
+    <div id="voice-status">Voice Connected</div>
+    <div id="voice-peers-bar"></div>
+    <button id="voice-mute-btn" onclick="toggleMute()">🎤 Mute</button>
+    <button id="voice-leave-btn" onclick="leaveVoice()">Leave</button>
+  </div>
 
-    <!-- Hidden audio container -->
-    <div id="remote-audio-container"></div>
+  <!-- Hidden audio container -->
+  <div id="remote-audio-container" style="display:none"></div>
 
-    <script>
-      // ═══════════════════════════════════════════
-      //  HELPERS
-      // ═══════════════════════════════════════════
-      function colorIdx(name) {
-        let h = 0;
-        for (let i = 0; i < name.length; i++)
-          h = (h * 31 + name.charCodeAt(i)) & 0xffff;
-        return h % 8;
-      }
-      function initials(n) {
-        return n.slice(0, 2).toUpperCase();
-      }
-      function esc(s) {
-        return s
-          .replace(/&/g, "&amp;")
-          .replace(/</g, "&lt;")
-          .replace(/>/g, "&gt;")
-          .replace(/"/g, "&quot;");
-      }
-      function formatTime(ts) {
-        return new Date(ts).toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
+  <script>
+    // ═══════════════════════════════════════════
+    //  HELPERS
+    // ═══════════════════════════════════════════
+    function colorIdx(name) { let h = 0; for (let i = 0; i < name.length; i++)h = (h * 31 + name.charCodeAt(i)) & 0xffff; return h % 8 }
+    function initials(n) { return n.slice(0, 2).toUpperCase() }
+    function esc(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;') }
+    function formatTime(ts) { return new Date(ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }
+
+    // ═══════════════════════════════════════════
+    //  AUTH
+    // ═══════════════════════════════════════════
+    let authMode = 'login';
+    let myToken = null, myName = null;
+
+    function switchTab(mode) {
+      authMode = mode;
+      document.getElementById('tab-login').classList.toggle('active', mode === 'login');
+      document.getElementById('tab-register').classList.toggle('active', mode === 'register');
+      document.getElementById('auth-btn').textContent = mode === 'login' ? 'Sign In' : 'Create Account';
+      document.getElementById('auth-error').textContent = '';
+    }
+
+    async function doAuth() {
+      const username = document.getElementById('auth-username').value.trim();
+      const password = document.getElementById('auth-password').value;
+      const errEl = document.getElementById('auth-error');
+      errEl.textContent = '';
+      if (!username || !password) { errEl.textContent = 'Please fill in both fields.'; return }
+      const btn = document.getElementById('auth-btn');
+      btn.disabled = true;
+      try {
+        const res = await fetch(`/api/chat/${authMode}`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
         });
-      }
+        const data = await res.json();
+        if (!data.ok) { errEl.textContent = data.error || 'Something went wrong.'; btn.disabled = false; return }
+        myToken = data.token;
+        myName = data.username;
+        localStorage.setItem('welkin-chat-token', myToken);
+        localStorage.setItem('welkin-chat-name', myName);
+        dismissLogin();
+        connectSocket();
+      } catch (e) { errEl.textContent = 'Network error. Try again.'; btn.disabled = false }
+    }
 
-      // ═══════════════════════════════════════════
-      //  AUTH
-      // ═══════════════════════════════════════════
-      let authMode = "login";
-      let myToken = null,
-        myName = null;
+    document.getElementById('auth-btn').addEventListener('click', doAuth);
+    document.getElementById('auth-password').addEventListener('keydown', e => { if (e.key === 'Enter') doAuth() });
+    document.getElementById('auth-username').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('auth-password').focus() });
 
-      function switchTab(mode) {
-        authMode = mode;
-        document
-          .getElementById("tab-login")
-          .classList.toggle("active", mode === "login");
-        document
-          .getElementById("tab-register")
-          .classList.toggle("active", mode === "register");
-        document.getElementById("auth-btn").textContent =
-          mode === "login" ? "Sign In" : "Create Account";
-        document.getElementById("auth-error").textContent = "";
-      }
+    function dismissLogin() {
+      const overlay = document.getElementById('login-overlay');
+      overlay.style.transition = 'opacity .3s ease';
+      overlay.style.opacity = '0';
+      setTimeout(() => overlay.remove(), 320);
+      setTimeout(() => document.getElementById('msg-input').focus(), 350);
+    }
 
-      async function doAuth() {
-        const username = document.getElementById("auth-username").value.trim();
-        const password = document.getElementById("auth-password").value;
-        const errEl = document.getElementById("auth-error");
-        errEl.textContent = "";
-        if (!username || !password) {
-          errEl.textContent = "Please fill in both fields.";
-          return;
-        }
-        const btn = document.getElementById("auth-btn");
-        btn.disabled = true;
-        try {
-          const res = await fetch(`/api/chat/${authMode}`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ username, password }),
-          });
-          const data = await res.json();
-          if (!data.ok) {
-            errEl.textContent = data.error || "Something went wrong.";
-            btn.disabled = false;
-            return;
-          }
-          myToken = data.token;
-          myName = data.username;
-          localStorage.setItem("welkin-chat-token", myToken);
-          localStorage.setItem("welkin-chat-name", myName);
+    // Try auto-login from saved token
+    (async () => {
+      const savedToken = localStorage.getItem('welkin-chat-token');
+      const savedName = localStorage.getItem('welkin-chat-name');
+      if (!savedToken) return;
+      try {
+        const res = await fetch('/api/chat/resume', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token: savedToken }) });
+        const data = await res.json();
+        if (data.ok) {
+          myToken = savedToken; myName = data.username;
           dismissLogin();
           connectSocket();
-        } catch (e) {
-          errEl.textContent = "Network error. Try again.";
-          btn.disabled = false;
         }
-      }
+      } catch (e) { }
+    })();
 
-      document.getElementById("auth-btn").addEventListener("click", doAuth);
-      document
-        .getElementById("auth-password")
-        .addEventListener("keydown", (e) => {
-          if (e.key === "Enter") doAuth();
+    // ═══════════════════════════════════════════
+    //  SOCKET + CHAT
+    // ═══════════════════════════════════════════
+    let socket;
+
+    function connectSocket() {
+      socket = io({ path: '/socket.io/' });
+
+      socket.on('connect', () => socket.emit('chat:join', { token: myToken }));
+      socket.on('chat:auth-error', () => {
+        localStorage.removeItem('welkin-chat-token');
+        location.reload();
+      });
+
+      // Server sends authoritative live member list
+      socket.on('members:update', names => {
+        document.getElementById('online-num').textContent = names.length;
+        document.getElementById('member-count').textContent = names.length;
+        const list = document.getElementById('members-list');
+        list.innerHTML = '';
+        names.forEach(name => {
+          const ci = colorIdx(name);
+          const el = document.createElement('div');
+          el.className = 'member-item';
+          el.innerHTML = `<div class="member-avatar av-${ci}">${esc(initials(name))}</div><div style="flex:1;min-width:0"><div class="member-name">${esc(name)}</div><div class="member-handle">@${esc(name.toLowerCase().replace(/\s+/g, '_'))}</div></div>${name !== myName ? `<button class="member-dm-btn" onclick="openDM('${esc(name)}')">DM</button>` : ''}`.trim();
+          list.appendChild(el);
         });
-      document
-        .getElementById("auth-username")
-        .addEventListener("keydown", (e) => {
-          if (e.key === "Enter")
-            document.getElementById("auth-password").focus();
-        });
+      });
 
-      function dismissLogin() {
-        const overlay = document.getElementById("login-overlay");
-        overlay.style.transition = "opacity .3s ease";
-        overlay.style.opacity = "0";
-        setTimeout(() => overlay.remove(), 320);
-        setTimeout(() => document.getElementById("msg-input").focus(), 350);
-      }
+      // Chat history
+      let lastAuthor = null, lastTs = 0;
+      const area = document.getElementById('messages-area');
 
-      // Try auto-login from saved token
-      (async () => {
-        const savedToken = localStorage.getItem("welkin-chat-token");
-        const savedName = localStorage.getItem("welkin-chat-name");
-        if (!savedToken) return;
-        try {
-          const res = await fetch("/api/chat/resume", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ token: savedToken }),
-          });
-          const data = await res.json();
-          if (data.ok) {
-            myToken = savedToken;
-            myName = data.username;
-            dismissLogin();
-            connectSocket();
-          }
-        } catch (e) {}
-      })();
-
-      // ═══════════════════════════════════════════
-      //  SOCKET + CHAT
-      // ═══════════════════════════════════════════
-      let socket;
-
-      function connectSocket() {
-        socket = io({ path: "/socket.io/" });
-
-        socket.on("connect", () =>
-          socket.emit("chat:join", { token: myToken }),
-        );
-        socket.on("chat:auth-error", () => {
-          localStorage.removeItem("welkin-chat-token");
-          location.reload();
-        });
-
-        // Server sends authoritative live member list
-        socket.on("members:update", (names) => {
-          document.getElementById("online-num").textContent = names.length;
-          document.getElementById("member-count").textContent = names.length;
-          const list = document.getElementById("members-list");
-          list.innerHTML = "";
-          names.forEach((name) => {
-            const ci = colorIdx(name);
-            const el = document.createElement("div");
-            el.className = "member-item";
-            el.innerHTML =
-              `<div class="member-avatar av-${ci}">${esc(initials(name))}</div><div style="flex:1;min-width:0"><div class="member-name">${esc(name)}</div><div class="member-handle">@${esc(name.toLowerCase().replace(/\s+/g, "_"))}</div></div>${name !== myName ? `<button class="member-dm-btn" onclick="openDM('${esc(name)}')">DM</button>` : ""}`.trim();
-            list.appendChild(el);
-          });
-        });
-
-        // Chat history
-        let lastAuthor = null,
-          lastTs = 0;
-        const area = document.getElementById("messages-area");
-
-        function renderMsg(data, animate) {
-          if (data.type === "system") {
-            const el = document.createElement("div");
-            el.className = "msg-system" + (animate ? " msg-new" : "");
-            el.innerHTML = `<span>${esc(data.text)}</span>`;
-            area.appendChild(el);
-            lastAuthor = null;
-            scrollBottom();
-            return;
-          }
-          const grouped =
-            data.name === lastAuthor && data.ts - lastTs < 5 * 60 * 1000;
-          lastAuthor = data.name;
-          lastTs = data.ts;
-          const ci = colorIdx(data.name);
-          const div = document.createElement("div");
-          div.className =
-            "msg-group" +
-            (grouped ? " grouped" : " has-header") +
-            (animate ? " msg-new" : "");
-          div.innerHTML = `${grouped ? `<span class="hover-time">${formatTime(data.ts)}</span>` : ""}
+      function renderMsg(data, animate) {
+        if (data.type === 'system') {
+          const el = document.createElement('div');
+          el.className = 'msg-system' + (animate ? ' msg-new' : '');
+          el.innerHTML = `<span>${esc(data.text)}</span>`;
+          area.appendChild(el);
+          lastAuthor = null;
+          scrollBottom(); return;
+        }
+        const grouped = data.name === lastAuthor && data.ts - lastTs < 5 * 60 * 1000;
+        lastAuthor = data.name; lastTs = data.ts;
+        const ci = colorIdx(data.name);
+        const div = document.createElement('div');
+        div.className = 'msg-group' + (grouped ? ' grouped' : ' has-header') + (animate ? ' msg-new' : '');
+        div.innerHTML = `${grouped ? `<span class="hover-time">${formatTime(data.ts)}</span>` : ''}
       <div class="msg-avatar av-${ci}">${esc(initials(data.name))}</div>
       <div class="msg-body">
         <div class="msg-meta"><span class="msg-name nc-${ci}">${esc(data.name)}</span><span class="msg-time">Today at ${formatTime(data.ts)}</span></div>
         <div class="msg-text">${esc(data.text)}</div>
       </div>`;
-          area.appendChild(div);
-          scrollBottom();
-        }
-
-        function scrollBottom() {
-          area.scrollTop = area.scrollHeight;
-        }
-
-        socket.on("chat:history", (history) => {
-          const banner = document.getElementById("welcome-banner");
-          area.innerHTML = "";
-          area.appendChild(banner);
-          lastAuthor = null;
-          lastTs = 0;
-          history.forEach((m) => renderMsg(m, false));
-        });
-        socket.on("chat:message", (m) => renderMsg(m, true));
-
-        // Send
-        function sendMsg() {
-          const input = document.getElementById("msg-input");
-          const text = input.value.trim();
-          if (!text) return;
-          socket.emit("chat:send", { text });
-          input.value = "";
-          input.style.height = "auto";
-        }
-        document.getElementById("send-btn").addEventListener("click", sendMsg);
-        document
-          .getElementById("msg-input")
-          .addEventListener("keydown", (e) => {
-            if (e.key === "Enter" && !e.shiftKey) {
-              e.preventDefault();
-              sendMsg();
-            }
-          });
-        document
-          .getElementById("msg-input")
-          .addEventListener("input", function () {
-            this.style.height = "auto";
-            this.style.height = Math.min(this.scrollHeight, 120) + "px";
-          });
-
-        // ── Voice: member list updates ──
-        socket.on("voice:members", (members) => {
-          const sidebar = document.getElementById("voice-members-sidebar");
-          sidebar.innerHTML = "";
-          members.forEach(({ name }) => {
-            const chip = document.createElement("div");
-            chip.className = "voice-member-chip";
-            chip.dataset.name = name;
-            chip.innerHTML = `<span class="vm-dot"></span><span>${esc(name)}</span>`;
-            sidebar.appendChild(chip);
-          });
-          updateVoiceBar(members);
-        });
-
-        // ── WebRTC ──
-        socket.on("voice:peers", (peers) => {
-          console.log("Received voice:peers", peers);
-          peers.forEach(({ peerId, name }) => createOffer(peerId, name));
-        });
-        socket.on("voice:peer-joined", ({ peerId, name }) => {
-          console.log("voice:peer-joined", peerId, name);
-          if (!peerConnections.has(peerId)) createOffer(peerId, name);
-        });
-        socket.on("voice:peer-left", ({ peerId }) => {
-          console.log("voice:peer-left", peerId);
-          removePeer(peerId);
-        });
-        socket.on("voice:offer", ({ from, name, offer }) =>
-          handleOffer(from, name, offer),
-        );
-        socket.on("voice:answer", ({ from, answer }) => {
-          const pc = peerConnections.get(from);
-          if (pc) pc.setRemoteDescription(new RTCSessionDescription(answer));
-        });
-        socket.on("voice:ice", ({ from, candidate }) => {
-          const pc = peerConnections.get(from);
-          if (pc && candidate)
-            pc.addIceCandidate(new RTCIceCandidate(candidate)).catch(() => {});
-        });
+        area.appendChild(div); scrollBottom();
       }
 
-      // Sidebar channel switching (visual)
-      document.querySelectorAll(".channel-item").forEach((el) => {
-        el.addEventListener("click", function () {
-          document
-            .querySelectorAll(".channel-item")
-            .forEach((c) => c.classList.remove("active"));
-          this.classList.add("active");
-          const name = this.textContent.trim();
-          document.querySelector("#channel-header .channel-name").textContent =
-            name;
-          document.getElementById("msg-input").placeholder = `Message #${name}`;
-        });
+      function scrollBottom() { area.scrollTop = area.scrollHeight }
+
+      socket.on('chat:history', history => {
+        chatHistoryCache = history; // save for channel re-render
+        const banner = document.getElementById('welcome-banner');
+        area.innerHTML = ''; area.appendChild(banner);
+        lastAuthor = null; lastTs = 0;
+        history.forEach(m => renderMsg(m, false));
+      });
+      // Keep cache updated as new messages arrive
+      socket.on('chat:message', m => {
+        if (m.name) chatHistoryCache.push(m);
+        if (!currentDMTarget) renderMsg(m, true);
       });
 
-      // ═══════════════════════════════════════════
-      //  VOICE CHAT (WebRTC)
-      // ═══════════════════════════════════════════
-      const peerConnections = new Map(); // peerId → RTCPeerConnection
-      let localStream = null;
-      let inVoice = false;
-      let muted = false;
-      const ICE_SERVERS = {
-        iceServers: [
-          { urls: "stun:stun.l.google.com:19302" },
-          { urls: "stun:stun1.l.google.com:19302" },
-          { urls: "stun:stun2.l.google.com:19302" },
-          { urls: "stun:stun3.l.google.com:19302" },
-          { urls: "stun:stun4.l.google.com:19302" },
-          { urls: "stun:stun.services.mozilla.com:3478" },
-          {
-            urls: "turn:openrelay.metered.ca:80",
-            username: "openrelayproject",
-            credential: "openrelayproject",
-          },
-          {
-            urls: "turn:openrelay.metered.ca:443",
-            username: "openrelayproject",
-            credential: "openrelayproject",
-          },
-          {
-            urls: "turn:openrelay.metered.ca:443?transport=tcp",
-            username: "openrelayproject",
-            credential: "openrelayproject",
-          },
-        ],
-        iceCandidatePoolSize: 10,
+      // Send
+      function sendMsg() {
+        const input = document.getElementById('msg-input');
+        const text = input.value.trim();
+        if (!text) return;
+        socket.emit('chat:send', { text });
+        input.value = ''; input.style.height = 'auto';
+      }
+      document.getElementById('send-btn').addEventListener('click', sendMsg);
+      document.getElementById('msg-input').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMsg() } });
+      document.getElementById('msg-input').addEventListener('input', function () { this.style.height = 'auto'; this.style.height = Math.min(this.scrollHeight, 120) + 'px' });
+
+      // Voice signaling registered via registerVoiceSignaling()
+
+      // ── DM messages ──
+      socket.on('dm:message', msg => {
+        const other = msg.from === myName ? msg.to : msg.from;
+        if (currentDMTarget === other) {
+          const area = document.getElementById('messages-area');
+          const prev = area.querySelectorAll('.msg-group');
+          const last = prev[prev.length - 1];
+          const lA = last?.querySelector('.msg-name')?.textContent || null;
+          const lT = parseInt(last?.dataset?.ts || '0');
+          renderDMBubble(msg, true, area, lA, lT);
+          area.scrollTop = area.scrollHeight;
+        } else {
+          dmUnread[other] = (dmUnread[other] || 0) + 1;
+          showToast('📩 DM from ' + other);
+          renderDMSidebar();
+        }
+      });
+
+      socket.on('friends:request', ({ from }) => {
+        showToast('👋 Friend request from ' + from);
+        loadFriends();
+      });
+
+      socket.on('friends:accepted', ({ from }) => {
+        showToast('✅ ' + from + ' accepted your friend request!');
+        loadFriends();
+      });
+
+      registerVoiceSignaling();
+    }
+
+    // Sidebar channel switching (visual)
+    document.querySelectorAll('.channel-item').forEach(el => {
+      el.addEventListener('click', function () {
+        document.querySelectorAll('.channel-item').forEach(c => c.classList.remove('active'));
+        this.classList.add('active');
+        const hashEl = this.querySelector('.hash');
+        const name = hashEl ? this.textContent.replace(hashEl.textContent, '').trim() : this.textContent.trim();
+        document.querySelector('#channel-header .channel-name').textContent = name;
+        document.getElementById('msg-input').placeholder = `Message #${name}`;
+      });
+    });
+
+    // ═══════════════════════════════════════════
+    //  VOICE CHAT (WebRTC)
+    // ═══════════════════════════════════════════
+    const peerConnections = new Map(); // peerId -> { pc, name }
+    let localStream = null;
+    let inVoice = false;
+    let muted = false;
+
+    const ICE = [
+      { urls: 'stun:stun.l.google.com:19302' },
+      { urls: 'stun:stun1.l.google.com:19302' },
+    ];
+
+    // ── Join voice ──
+    async function joinVoice() {
+      if (!socket || !myName || inVoice) return;
+      try {
+        localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+      } catch (e) {
+        alert('Microphone access denied — please allow it in your browser and try again.');
+        return;
+      }
+      inVoice = true;
+      document.getElementById('voice-channel-btn').classList.add('in-voice');
+      document.getElementById('voice-bar').classList.add('active');
+      document.getElementById('input-wrap').style.paddingBottom = '68px';
+      socket.emit('voice:join');
+    }
+
+    // ── Leave voice ──
+    function leaveVoice() {
+      if (!inVoice) return;
+      inVoice = false;
+      socket.emit('voice:leave');
+      peerConnections.forEach(({ pc }) => pc.close());
+      peerConnections.clear();
+      if (localStream) { localStream.getTracks().forEach(t => t.stop()); localStream = null; }
+      document.getElementById('remote-audio-container').innerHTML = '';
+      document.getElementById('voice-channel-btn').classList.remove('in-voice');
+      document.getElementById('voice-bar').classList.remove('active');
+      document.getElementById('voice-members-sidebar').innerHTML = '';
+      document.getElementById('voice-peers-bar').innerHTML = '';
+      document.getElementById('input-wrap').style.paddingBottom = '';
+      muted = false;
+      const mb = document.getElementById('voice-mute-btn');
+      mb.classList.remove('muted'); mb.textContent = '🎤 Mute';
+    }
+
+    // ── Mute toggle ──
+    function toggleMute() {
+      muted = !muted;
+      if (localStream) localStream.getAudioTracks().forEach(t => t.enabled = !muted);
+      const btn = document.getElementById('voice-mute-btn');
+      btn.classList.toggle('muted', muted);
+      btn.textContent = muted ? '🔇 Unmute' : '🎤 Mute';
+    }
+
+    document.getElementById('voice-channel-btn').addEventListener('click', () => {
+      if (inVoice) leaveVoice(); else joinVoice();
+    });
+
+    // ── Create a peer connection for a remote peer ──
+    function createPC(peerId, peerName) {
+      if (peerConnections.has(peerId)) return peerConnections.get(peerId).pc;
+
+      const pc = new RTCPeerConnection({ iceServers: ICE });
+      peerConnections.set(peerId, { pc, name: peerName });
+
+      // Add local tracks
+      if (localStream) localStream.getTracks().forEach(t => pc.addTrack(t, localStream));
+
+      // Send ICE candidates as they arrive
+      pc.onicecandidate = ({ candidate }) => {
+        if (candidate) socket.emit('voice:ice', { to: peerId, candidate });
       };
 
-      document
-        .getElementById("voice-channel-btn")
-        .addEventListener("click", () => {
-          if (inVoice) leaveVoice();
-          else joinVoice();
-        });
+      pc.oniceconnectionstatechange = () => {
+        if (pc.iceConnectionState === 'failed') pc.restartIce();
+      };
 
-      async function joinVoice() {
-        if (!socket || !myName) return;
-        try {
-          console.log("Joining voice channel...");
-          localStream = await navigator.mediaDevices.getUserMedia({
-            audio: {
-              echoCancellation: true,
-              noiseSuppression: true,
-              autoGainControl: true,
-            },
-            video: false,
-          });
-          console.log("Got local stream");
-        } catch (e) {
-          alert("Microphone access denied. Voice chat needs mic permission.");
-          console.error("getUserMedia error:", e);
-          return;
+      // Play remote audio
+      pc.ontrack = ({ streams }) => {
+        let el = document.getElementById('audio-' + peerId);
+        if (!el) {
+          el = document.createElement('audio');
+          el.id = 'audio-' + peerId;
+          el.autoplay = true;
+          el.setAttribute('playsinline', '');
+          document.getElementById('remote-audio-container').appendChild(el);
         }
-        inVoice = true;
-        document.getElementById("voice-channel-btn").classList.add("in-voice");
-        document.getElementById("voice-bar").classList.add("active");
-        // Adjust input-wrap bottom to not overlap voice bar
-        document.getElementById("input-wrap").style.paddingBottom = "68px";
-        socket.emit("voice:join");
-      }
+        el.srcObject = streams[0];
+      };
 
-      function leaveVoice() {
-        if (!inVoice) return;
-        inVoice = false;
-        socket.emit("voice:leave");
-        peerConnections.forEach((pc) => pc.close());
-        peerConnections.clear();
-        if (localStream) {
-          localStream.getTracks().forEach((t) => t.stop());
-          localStream = null;
+      return pc;
+    }
+
+    function removePC(peerId) {
+      const entry = peerConnections.get(peerId);
+      if (entry) { entry.pc.close(); peerConnections.delete(peerId); }
+      const el = document.getElementById('audio-' + peerId);
+      if (el) el.remove();
+    }
+
+    // ── Voice signaling — registered inside connectSocket ──
+    function registerVoiceSignaling() {
+      // Server tells us who is already in the room
+      socket.on('voice:peers', async (peers) => {
+        for (const { peerId, name } of peers) {
+          const pc = createPC(peerId, name);
+          const offer = await pc.createOffer();
+          await pc.setLocalDescription(offer);
+          socket.emit('voice:offer', { to: peerId, offer });
         }
-        document.getElementById("remote-audio-container").innerHTML = "";
-        document
-          .getElementById("voice-channel-btn")
-          .classList.remove("in-voice");
-        document.getElementById("voice-bar").classList.remove("active");
-        document.getElementById("voice-members-sidebar").innerHTML = "";
-        document.getElementById("input-wrap").style.paddingBottom = "";
-        document.getElementById("voice-peers-bar").innerHTML = "";
-      }
+      });
 
-      function toggleMute() {
-        muted = !muted;
-        if (localStream)
-          localStream.getAudioTracks().forEach((t) => (t.enabled = !muted));
-        const btn = document.getElementById("voice-mute-btn");
-        btn.classList.toggle("muted", muted);
-        btn.textContent = muted ? "🔇 Unmute" : "🎤 Mute";
-      }
+      // A new peer joined — they will send us an offer
+      socket.on('voice:peer-joined', ({ peerId, name }) => {
+        // Just pre-create the PC so it's ready; offer comes next
+        createPC(peerId, name);
+      });
 
-      function makePeerConnection(peerId) {
-        const pc = new RTCPeerConnection(ICE_SERVERS);
-        peerConnections.set(peerId, pc);
+      socket.on('voice:peer-left', ({ peerId }) => {
+        removePC(peerId);
+        updateVoiceBar();
+      });
 
-        pc.oniceconnectionstatechange = () => {
-          console.log(`ICE state for ${peerId}:`, pc.iceConnectionState);
-        };
-
-        pc.onconnectionstatechange = () => {
-          console.log(`Connection state for ${peerId}:`, pc.connectionState);
-        };
-
-        if (localStream)
-          localStream.getTracks().forEach((t) => pc.addTrack(t, localStream));
-
-        pc.onicecandidate = ({ candidate }) => {
-          if (candidate) socket.emit("voice:ice", { to: peerId, candidate });
-        };
-
-        pc.ontrack = ({ streams: [stream] }) => {
-          console.log("Received remote track from", peerId);
-          let audio = document.getElementById("audio-" + peerId);
-          if (!audio) {
-            audio = document.createElement("audio");
-            audio.id = "audio-" + peerId;
-            audio.autoplay = true;
-            audio.playsInline = true;
-            audio.volume = 1.0;
-            document
-              .getElementById("remote-audio-container")
-              .appendChild(audio);
-          }
-          audio.srcObject = stream;
-          audio.play().catch(() => {});
-        };
-
-        return pc;
-      }
-
-      async function createOffer(peerId, name) {
-        if (peerConnections.has(peerId)) return;
-        const pc = makePeerConnection(peerId);
-        const offer = await pc.createOffer();
-        await pc.setLocalDescription(offer);
-        socket.emit("voice:offer", { to: peerId, offer });
-      }
-
-      async function handleOffer(peerId, name, offer) {
-        if (peerConnections.has(peerId)) return;
-        const pc = makePeerConnection(peerId);
+      socket.on('voice:offer', async ({ from, name, offer }) => {
+        const pc = createPC(from, name);
         await pc.setRemoteDescription(new RTCSessionDescription(offer));
         const answer = await pc.createAnswer();
         await pc.setLocalDescription(answer);
-        socket.emit("voice:answer", { to: peerId, answer });
-      }
-
-      function removePeer(peerId) {
-        const pc = peerConnections.get(peerId);
-        if (pc) {
-          pc.close();
-          peerConnections.delete(peerId);
-        }
-        const audio = document.getElementById("audio-" + peerId);
-        if (audio) audio.remove();
-      }
-
-      function updateVoiceBar(members) {
-        const bar = document.getElementById("voice-peers-bar");
-        bar.innerHTML = "";
-        members.forEach(({ name }) => {
-          const chip = document.createElement("div");
-          chip.className = "vpeer-chip";
-          chip.id = "vpeer-" + name.replace(/\W/g, "_");
-          chip.textContent = name;
-          bar.appendChild(chip);
-        });
-      }
-
-      // ════════════════════════════════════════════
-      //  FRIENDS & DM
-      // ════════════════════════════════════════════
-      let currentDMTarget = null;
-      let dmUnread = {};
-      let friendsData = { friends: [], incoming: [], outgoing: [] };
-      let activeFTab = "friends";
-
-      function showToast(msg) {
-        const t = document.getElementById("toast");
-        t.textContent = msg;
-        t.classList.add("show");
-        setTimeout(() => t.classList.remove("show"), 3500);
-      }
-
-      // ── Friends modal ──
-      function openFriendsModal() {
-        document.getElementById("friends-modal").classList.add("open");
-        renderFriendsList();
-      }
-      function closeFriendsModal() {
-        document.getElementById("friends-modal").classList.remove("open");
-        document.getElementById("friends-add-msg").textContent = "";
-        document.getElementById("friends-add-input").value = "";
-      }
-      document.addEventListener("DOMContentLoaded", () => {
-        document
-          .getElementById("friends-modal")
-          .addEventListener("click", (e) => {
-            if (e.target === document.getElementById("friends-modal"))
-              closeFriendsModal();
-          });
-        document
-          .getElementById("friends-add-input")
-          .addEventListener("keydown", (e) => {
-            if (e.key === "Enter") sendFriendRequest();
-          });
+        socket.emit('voice:answer', { to: from, answer });
       });
 
-      function switchFTab(el, tab) {
-        document
-          .querySelectorAll(".ftab")
-          .forEach((b) => b.classList.remove("active"));
-        el.classList.add("active");
-        activeFTab = tab;
-        renderFriendsList();
-      }
-
-      async function sendFriendRequest() {
-        const username = document
-          .getElementById("friends-add-input")
-          .value.trim();
-        const msgEl = document.getElementById("friends-add-msg");
-        if (!username) return;
-        try {
-          const res = await fetch("/api/chat/friends/request", {
-            method: "POST",
-            headers: { "Content-Type": "application/json", "x-token": myToken },
-            body: JSON.stringify({ username }),
-          });
-          const data = await res.json();
-          msgEl.style.color = data.ok ? "#43c99b" : "#f04747";
-          msgEl.textContent = data.ok
-            ? `Request sent to ${username}!`
-            : data.error || "Error";
-          if (data.ok) {
-            document.getElementById("friends-add-input").value = "";
-            loadFriends();
-          }
-        } catch (e) {
-          msgEl.style.color = "#f04747";
-          msgEl.textContent = "Network error";
+      socket.on('voice:answer', async ({ from, answer }) => {
+        const entry = peerConnections.get(from);
+        if (entry) {
+          try { await entry.pc.setRemoteDescription(new RTCSessionDescription(answer)); } catch (e) { }
         }
-      }
+      });
 
-      async function loadFriends() {
-        if (!myToken) return;
-        try {
-          const res = await fetch("/api/chat/friends", {
-            headers: { "x-token": myToken },
-          });
-          const data = await res.json();
-          if (data.ok) {
-            friendsData = data;
-            updateFriendsBadge();
-            renderDMSidebar();
-            renderFriendsList();
-          }
-        } catch (e) {}
-      }
-
-      function updateFriendsBadge() {
-        const b = document.getElementById("ftab-badge");
-        if (b) {
-          b.textContent = friendsData.incoming.length;
-          b.style.display = friendsData.incoming.length ? "inline" : "none";
+      socket.on('voice:ice', async ({ from, candidate }) => {
+        const entry = peerConnections.get(from);
+        if (entry && candidate) {
+          try { await entry.pc.addIceCandidate(new RTCIceCandidate(candidate)); } catch (e) { }
         }
-      }
+      });
 
-      function renderFriendsList() {
-        const list = document.getElementById("friends-list");
-        if (!list) return;
-        list.innerHTML = "";
-        const items =
-          activeFTab === "friends"
-            ? friendsData.friends
-            : activeFTab === "incoming"
-              ? friendsData.incoming
-              : friendsData.outgoing;
-        if (!items.length) {
-          list.innerHTML = `<div class="friend-empty">${activeFTab === "friends" ? "No friends yet — add someone!" : activeFTab === "incoming" ? "No pending requests." : "No sent requests."}</div>`;
-          return;
-        }
-        items.forEach((name) => {
-          const ci = colorIdx(name);
-          const div = document.createElement("div");
-          div.className = "friend-item";
-          let actions = "";
-          if (activeFTab === "friends") {
-            actions = `<div class="friend-actions"><button class="btn-dm" onclick="closeFriendsModal();openDM('${esc(name)}')">DM</button><button class="btn-remove" onclick="removeFriend('${esc(name)}')">Remove</button></div>`;
-          } else if (activeFTab === "incoming") {
-            actions = `<div class="friend-actions"><button class="btn-accept" onclick="acceptFriend('${esc(name)}')">Accept</button><button class="btn-decline" onclick="removeFriend('${esc(name)}')">Decline</button></div>`;
-          } else {
-            actions = `<div class="friend-actions"><button class="btn-decline" onclick="removeFriend('${esc(name)}')">Cancel</button></div>`;
-          }
-          div.innerHTML = `<div class="friend-av av-${ci}">${esc(initials(name))}</div><span class="friend-name">${esc(name)}</span>${actions}`;
-          list.appendChild(div);
+      socket.on('voice:members', members => {
+        updateVoiceSidebar(members);
+        updateVoiceBar(members);
+      });
+    }
+
+    function updateVoiceSidebar(members) {
+      const sidebar = document.getElementById('voice-members-sidebar');
+      sidebar.innerHTML = '';
+      members.forEach(({ name }) => {
+        const chip = document.createElement('div');
+        chip.className = 'voice-member-chip';
+        chip.innerHTML = `<span class="vm-dot"></span><span>${esc(name)}</span>`;
+        sidebar.appendChild(chip);
+      });
+    }
+
+    function updateVoiceBar(members) {
+      const bar = document.getElementById('voice-peers-bar');
+      bar.innerHTML = '';
+      (members || [...peerConnections.values()].map(e => ({ name: e.name }))).forEach(({ name }) => {
+        const chip = document.createElement('div');
+        chip.className = 'vpeer-chip';
+        chip.textContent = name;
+        bar.appendChild(chip);
+      });
+    }
+
+    // ════════════════════════════════════════════
+    //  FRIENDS & DM
+    // ════════════════════════════════════════════
+    let currentDMTarget = null;
+    let chatHistoryCache = [];
+    let dmUnread = {};
+    let friendsData = { friends: [], incoming: [], outgoing: [] };
+    let activeFTab = 'friends';
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 3500);
+    }
+
+    // ── Friends modal ──
+    function openFriendsModal() {
+      document.getElementById('friends-modal').classList.add('open');
+      renderFriendsList();
+    }
+    function closeFriendsModal() {
+      document.getElementById('friends-modal').classList.remove('open');
+      document.getElementById('friends-add-msg').textContent = '';
+      document.getElementById('friends-add-input').value = '';
+    }
+    document.getElementById('friends-modal').addEventListener('click', e => {
+      if (e.target === document.getElementById('friends-modal')) closeFriendsModal();
+    });
+    document.getElementById('friends-add-input').addEventListener('keydown', e => {
+      if (e.key === 'Enter') sendFriendRequest();
+    });
+
+    function switchFTab(el, tab) {
+      document.querySelectorAll('.ftab').forEach(b => b.classList.remove('active'));
+      el.classList.add('active');
+      activeFTab = tab;
+      renderFriendsList();
+    }
+
+    async function sendFriendRequest() {
+      const username = document.getElementById('friends-add-input').value.trim();
+      const msgEl = document.getElementById('friends-add-msg');
+      if (!username) return;
+      try {
+        const res = await fetch('/api/chat/friends/request', {
+          method: 'POST', headers: { 'Content-Type': 'application/json', 'x-token': myToken },
+          body: JSON.stringify({ username })
         });
+        const data = await res.json();
+        msgEl.style.color = data.ok ? '#43c99b' : '#f04747';
+        msgEl.textContent = data.ok ? `Request sent to ${username}!` : (data.error || 'Error');
+        if (data.ok) { document.getElementById('friends-add-input').value = ''; loadFriends(); }
+      } catch (e) { msgEl.style.color = '#f04747'; msgEl.textContent = 'Network error'; }
+    }
+
+    async function loadFriends() {
+      if (!myToken) return;
+      try {
+        const res = await fetch('/api/chat/friends?token=' + encodeURIComponent(myToken));
+        const data = await res.json();
+        if (data.ok) { friendsData = data; updateFriendsBadge(); renderDMSidebar(); renderFriendsList(); }
+      } catch (e) { }
+    }
+
+    function updateFriendsBadge() {
+      const b = document.getElementById('ftab-badge');
+      if (b) { b.textContent = friendsData.incoming.length; b.style.display = friendsData.incoming.length ? 'inline' : 'none'; }
+    }
+
+    function renderFriendsList() {
+      const list = document.getElementById('friends-list');
+      if (!list) return;
+      list.innerHTML = '';
+      const items = activeFTab === 'friends' ? friendsData.friends : activeFTab === 'incoming' ? friendsData.incoming : friendsData.outgoing;
+      if (!items.length) {
+        list.innerHTML = `<div class="friend-empty">${activeFTab === 'friends' ? 'No friends yet — add someone!' : activeFTab === 'incoming' ? 'No pending requests.' : 'No sent requests.'}</div>`;
+        return;
       }
-
-      async function acceptFriend(name) {
-        await fetch("/api/chat/friends/accept", {
-          method: "POST",
-          headers: { "Content-Type": "application/json", "x-token": myToken },
-          body: JSON.stringify({ username: name }),
-        });
-        loadFriends();
-        showToast(`✅ Now friends with ${name}!`);
-      }
-      async function removeFriend(name) {
-        await fetch("/api/chat/friends/remove", {
-          method: "POST",
-          headers: { "Content-Type": "application/json", "x-token": myToken },
-          body: JSON.stringify({ username: name }),
-        });
-        loadFriends();
-      }
-
-      // ── DM sidebar list ──
-      function renderDMSidebar() {
-        const list = document.getElementById("dm-list");
-        if (!list) return;
-        list.innerHTML = "";
-        if (!friendsData.friends.length) {
-          list.innerHTML =
-            '<div style="padding:3px 18px;font-size:12px;color:var(--nimbus)">Add friends to DM</div>';
-          return;
-        }
-        friendsData.friends.forEach((name) => {
-          const ci = colorIdx(name);
-          const isActive = currentDMTarget === name;
-          const hasUnread = (dmUnread[name] || 0) > 0 && !isActive;
-          const el = document.createElement("div");
-          el.className = "dm-item" + (isActive ? " active" : "");
-          el.innerHTML = `<div class="dm-av av-${ci}">${esc(initials(name))}</div><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(name)}</span>${hasUnread ? '<span class="dm-unread"></span>' : ""}`;
-          el.addEventListener("click", () => openDM(name));
-          list.appendChild(el);
-        });
-      }
-
-      // ── Open a DM conversation ──
-      async function openDM(name) {
-        currentDMTarget = name;
-        dmUnread[name] = 0;
-
-        // Sidebar: deactivate channels, activate this DM
-        document
-          .querySelectorAll(".channel-item")
-          .forEach((c) => c.classList.remove("active"));
-        renderDMSidebar();
-
-        // Header
-        document.querySelector("#channel-header .hash").textContent = "@";
-        document.querySelector("#channel-header .channel-name").textContent =
-          name;
-        const desc = document.querySelector("#channel-header .channel-desc");
-        if (desc) desc.textContent = "Direct Message";
-        document.getElementById("online-pill").style.display = "none";
-        document.getElementById("msg-input").placeholder = `Message ${name}…`;
-
-        // Clear + show DM banner
-        const area = document.getElementById("messages-area");
+      items.forEach(name => {
         const ci = colorIdx(name);
-        area.innerHTML = `<div class="dm-banner"><div class="dm-banner-av av-${ci}">${esc(initials(name))}</div><h2>${esc(name)}</h2><p>Beginning of your DM with ${esc(name)}.</p></div>`;
+        const div = document.createElement('div');
+        div.className = 'friend-item';
+        let actions = '';
+        if (activeFTab === 'friends') {
+          actions = `<div class="friend-actions"><button class="btn-dm" onclick="closeFriendsModal();openDM('${esc(name)}')">DM</button><button class="btn-remove" onclick="removeFriend('${esc(name)}')">Remove</button></div>`;
+        } else if (activeFTab === 'incoming') {
+          actions = `<div class="friend-actions"><button class="btn-accept" onclick="acceptFriend('${esc(name)}')">Accept</button><button class="btn-decline" onclick="removeFriend('${esc(name)}')">Decline</button></div>`;
+        } else {
+          actions = `<div class="friend-actions"><button class="btn-decline" onclick="removeFriend('${esc(name)}')">Cancel</button></div>`;
+        }
+        div.innerHTML = `<div class="friend-av av-${ci}">${esc(initials(name))}</div><span class="friend-name">${esc(name)}</span>${actions}`;
+        list.appendChild(div);
+      });
+    }
 
-        // Load history
-        try {
-          const res = await fetch("/api/chat/dm/" + encodeURIComponent(name), {
-            headers: { "x-token": myToken },
-          });
-          const data = await res.json();
-          if (data.ok) {
-            let lA = null,
-              lT = 0;
-            data.messages.forEach((m) => {
-              renderDMBubble(m, false, area, lA, lT);
-              lA = m.from;
-              lT = m.ts;
-            });
-            area.scrollTop = area.scrollHeight;
-          }
-        } catch (e) {}
+    async function acceptFriend(name) {
+      await fetch('/api/chat/friends/accept', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: name, token: myToken }) });
+      loadFriends();
+      showToast(`✅ Now friends with ${name}!`);
+    }
+    async function removeFriend(name) {
+      await fetch('/api/chat/friends/remove', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: name, token: myToken }) });
+      loadFriends();
+    }
+
+    // ── DM sidebar list ──
+    function renderDMSidebar() {
+      const list = document.getElementById('dm-list');
+      if (!list) return;
+      list.innerHTML = '';
+      if (!friendsData.friends.length) {
+        list.innerHTML = '<div style="padding:3px 18px;font-size:12px;color:var(--nimbus)">Add friends to DM</div>';
+        return;
       }
+      friendsData.friends.forEach(name => {
+        const ci = colorIdx(name);
+        const isActive = currentDMTarget === name;
+        const hasUnread = (dmUnread[name] || 0) > 0 && !isActive;
+        const el = document.createElement('div');
+        el.className = 'dm-item' + (isActive ? ' active' : '');
+        el.dataset.dmName = name;
+        el.innerHTML = `<div class="dm-av av-${ci}">${esc(initials(name))}</div><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(name)}</span>${hasUnread ? '<span class="dm-unread"></span>' : ''}`;
+        el.addEventListener('click', () => openDM(name));
+        list.appendChild(el);
+      });
+    }
 
-      function renderDMBubble(msg, animate, area, lastAuthor, lastTs) {
-        const grouped =
-          msg.from === lastAuthor && msg.ts - lastTs < 5 * 60 * 1000;
-        const ci = colorIdx(msg.from);
-        const div = document.createElement("div");
-        div.className =
-          "msg-group" +
-          (grouped ? " grouped" : " has-header") +
-          (animate ? " msg-new" : "");
-        div.dataset.ts = msg.ts;
-        div.innerHTML = `${grouped ? `<span class="hover-time">${formatTime(msg.ts)}</span>` : ""}
+    // ── Open a DM conversation ──
+    async function openDM(name) {
+      currentDMTarget = name;
+      dmUnread[name] = 0;
+
+      // Sidebar will be refreshed after history loads
+
+      // Header — show as DM channel
+      document.querySelector('#channel-header .hash').textContent = '@';
+      document.querySelector('#channel-header .channel-name').textContent = name;
+      const desc = document.querySelector('#channel-header .channel-desc');
+      if (desc) desc.textContent = 'Direct Message';
+      document.getElementById('online-pill').style.display = 'none';
+      document.getElementById('msg-input').placeholder = `Message ${name}…`;
+
+      // Highlight DM item in sidebar — deactivate channels first
+      document.querySelectorAll('.channel-item').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('.dm-item').forEach(c => {
+        c.classList.toggle('active', c.dataset.dmName === name);
+      });
+
+      // Clear + show DM banner
+      const area = document.getElementById('messages-area');
+      const ci = colorIdx(name);
+      area.innerHTML = `<div class="dm-banner"><div class="dm-banner-av av-${ci}">${esc(initials(name))}</div><h2>${esc(name)}</h2><p>Beginning of your DM with ${esc(name)}.</p></div>`;
+
+      // Load history
+      try {
+        const res = await fetch('/api/chat/dm/' + encodeURIComponent(name) + '?token=' + encodeURIComponent(myToken));
+        const data = await res.json();
+        if (data.ok) {
+          let lA = null, lT = 0;
+          data.messages.forEach(m => { renderDMBubble(m, false, area, lA, lT); lA = m.from; lT = m.ts; });
+          area.scrollTop = area.scrollHeight;
+        }
+      } catch (e) { }
+    }
+
+    function renderDMBubble(msg, animate, area, lastAuthor, lastTs) {
+      const grouped = msg.from === lastAuthor && msg.ts - lastTs < 5 * 60 * 1000;
+      const ci = colorIdx(msg.from);
+      const div = document.createElement('div');
+      div.className = 'msg-group' + (grouped ? ' grouped' : ' has-header') + (animate ? ' msg-new' : '');
+      div.dataset.ts = msg.ts;
+      div.innerHTML = `${grouped ? `<span class="hover-time">${formatTime(msg.ts)}</span>` : ''}
     <div class="msg-avatar av-${ci}">${esc(initials(msg.from))}</div>
     <div class="msg-body">
       <div class="msg-meta"><span class="msg-name nc-${ci}">${esc(msg.from)}</span><span class="msg-time">Today at ${formatTime(msg.ts)}</span></div>
       <div class="msg-text">${esc(msg.text)}</div>
     </div>`;
-        area.appendChild(div);
-      }
+      area.appendChild(div);
+    }
 
-      // ── Intercept send for DM mode ──
-      // Patch the existing sendMsg via event — re-bind send button and enter key
-      function sendMsgPatched() {
-        if (currentDMTarget) {
-          const input = document.getElementById("msg-input");
-          const text = input.value.trim();
-          if (!text) return;
-          socket.emit("dm:send", { to: currentDMTarget, text });
-          input.value = "";
-          input.style.height = "auto";
-        } else {
-          sendMsg();
-        }
+    // ── Intercept send for DM mode ──
+    function sendMsgPatched() {
+      if (currentDMTarget) {
+        const input = document.getElementById('msg-input');
+        const text = input.value.trim();
+        if (!text) return;
+        if (socket) socket.emit('dm:send', { to: currentDMTarget, text });
+        input.value = ''; input.style.height = 'auto';
+      } else {
+        sendMsg();
       }
-      document
-        .getElementById("send-btn")
-        .addEventListener("click", sendMsgPatched);
-      document.getElementById("msg-input").addEventListener(
-        "keydown",
-        (e) => {
-          if (e.key === "Enter" && !e.shiftKey && currentDMTarget) {
-            e.preventDefault();
-            e.stopImmediatePropagation();
-            sendMsgPatched();
-          }
-        },
-        true,
-      ); // capture phase so it fires before existing listener
+    }
+    document.getElementById('send-btn').addEventListener('click', sendMsgPatched);
+    document.getElementById('msg-input').addEventListener('keydown', e => {
+      if (e.key === 'Enter' && !e.shiftKey && currentDMTarget) { e.preventDefault(); e.stopImmediatePropagation(); sendMsgPatched(); }
+    }, true);
 
-      // Patch channel clicks to reset DM mode
-      document.querySelectorAll(".channel-item").forEach((el) => {
-        el.addEventListener("click", () => {
-          currentDMTarget = null;
-          document.querySelector("#channel-header .hash").textContent = "#";
-          document.getElementById("online-pill").style.display = "";
-          document.getElementById("msg-input").placeholder = "Message #general";
-          renderDMSidebar();
-        });
+    // Patch channel clicks to reset DM mode
+    document.querySelectorAll('.channel-item').forEach(el => {
+      el.addEventListener('click', () => {
+        currentDMTarget = null;
+        document.querySelector('#channel-header .hash').textContent = '#';
+        document.getElementById('online-pill').style.display = '';
+        // Get channel name without the hash prefix
+        const chName = el.querySelector('.hash')
+          ? el.textContent.replace(el.querySelector('.hash').textContent, '').trim()
+          : el.textContent.trim();
+        document.querySelector('#channel-header .channel-name').textContent = chName;
+        document.querySelector('#channel-header .channel-desc').textContent = 'Welcome to Welkin';
+        document.getElementById('msg-input').placeholder = 'Message #' + chName;
+        renderDMSidebar();
       });
+    });
 
-      // ── Socket listeners for DM + friends (hooked after connectSocket runs) ──
-      const _waitForSocket = setInterval(() => {
-        if (!socket) return;
-        clearInterval(_waitForSocket);
+    // ── Socket listeners for DM + friends (hooked after connectSocket runs) ──
 
-        socket.on("dm:message", (msg) => {
-          const other = msg.from === myName ? msg.to : msg.from;
-          if (currentDMTarget === other) {
-            const area = document.getElementById("messages-area");
-            const prev = area.querySelectorAll(".msg-group");
-            const last = prev[prev.length - 1];
-            const lA = last?.querySelector(".msg-name")?.textContent || null;
-            const lT = parseInt(last?.dataset?.ts || "0");
-            renderDMBubble(msg, true, area, lA, lT);
-            area.scrollTop = area.scrollHeight;
-          } else {
-            dmUnread[other] = (dmUnread[other] || 0) + 1;
-            showToast("📩 DM from " + other);
-            renderDMSidebar();
-          }
-        });
 
-        socket.on("friends:request", ({ from }) => {
-          showToast("👋 Friend request from " + from);
-          loadFriends();
-        });
+    // Load friends once token is available
+    const _waitForToken = setInterval(() => {
+      if (!myToken) return;
+      clearInterval(_waitForToken);
+      loadFriends();
+    }, 200);
 
-        socket.on("friends:accepted", ({ from }) => {
-          showToast("✅ " + from + " accepted your friend request!");
-          loadFriends();
-        });
-      }, 150);
 
-      // Load friends once token is available
-      const _waitForToken = setInterval(() => {
-        if (!myToken) return;
-        clearInterval(_waitForToken);
-        loadFriends();
-      }, 200);
+    // ── Logout ──
+    function logout() {
+      localStorage.removeItem('welkin-chat-token');
+      localStorage.removeItem('welkin-chat-name');
+      location.reload();
+    }
 
-      // ── Logout ──
-      function logout() {
-        localStorage.removeItem("welkin-chat-token");
-        localStorage.removeItem("welkin-chat-name");
-        location.reload();
-      }
-    </script>
+  </script>
 
-    <!-- FRIENDS MODAL -->
-    <div id="friends-modal">
-      <div id="friends-card">
-        <div id="friends-card-header">
-          <h2>👥 Friends</h2>
-          <button id="friends-close" onclick="closeFriendsModal()">✕</button>
-        </div>
-        <div id="friends-add-row">
-          <input
-            id="friends-add-input"
-            type="text"
-            placeholder="Add friend by username…"
-            maxlength="24"
-            spellcheck="false"
-          />
-          <button id="friends-add-btn" onclick="sendFriendRequest()">
-            Send Request
-          </button>
-        </div>
-        <div id="friends-add-msg"></div>
-        <div id="friends-tabs">
-          <button class="ftab active" onclick="switchFTab(this, 'friends')">
-            Friends
-          </button>
-          <button class="ftab" onclick="switchFTab(this, 'incoming')">
-            Pending
-            <span
-              class="ftab-badge"
-              id="ftab-badge"
-              style="display: none"
-            ></span>
-          </button>
-          <button class="ftab" onclick="switchFTab(this, 'outgoing')">
-            Sent
-          </button>
-        </div>
-        <div id="friends-list"></div>
+  <!-- FRIENDS MODAL -->
+  <!--
+  <div id="friends-modal">
+    <div id="friends-card">
+      <div id="friends-card-header">
+        <h2>👥 Friends</h2>
+        <button id="friends-close" onclick="closeFriendsModal()">✕</button>
       </div>
+      <div id="friends-add-row">
+        <input id="friends-add-input" type="text" placeholder="Add friend by username…" maxlength="24"
+          spellcheck="false">
+        <button id="friends-add-btn" onclick="sendFriendRequest()">Send Request</button>
+      </div>
+      <div id="friends-add-msg"></div>
+      <div id="friends-tabs">
+        <button class="ftab active" onclick="switchFTab(this,'friends')">Friends</button>
+        <button class="ftab" onclick="switchFTab(this,'incoming')">Pending <span class="ftab-badge" id="ftab-badge"
+            style="display:none"></span></button>
+        <button class="ftab" onclick="switchFTab(this,'outgoing')">Sent</button>
+      </div>
+      <div id="friends-list"></div>
     </div>
-    <div id="toast"></div>
-  </body>
+  </div>
+  
+  <div id="toast"></div>
+  -->
+</body>
+
 </html>
