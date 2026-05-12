@@ -331,6 +331,10 @@
           counter.textContent = "Currently Online: " + count;
         });
 
+        socket.on("connect", function () {
+          socket.emit("lobby:ping");
+        });
+
         socket.on("disconnect", function () {
           counter.textContent = "Currently Online: —";
         });
