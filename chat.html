@@ -1594,7 +1594,7 @@
     </div>
 
     <!-- Hidden audio container -->
-    <div id="remote-audio-container" style="display: none"></div>
+    <div id="remote-audio-container"></div>
 
     <script>
       // ═══════════════════════════════════════════
@@ -1847,7 +1847,7 @@
         });
         socket.on("voice:peer-joined", ({ peerId, name }) => {
           console.log("voice:peer-joined", peerId, name);
-          createOffer(peerId, name);
+          if (!peerConnections.has(peerId)) createOffer(peerId, name);
         });
         socket.on("voice:peer-left", ({ peerId }) => {
           console.log("voice:peer-left", peerId);
@@ -1896,6 +1896,21 @@
           { urls: "stun:stun3.l.google.com:19302" },
           { urls: "stun:stun4.l.google.com:19302" },
           { urls: "stun:stun.services.mozilla.com:3478" },
+          {
+            urls: "turn:openrelay.metered.ca:80",
+            username: "openrelayproject",
+            credential: "openrelayproject",
+          },
+          {
+            urls: "turn:openrelay.metered.ca:443",
+            username: "openrelayproject",
+            credential: "openrelayproject",
+          },
+          {
+            urls: "turn:openrelay.metered.ca:443?transport=tcp",
+            username: "openrelayproject",
+            credential: "openrelayproject",
+          },
         ],
         iceCandidatePoolSize: 10,
       };
@@ -1989,11 +2004,13 @@
             audio.id = "audio-" + peerId;
             audio.autoplay = true;
             audio.playsInline = true;
+            audio.volume = 1.0;
             document
               .getElementById("remote-audio-container")
               .appendChild(audio);
           }
           audio.srcObject = stream;
+          audio.play().catch(() => {});
         };
 
         return pc;
