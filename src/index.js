@@ -376,18 +376,69 @@ let io;
 
 const CHAT_FILE = join(publicPath, "chat-history.json");
 const USERS_FILE = join(publicPath, "chat-users.json");
+const DM_FILE = join(publicPath, "chat-dms.json");
 const MAX_HISTORY = 100;
+const MAX_DM = 200;
 
-// ── Persistent chat history ──
+// ── Redis persistence (optional) ─────────────────────────────────────────────
+// Set REDIS_URL env var (e.g. from Upstash) to persist data across Render
+// deploys. Falls back to local JSON files when REDIS_URL is not set.
+let redis = null;
+if (process.env.REDIS_URL) {
+  try {
+    const { createClient } = await import("redis").catch(() => null) ||
+      { createClient: null };
+    if (createClient) {
+      redis = createClient({ url: process.env.REDIS_URL });
+      redis.on("error", (e) => console.warn("Redis error:", e.message));
+      await redis.connect();
+      console.log("chat: Redis connected — data will persist across deploys.");
+    }
+  } catch (e) {
+    console.warn("chat: Redis init failed, falling back to JSON files:", e.message);
+    redis = null;
+  }
+} else {
+  console.log(
+    "chat: No REDIS_URL set — data stored in local JSON files (lost on Render redeploy).\n" +
+    "      Set REDIS_URL to a free Upstash Redis instance to persist data."
+  );
+}
+
+// ── Low-level read/write helpers ──────────────────────────────────────────────
+async function redisGet(key, fallback) {
+  if (redis) {
+    try {
+      const val = await redis.get(key);
+      return val ? JSON.parse(val) : fallback;
+    } catch { return fallback; }
+  }
+  return fallback;
+}
+async function redisSet(key, value) {
+  if (redis) {
+    try { await redis.set(key, JSON.stringify(value)); } catch { }
+  }
+}
+
+// ── Persistent chat history ───────────────────────────────────────────────────
 const chatHistory = (() => {
   try {
     if (existsSync(CHAT_FILE))
       return JSON.parse(readFileSync(CHAT_FILE, "utf8"));
-  } catch {
-    /* start fresh */
-  }
+  } catch { /* start fresh */ }
   return [];
 })();
+
+// If Redis is available, hydrate from it (may have newer data than local file)
+if (redis) {
+  redisGet("welkin:chat-history", null).then((saved) => {
+    if (saved && Array.isArray(saved) && saved.length) {
+      chatHistory.length = 0;
+      chatHistory.push(...saved);
+    }
+  });
+}
 
 let saveTimer = null;
 function saveHistory() {
@@ -396,8 +447,9 @@ function saveHistory() {
     try {
       await writeFile(CHAT_FILE, JSON.stringify(chatHistory), "utf8");
     } catch (err) {
-      console.error("chat: failed to save history:", err);
+      console.error("chat: failed to save history to file:", err);
     }
+    await redisSet("welkin:chat-history", chatHistory);
   }, 2000);
 }
 
@@ -407,34 +459,63 @@ function pushMsg(msg) {
   saveHistory();
 }
 
-// ── User accounts: { username → { passwordHash, token } } ──
-// Simple SHA-256 hash — no bcrypt dependency needed
+// ── User accounts ─────────────────────────────────────────────────────────────
 function hashPassword(pw) {
-  return createHash("sha256")
-    .update("welkin-salt-" + pw)
-    .digest("hex");
+  return createHash("sha256").update("welkin-salt-" + pw).digest("hex");
 }
 function makeToken() {
-  return createHash("sha256")
-    .update(Math.random().toString() + Date.now())
-    .digest("hex");
+  return createHash("sha256").update(Math.random().toString() + Date.now()).digest("hex");
 }
 
-const DM_FILE = join(publicPath, "chat-dms.json");
-const MAX_DM = 200;
+const users = (() => {
+  try {
+    if (existsSync(USERS_FILE))
+      return JSON.parse(readFileSync(USERS_FILE, "utf8"));
+  } catch { /* start fresh */ }
+  return {};
+})();
+
+if (redis) {
+  redisGet("welkin:users", null).then((saved) => {
+    if (saved && typeof saved === "object") {
+      Object.assign(users, saved);
+    }
+  });
+}
+
+async function saveUsers() {
+  try {
+    await writeFile(USERS_FILE, JSON.stringify(users), "utf8");
+  } catch (err) {
+    console.error("chat: failed to save users to file:", err);
+  }
+  await redisSet("welkin:users", users);
+}
+
+// ── DM history ────────────────────────────────────────────────────────────────
 const dmHistory = (() => {
   try {
     if (existsSync(DM_FILE)) return JSON.parse(readFileSync(DM_FILE, "utf8"));
-  } catch {}
+  } catch { }
   return {};
 })();
+
+if (redis) {
+  redisGet("welkin:dms", null).then((saved) => {
+    if (saved && typeof saved === "object") {
+      Object.assign(dmHistory, saved);
+    }
+  });
+}
+
 let dmSaveTimer = null;
 function saveDMs() {
   clearTimeout(dmSaveTimer);
   dmSaveTimer = setTimeout(async () => {
     try {
       await writeFile(DM_FILE, JSON.stringify(dmHistory), "utf8");
-    } catch (e) {}
+    } catch (e) { }
+    await redisSet("welkin:dms", dmHistory);
   }, 2000);
 }
 function dmKey(a, b) {
@@ -446,23 +527,6 @@ function pushDM(a, b, msg) {
   dmHistory[k].push(msg);
   if (dmHistory[k].length > MAX_DM) dmHistory[k].shift();
   saveDMs();
-}
-const users = (() => {
-  try {
-    if (existsSync(USERS_FILE))
-      return JSON.parse(readFileSync(USERS_FILE, "utf8"));
-  } catch {
-    /* start fresh */
-  }
-  return {};
-})();
-
-async function saveUsers() {
-  try {
-    await writeFile(USERS_FILE, JSON.stringify(users), "utf8");
-  } catch (err) {
-    console.error("chat: failed to save users:", err);
-  }
 }
 
 // ── Auth REST endpoints (called by the login form before WS connect) ──
@@ -634,7 +698,6 @@ const lastJoinMsg = new Map(); // name → timestamp, debounce join/left spam
 function broadcastMembers() {
   const list = [...new Set(liveMembers.values())].sort();
   io.emit("members:update", list);
-  // Named-user count for chat.html pill; raw count for index.html badge
   io.emit("online-count", list.length);
   io.emit("raw-count", io.engine.clientsCount);
 }
@@ -646,9 +709,10 @@ function initSocketIO() {
   });
 
   io.on("connection", (socket) => {
-    // Send named user count immediately on connect
+    // Send named user count to this new socket immediately on connect
     const _namedCount = new Set(liveMembers.values()).size;
     socket.emit("online-count", _namedCount);
+    socket.emit("raw-count", io.engine.clientsCount);
 
     socket.on("disconnect", () => {
       const name = liveMembers.get(socket.id);
@@ -670,8 +734,7 @@ function initSocketIO() {
     });
 
     socket.on("lobby:ping", () => {
-      const _namedCount = new Set(liveMembers.values()).size;
-      socket.emit("online-count", _namedCount);
+      socket.emit("raw-count", io.engine.clientsCount);
     });
 
     // ── Auth: join with token ──
@@ -744,12 +807,10 @@ function initSocketIO() {
       if (!socket.chatName) return;
       socket.join("voice");
       // Tell everyone else a new peer joined so they can initiate offer
-      socket
-        .to("voice")
-        .emit("voice:peer-joined", {
-          peerId: socket.id,
-          name: socket.chatName,
-        });
+      socket.to("voice").emit("voice:peer-joined", {
+        peerId: socket.id,
+        name: socket.chatName,
+      });
       // Send this peer the list of existing voice members so it can show the UI
       const voicePeers = [...(io.sockets.adapter.rooms.get("voice") || [])]
         .filter((id) => id !== socket.id)
@@ -775,6 +836,14 @@ function initSocketIO() {
     socket.on("voice:ice", ({ to, candidate }) =>
       io.to(to).emit("voice:ice", { from: socket.id, candidate }),
     );
+    // ── Video: notify peers when someone toggles their camera ──
+    socket.on("voice:video-state", ({ enabled }) => {
+      socket.to("voice").emit("voice:peer-video", {
+        peerId: socket.id,
+        name: socket.chatName,
+        enabled: !!enabled,
+      });
+    });
   });
 
   console.log("Socket.io attached to server");

@@ -712,7 +712,8 @@
     }
 
     #voice-mute-btn,
-    #voice-leave-btn {
+    #voice-leave-btn,
+    #voice-cam-btn {
       padding: 6px 14px;
       border: none;
       border-radius: 8px;
@@ -747,6 +748,85 @@
 
     #voice-leave-btn:hover {
       background: rgba(240, 71, 71, .35)
+    }
+
+    #voice-cam-btn {
+      background: rgba(255, 255, 255, .08);
+      color: var(--cumulus)
+    }
+
+    #voice-cam-btn:hover {
+      background: rgba(255, 255, 255, .14)
+    }
+
+    #voice-cam-btn.cam-on {
+      background: rgba(67, 201, 155, .2);
+      color: #43c99b;
+      border: 1px solid rgba(67, 201, 155, .3)
+    }
+
+    /* ── VIDEO GRID OVERLAY ── */
+    #video-grid {
+      display: none;
+      position: fixed;
+      top: 52px;
+      /* below channel header */
+      left: var(--sidebar-w);
+      right: var(--members-w);
+      bottom: 52px;
+      /* above voice bar */
+      background: rgba(11, 30, 61, .92);
+      backdrop-filter: blur(8px);
+      z-index: 40;
+      padding: 16px;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-content: flex-start;
+      overflow-y: auto;
+    }
+
+    #video-grid.has-video {
+      display: flex;
+    }
+
+    .video-tile {
+      position: relative;
+      background: #0a1a3a;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid rgba(108, 180, 240, .15);
+      flex: 1 1 280px;
+      max-width: calc(50% - 6px);
+      aspect-ratio: 16/9;
+    }
+
+    .video-tile video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .video-tile .vt-label {
+      position: absolute;
+      bottom: 8px;
+      left: 10px;
+      font-size: 12px;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 600;
+      color: #fff;
+      background: rgba(0, 0, 0, .55);
+      padding: 2px 8px;
+      border-radius: 6px;
+    }
+
+    .video-tile .vt-no-cam {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
     }
 
     /* ── LOGIN OVERLAY ── */
@@ -1504,9 +1584,13 @@
   <div id="voice-bar">
     <div id="voice-status">Voice Connected</div>
     <div id="voice-peers-bar"></div>
+    <button id="voice-cam-btn" onclick="toggleCamera()">📷 Camera</button>
     <button id="voice-mute-btn" onclick="toggleMute()">🎤 Mute</button>
     <button id="voice-leave-btn" onclick="leaveVoice()">Leave</button>
   </div>
+
+  <!-- VIDEO GRID OVERLAY -->
+  <div id="video-grid"></div>
 
   <!-- Hidden audio container -->
   <div id="remote-audio-container" style="display:none"></div>
@@ -1719,8 +1803,10 @@
     // ═══════════════════════════════════════════
     const peerConnections = new Map(); // peerId -> { pc, name }
     let localStream = null;
+    let localVideoStream = null; // separate camera stream
     let inVoice = false;
     let muted = false;
+    let videoEnabled = false;
 
     const ICE = [
       { urls: 'stun:stun.l.google.com:19302' },
@@ -1751,7 +1837,11 @@
       peerConnections.forEach(({ pc }) => pc.close());
       peerConnections.clear();
       if (localStream) { localStream.getTracks().forEach(t => t.stop()); localStream = null; }
+      if (localVideoStream) { localVideoStream.getTracks().forEach(t => t.stop()); localVideoStream = null; }
+      videoEnabled = false;
       document.getElementById('remote-audio-container').innerHTML = '';
+      document.getElementById('video-grid').innerHTML = '';
+      document.getElementById('video-grid').classList.remove('has-video');
       document.getElementById('voice-channel-btn').classList.remove('in-voice');
       document.getElementById('voice-bar').classList.remove('active');
       document.getElementById('voice-members-sidebar').innerHTML = '';
@@ -1760,6 +1850,8 @@
       muted = false;
       const mb = document.getElementById('voice-mute-btn');
       mb.classList.remove('muted'); mb.textContent = '🎤 Mute';
+      const cb = document.getElementById('voice-cam-btn');
+      cb.classList.remove('cam-on'); cb.textContent = '📷 Camera';
     }
 
     // ── Mute toggle ──
@@ -1769,6 +1861,106 @@
       const btn = document.getElementById('voice-mute-btn');
       btn.classList.toggle('muted', muted);
       btn.textContent = muted ? '🔇 Unmute' : '🎤 Mute';
+    }
+
+    // ── Camera toggle ──
+    async function toggleCamera() {
+      if (!inVoice) return;
+      const btn = document.getElementById('voice-cam-btn');
+      const grid = document.getElementById('video-grid');
+
+      if (!videoEnabled) {
+        // Turn camera ON
+        try {
+          localVideoStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+        } catch (e) {
+          alert('Camera access denied — please allow it in your browser.');
+          return;
+        }
+        videoEnabled = true;
+        btn.classList.add('cam-on');
+        btn.textContent = '📹 Camera On';
+
+        // Show local tile
+        showVideoTile('local', myName, localVideoStream, true);
+
+        // Add video track to all existing peer connections
+        const videoTrack = localVideoStream.getVideoTracks()[0];
+        peerConnections.forEach(({ pc }, peerId) => {
+          pc.addTrack(videoTrack, localVideoStream);
+          // Renegotiate with this peer
+          renegotiate(peerId, pc);
+        });
+
+        socket.emit('voice:video-state', { enabled: true });
+      } else {
+        // Turn camera OFF
+        videoEnabled = false;
+        btn.classList.remove('cam-on');
+        btn.textContent = '📷 Camera';
+
+        if (localVideoStream) {
+          localVideoStream.getTracks().forEach(t => t.stop());
+          localVideoStream = null;
+        }
+
+        // Remove our local tile
+        removeVideoTile('local');
+
+        // Remove video sender from all peer connections
+        peerConnections.forEach(({ pc }, peerId) => {
+          const senders = pc.getSenders().filter(s => s.track?.kind === 'video');
+          senders.forEach(s => pc.removeTrack(s));
+          renegotiate(peerId, pc);
+        });
+
+        socket.emit('voice:video-state', { enabled: false });
+      }
+
+      updateVideoGridVisibility();
+    }
+
+    async function renegotiate(peerId, pc) {
+      try {
+        const offer = await pc.createOffer();
+        await pc.setLocalDescription(offer);
+        socket.emit('voice:offer', { to: peerId, offer });
+      } catch (e) { console.warn('renegotiate failed:', e); }
+    }
+
+    // ── Video tile helpers ──
+    function showVideoTile(id, name, stream, mirror) {
+      const grid = document.getElementById('video-grid');
+      let tile = document.getElementById('vtile-' + id);
+      if (!tile) {
+        tile = document.createElement('div');
+        tile.className = 'video-tile';
+        tile.id = 'vtile-' + id;
+        const video = document.createElement('video');
+        video.autoplay = true;
+        video.setAttribute('playsinline', '');
+        if (mirror) video.style.transform = 'scaleX(-1)';
+        const label = document.createElement('div');
+        label.className = 'vt-label';
+        label.textContent = name + (mirror ? ' (You)' : '');
+        tile.appendChild(video);
+        tile.appendChild(label);
+        grid.appendChild(tile);
+      }
+      tile.querySelector('video').srcObject = stream;
+      updateVideoGridVisibility();
+    }
+
+    function removeVideoTile(id) {
+      const tile = document.getElementById('vtile-' + id);
+      if (tile) tile.remove();
+      updateVideoGridVisibility();
+    }
+
+    function updateVideoGridVisibility() {
+      const grid = document.getElementById('video-grid');
+      const hasTiles = grid.querySelectorAll('.video-tile').length > 0;
+      grid.classList.toggle('has-video', hasTiles);
     }
 
     document.getElementById('voice-channel-btn').addEventListener('click', () => {
@@ -1794,17 +1986,24 @@
         if (pc.iceConnectionState === 'failed') pc.restartIce();
       };
 
-      // Play remote audio
-      pc.ontrack = ({ streams }) => {
-        let el = document.getElementById('audio-' + peerId);
-        if (!el) {
-          el = document.createElement('audio');
-          el.id = 'audio-' + peerId;
-          el.autoplay = true;
-          el.setAttribute('playsinline', '');
-          document.getElementById('remote-audio-container').appendChild(el);
+      // Play remote audio and show video tiles
+      pc.ontrack = ({ track, streams }) => {
+        if (track.kind === 'audio') {
+          let el = document.getElementById('audio-' + peerId);
+          if (!el) {
+            el = document.createElement('audio');
+            el.id = 'audio-' + peerId;
+            el.autoplay = true;
+            el.setAttribute('playsinline', '');
+            document.getElementById('remote-audio-container').appendChild(el);
+          }
+          el.srcObject = streams[0];
+        } else if (track.kind === 'video') {
+          // Build a MediaStream with just this video track so we can display it
+          const vs = new MediaStream([track]);
+          showVideoTile(peerId, peerName, vs, false);
+          track.onended = () => removeVideoTile(peerId);
         }
-        el.srcObject = streams[0];
       };
 
       return pc;
@@ -1815,6 +2014,7 @@
       if (entry) { entry.pc.close(); peerConnections.delete(peerId); }
       const el = document.getElementById('audio-' + peerId);
       if (el) el.remove();
+      removeVideoTile(peerId);
     }
 
     // ── Voice signaling — registered inside connectSocket ──
@@ -1837,7 +2037,14 @@
 
       socket.on('voice:peer-left', ({ peerId }) => {
         removePC(peerId);
+        removeVideoTile(peerId);
         updateVoiceBar();
+      });
+
+      // A peer toggled their camera — if they turned it off, remove their tile
+      socket.on('voice:peer-video', ({ peerId, name, enabled }) => {
+        if (!enabled) removeVideoTile(peerId);
+        // If enabled, the video track will arrive via ontrack
       });
 
       socket.on('voice:offer', async ({ from, name, offer }) => {

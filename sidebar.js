@@ -303,7 +303,6 @@ if (document.readyState === "loading") {
 }
 
 // Navigation is handled by router.js for SPA
-
 // ── Online counter (shared across all pages) ────────────────────────────────
 // index.html has its own inline socket block, so we skip it here to avoid
 // double-counting. Every other page gets the counter wired up automatically.
