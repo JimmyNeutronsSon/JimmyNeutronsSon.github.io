@@ -425,7 +425,7 @@ const MAX_DM = 200;
 const dmHistory = (() => {
   try {
     if (existsSync(DM_FILE)) return JSON.parse(readFileSync(DM_FILE, "utf8"));
-  } catch { }
+  } catch {}
   return {};
 })();
 let dmSaveTimer = null;
@@ -434,7 +434,7 @@ function saveDMs() {
   dmSaveTimer = setTimeout(async () => {
     try {
       await writeFile(DM_FILE, JSON.stringify(dmHistory), "utf8");
-    } catch (e) { }
+    } catch (e) {}
   }, 2000);
 }
 function dmKey(a, b) {
@@ -630,6 +630,7 @@ fastify.get("/api/chat/dm/:other", async (req, reply) => {
 // ── Live members map: socketId → username ──
 const liveMembers = new Map();
 const lastJoinMsg = new Map(); // name → timestamp, debounce join/left spam
+const serverId = Math.random().toString(36).substring(2, 10); // unique ID per server start
 
 function broadcastMembers() {
   const list = [...new Set(liveMembers.values())].sort();
@@ -646,6 +647,8 @@ function initSocketIO() {
   });
 
   io.on("connection", (socket) => {
+    // Send server ID so client can detect restarts
+    socket.emit("server:id", serverId);
     // Broadcast updated visitor count to ALL connected sockets (raw = any page)
     io.emit("online-count", io.engine.clientsCount);
     socket.emit("raw-count", io.engine.clientsCount);

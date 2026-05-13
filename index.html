@@ -275,37 +275,56 @@
     <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
     <script>
       (function () {
-        // Show update popup on every server restart by using sessionStorage
-        // (clears when browser/tab closes - typically corresponds to dev server restart)
-        if (sessionStorage.getItem("updateSeen")) return;
+        // Show update popup on every server restart by comparing server ID
+        const savedServerId = localStorage.getItem("lastServerId");
 
-        const popup = document.createElement("div");
-        popup.className = "update-popup";
-        popup.innerHTML = `
-        <div class="update-card">
-          <h2 class="update-title">Site Updated!</h2>
-          <p class="update-desc">
-            Voice chat now has videos(little glitchy)!<br>
-            You can also now have DMs and add friends!<br>
-            Unfortunatley, the online counter is still broken.<br>
-          </p>
-          <button class="update-btn" id="update-close">Got it!</button>
-        </div>
-      `;
+        function showPopup() {
+          const popup = document.createElement("div");
+          popup.className = "update-popup";
+          popup.innerHTML = `
+          <div class="update-card">
+            <h2 class="update-title">Site Updated!</h2>
+            <p class="update-desc">
+              Voice chat now has videos(little glitchy)!<br>
+              You can also now have DMs and add friends!<br>
+              Unfortunatley, the online counter is still broken.<br>
+            </p>
+            <button class="update-btn" id="update-close">Got it!</button>
+          </div>
+        `;
 
-        document.body.appendChild(popup);
+          document.body.appendChild(popup);
 
-        function dismiss() {
-          popup.classList.add("hiding");
-          setTimeout(() => popup.remove(), 400);
-          sessionStorage.setItem("updateSeen", "true");
+          function dismiss() {
+            popup.classList.add("hiding");
+            setTimeout(() => popup.remove(), 400);
+          }
+
+          document
+            .getElementById("update-close")
+            .addEventListener("click", dismiss);
+          popup.addEventListener("click", function (e) {
+            if (e.target === popup) dismiss();
+          });
         }
 
-        document
-          .getElementById("update-close")
-          .addEventListener("click", dismiss);
-        popup.addEventListener("click", function (e) {
-          if (e.target === popup) dismiss();
+        // Skip if local dev (no server)
+        const isLocalDev =
+          (window.location.hostname === "localhost" ||
+            window.location.hostname === "127.0.0.1") &&
+          window.location.port !== "8080";
+        if (isLocalDev) return;
+
+        const socket = io(window.location.origin, { path: "/socket.io/" });
+
+        socket.on("server:id", function (serverId) {
+          if (savedServerId && savedServerId !== serverId) {
+            showPopup();
+          } else if (!savedServerId) {
+            // First visit - also show
+            showPopup();
+          }
+          localStorage.setItem("lastServerId", serverId);
         });
       })();
     </script>
