@@ -120,21 +120,39 @@
       background: rgba(240, 71, 71, .12)
     }
 
-    #channels-label {
-      padding: 16px 16px 6px;
+    .ch-section-label {
+      padding: 12px 16px 4px;
       font-family: 'Outfit', sans-serif;
       font-size: 10px;
       font-weight: 700;
       letter-spacing: 1.5px;
       text-transform: uppercase;
       color: var(--nimbus);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       flex-shrink: 0
     }
 
+    .ch-section-add {
+      background: none;
+      border: none;
+      color: var(--nimbus);
+      cursor: pointer;
+      font-size: 15px;
+      padding: 0 2px;
+      border-radius: 4px;
+      transition: color .15s;
+      line-height: 1
+    }
+
+    .ch-section-add:hover {
+      color: var(--daylight)
+    }
+
     #channels-list {
-      flex: 1;
       overflow-y: auto;
-      padding: 0 8px 8px
+      padding: 0 8px 4px
     }
 
     #channels-list::-webkit-scrollbar {
@@ -181,7 +199,73 @@
       color: var(--daylight)
     }
 
-    /* Voice channel in sidebar */
+    /* DM section */
+    .dm-section-label {
+      padding: 10px 16px 4px;
+      font-family: "Outfit", sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--nimbus);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0
+    }
+
+    #dm-list {
+      overflow-y: auto;
+      padding: 0 0 4px
+    }
+
+    .dm-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-size: 14px;
+      color: var(--nimbus);
+      cursor: pointer;
+      transition: all .15s;
+      margin: 0 8px 1px;
+      font-weight: 500
+    }
+
+    .dm-item:hover {
+      background: rgba(108, 180, 240, .08);
+      color: var(--mist)
+    }
+
+    .dm-item.active {
+      background: rgba(58, 143, 224, .18);
+      color: var(--cumulus)
+    }
+
+    .dm-av {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: "Outfit", sans-serif;
+      font-weight: 700;
+      font-size: 9px;
+      flex-shrink: 0
+    }
+
+    .dm-unread {
+      width: 8px;
+      height: 8px;
+      background: var(--cerulean);
+      border-radius: 50%;
+      margin-left: auto;
+      flex-shrink: 0
+    }
+
+    /* Voice */
     #voice-channel-btn {
       display: flex;
       align-items: center;
@@ -237,8 +321,7 @@
     }
 
     .voice-member-chip.speaking .vm-dot {
-      box-shadow: 0 0 5px #43c99b;
-      background: #43c99b
+      box-shadow: 0 0 5px #43c99b
     }
 
     /* ── MAIN ── */
@@ -432,6 +515,16 @@
       word-break: break-word
     }
 
+    .msg-img {
+      max-width: 320px;
+      max-height: 240px;
+      border-radius: 8px;
+      margin-top: 4px;
+      cursor: pointer;
+      display: block;
+      border: 1px solid rgba(108, 180, 240, .15)
+    }
+
     .hover-time {
       display: none;
       position: absolute;
@@ -497,12 +590,77 @@
       align-items: flex-end;
       backdrop-filter: blur(10px);
       transition: border-color .2s, box-shadow .2s;
-      overflow: hidden
+      overflow: hidden;
+      flex-direction: column
     }
 
     #input-box:focus-within {
       border-color: rgba(58, 143, 224, .4);
       box-shadow: 0 0 0 3px rgba(58, 143, 224, .08)
+    }
+
+    #img-preview-row {
+      display: none;
+      padding: 8px 12px 0;
+      gap: 8px;
+      flex-wrap: wrap
+    }
+
+    #img-preview-row.has-img {
+      display: flex
+    }
+
+    .img-preview-thumb {
+      position: relative;
+      display: inline-block
+    }
+
+    .img-preview-thumb img {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 6px;
+      border: 1px solid rgba(108, 180, 240, .2)
+    }
+
+    .img-preview-remove {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      background: #f04747;
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 16px;
+      height: 16px;
+      font-size: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1
+    }
+
+    #input-row {
+      display: flex;
+      align-items: flex-end;
+      width: 100%
+    }
+
+    #img-attach-btn {
+      margin: 10px 0 10px 12px;
+      padding: 6px 8px;
+      background: transparent;
+      border: none;
+      color: var(--nimbus);
+      cursor: pointer;
+      font-size: 18px;
+      transition: color .15s;
+      flex-shrink: 0
+    }
+
+    #img-attach-btn:hover {
+      color: var(--daylight)
     }
 
     #msg-input {
@@ -547,6 +705,33 @@
 
     #send-btn:active {
       transform: translateY(0)
+    }
+
+    #file-input {
+      display: none
+    }
+
+    /* image lightbox */
+    #lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .85);
+      z-index: 500;
+      align-items: center;
+      justify-content: center;
+      cursor: zoom-out
+    }
+
+    #lightbox.open {
+      display: flex
+    }
+
+    #lightbox img {
+      max-width: 90vw;
+      max-height: 90vh;
+      border-radius: 10px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, .6)
     }
 
     /* ── MEMBERS PANEL ── */
@@ -646,7 +831,31 @@
       text-overflow: ellipsis
     }
 
-    /* ── VOICE BAR (bottom of screen when in call) ── */
+    .member-dm-btn {
+      display: none;
+      background: rgba(58, 143, 224, .15);
+      border: 1px solid rgba(58, 143, 224, .25);
+      border-radius: 6px;
+      color: var(--daylight);
+      font-size: 11px;
+      padding: 2px 8px;
+      cursor: pointer;
+      transition: all .15s;
+      margin-left: auto;
+      flex-shrink: 0;
+      font-family: "Outfit", sans-serif;
+      font-weight: 600
+    }
+
+    .member-item:hover .member-dm-btn {
+      display: block
+    }
+
+    .member-dm-btn:hover {
+      background: rgba(58, 143, 224, .3)
+    }
+
+    /* ── VOICE BAR ── */
     #voice-bar {
       display: none;
       position: fixed;
@@ -765,16 +974,13 @@
       border: 1px solid rgba(67, 201, 155, .3)
     }
 
-    /* ── VIDEO GRID OVERLAY ── */
     #video-grid {
       display: none;
       position: fixed;
       top: 52px;
-      /* below channel header */
       left: var(--sidebar-w);
       right: var(--members-w);
       bottom: 52px;
-      /* above voice bar */
       background: rgba(11, 30, 61, .92);
       backdrop-filter: blur(8px);
       z-index: 40;
@@ -782,11 +988,11 @@
       gap: 12px;
       flex-wrap: wrap;
       align-content: flex-start;
-      overflow-y: auto;
+      overflow-y: auto
     }
 
     #video-grid.has-video {
-      display: flex;
+      display: flex
     }
 
     .video-tile {
@@ -797,14 +1003,14 @@
       border: 1px solid rgba(108, 180, 240, .15);
       flex: 1 1 280px;
       max-width: calc(50% - 6px);
-      aspect-ratio: 16/9;
+      aspect-ratio: 16/9
     }
 
     .video-tile video {
       width: 100%;
       height: 100%;
       object-fit: cover;
-      display: block;
+      display: block
     }
 
     .video-tile .vt-label {
@@ -817,19 +1023,10 @@
       color: #fff;
       background: rgba(0, 0, 0, .55);
       padding: 2px 8px;
-      border-radius: 6px;
+      border-radius: 6px
     }
 
-    .video-tile .vt-no-cam {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 40px;
-    }
-
-    /* ── LOGIN OVERLAY ── */
+    /* ── LOGIN ── */
     #login-overlay {
       position: fixed;
       inset: 0;
@@ -978,10 +1175,6 @@
       transform: translateY(-1px)
     }
 
-    #auth-btn:active {
-      transform: translateY(0)
-    }
-
     #auth-btn:disabled {
       opacity: .5;
       cursor: not-allowed;
@@ -1068,107 +1261,7 @@
       color: #a5d4f7
     }
 
-
-    /* ── FRIENDS & DM ── */
-    .sb-section-add {
-      background: none;
-      border: none;
-      color: var(--nimbus);
-      cursor: pointer;
-      font-size: 15px;
-      padding: 0 2px;
-      border-radius: 4px;
-      transition: color .15s;
-      line-height: 1
-    }
-
-    .sb-section-add:hover {
-      color: var(--daylight)
-    }
-
-    .dm-item {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 6px 10px;
-      border-radius: 8px;
-      font-size: 14px;
-      color: var(--nimbus);
-      cursor: pointer;
-      transition: all .15s;
-      margin: 0 8px 1px;
-      font-weight: 500
-    }
-
-    .dm-item:hover {
-      background: rgba(108, 180, 240, .08);
-      color: var(--mist)
-    }
-
-    .dm-item.active {
-      background: rgba(58, 143, 224, .18);
-      color: var(--cumulus)
-    }
-
-    .dm-av {
-      width: 22px;
-      height: 22px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: "Outfit", sans-serif;
-      font-weight: 700;
-      font-size: 9px;
-      flex-shrink: 0
-    }
-
-    .dm-section-label {
-      padding: 10px 16px 4px;
-      font-family: "Outfit", sans-serif;
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      color: var(--nimbus);
-      display: flex;
-      align-items: center;
-      justify-content: space-between
-    }
-
-    .dm-unread {
-      width: 8px;
-      height: 8px;
-      background: var(--cerulean);
-      border-radius: 50%;
-      margin-left: auto;
-      flex-shrink: 0
-    }
-
-    .member-dm-btn {
-      display: none;
-      background: rgba(58, 143, 224, .15);
-      border: 1px solid rgba(58, 143, 224, .25);
-      border-radius: 6px;
-      color: var(--daylight);
-      font-size: 11px;
-      padding: 2px 8px;
-      cursor: pointer;
-      transition: all .15s;
-      margin-left: auto;
-      flex-shrink: 0;
-      font-family: "Outfit", sans-serif;
-      font-weight: 600
-    }
-
-    .member-item:hover .member-dm-btn {
-      display: block
-    }
-
-    .member-dm-btn:hover {
-      background: rgba(58, 143, 224, .3)
-    }
-
+    /* ── FRIENDS MODAL ── */
     #friends-modal {
       display: none;
       position: fixed;
@@ -1426,6 +1519,7 @@
       color: var(--nimbus)
     }
 
+    /* DM banner */
     .dm-banner {
       padding: 24px 20px 16px;
       margin-bottom: 8px;
@@ -1458,6 +1552,7 @@
       color: var(--nimbus)
     }
 
+    /* Toast */
     #toast {
       position: fixed;
       bottom: 80px;
@@ -1526,22 +1621,23 @@
     <div id="sidebar">
       <div id="server-header">
         <div class="server-icon">☁️</div>
-        <div class="server-name">Welkin<strong style="color: #1E6CC7;">.Chat</strong></div>
+        <div class="server-name">Welkin<strong style="color:#1E6CC7;">.Chat</strong></div>
         <button id="logout-btn" onclick="logout()" title="Sign out">Log Out</button>
       </div>
-      <div id="channels-label">Text Channels</div>
+
+      <div class="ch-section-label">Text Channels</div>
       <div id="channels-list">
-        <div class="channel-item active"><span class="hash">#</span>general</div>
+        <div class="channel-item active" data-ch="general"><span class="hash">#</span>general</div>
+        <div class="channel-item" data-ch="unblocked-links"><span class="hash">#</span>unblocked-links</div>
       </div>
-      <!-- DMs -->
-      <!--
-      <div class="dm-section-label">Direct Messages <button class="sb-section-add" onclick="openFriendsModal()"
-          title="Friends">👥</button></div>
+
+      <div class="dm-section-label">
+        Direct Messages
+        <button class="ch-section-add" onclick="openFriendsModal()" title="Friends">👥</button>
+      </div>
       <div id="dm-list"></div>
-      -->
-      <div
-        style="padding:12px 16px 6px;font-family:'Outfit',sans-serif;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--nimbus);">
-        Voice Channels</div>
+
+      <div class="ch-section-label" style="margin-top:8px">Voice Channels</div>
       <div id="voice-channel-btn"><span class="vc-icon">🔊</span>General Voice</div>
       <div id="voice-members-sidebar"></div>
     </div>
@@ -1567,8 +1663,13 @@
       <div id="typing-bar"></div>
       <div id="input-wrap">
         <div id="input-box">
-          <textarea id="msg-input" placeholder="Message #general" rows="1" maxlength="500"></textarea>
-          <button id="send-btn">Send</button>
+          <div id="img-preview-row"></div>
+          <div id="input-row">
+            <button id="img-attach-btn" title="Attach image">📎</button>
+            <input type="file" id="file-input" accept="image/*" multiple>
+            <textarea id="msg-input" placeholder="Message #general" rows="1" maxlength="500"></textarea>
+            <button id="send-btn">Send</button>
+          </div>
         </div>
       </div>
     </div>
@@ -1589,11 +1690,41 @@
     <button id="voice-leave-btn" onclick="leaveVoice()">Leave</button>
   </div>
 
-  <!-- VIDEO GRID OVERLAY -->
+  <!-- VIDEO GRID -->
   <div id="video-grid"></div>
 
-  <!-- Hidden audio container -->
+  <!-- Hidden audio -->
   <div id="remote-audio-container" style="display:none"></div>
+
+  <!-- Image lightbox -->
+  <div id="lightbox" onclick="this.classList.remove('open')">
+    <img id="lightbox-img" src="" alt="">
+  </div>
+
+  <!-- FRIENDS MODAL -->
+  <div id="friends-modal">
+    <div id="friends-card">
+      <div id="friends-card-header">
+        <h2>👥 Friends</h2>
+        <button id="friends-close" onclick="closeFriendsModal()">✕</button>
+      </div>
+      <div id="friends-add-row">
+        <input id="friends-add-input" type="text" placeholder="Add friend by username…" maxlength="24"
+          spellcheck="false">
+        <button id="friends-add-btn" onclick="sendFriendRequest()">Send Request</button>
+      </div>
+      <div id="friends-add-msg"></div>
+      <div id="friends-tabs">
+        <button class="ftab active" onclick="switchFTab(this,'friends')">Friends</button>
+        <button class="ftab" onclick="switchFTab(this,'incoming')">Pending <span class="ftab-badge" id="ftab-badge"
+            style="display:none"></span></button>
+        <button class="ftab" onclick="switchFTab(this,'outgoing')">Sent</button>
+      </div>
+      <div id="friends-list"></div>
+    </div>
+  </div>
+
+  <div id="toast"></div>
 
   <script>
     // ═══════════════════════════════════════════
@@ -1603,13 +1734,23 @@
     function initials(n) { return n.slice(0, 2).toUpperCase() }
     function esc(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;') }
     function formatTime(ts) { return new Date(ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }
+    function showToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3500) }
+
+    // ═══════════════════════════════════════════
+    //  STATE
+    // ═══════════════════════════════════════════
+    let authMode = 'login', myToken = null, myName = null, socket;
+    let currentChannel = 'general';
+    let currentDMTarget = null;
+    let chatHistoryByChannel = { general: [], ['unblocked-links']: [] };
+    let dmUnread = {};
+    let friendsData = { friends: [], incoming: [], outgoing: [] };
+    let activeFTab = 'friends';
+    let pendingImages = []; // {dataUrl, file} waiting to send
 
     // ═══════════════════════════════════════════
     //  AUTH
     // ═══════════════════════════════════════════
-    let authMode = 'login';
-    let myToken = null, myName = null;
-
     function switchTab(mode) {
       authMode = mode;
       document.getElementById('tab-login').classList.toggle('active', mode === 'login');
@@ -1627,18 +1768,13 @@
       const btn = document.getElementById('auth-btn');
       btn.disabled = true;
       try {
-        const res = await fetch(`/api/chat/${authMode}`, {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username, password })
-        });
+        const res = await fetch(`/api/chat/${authMode}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username, password }) });
         const data = await res.json();
         if (!data.ok) { errEl.textContent = data.error || 'Something went wrong.'; btn.disabled = false; return }
-        myToken = data.token;
-        myName = data.username;
+        myToken = data.token; myName = data.username;
         localStorage.setItem('welkin-chat-token', myToken);
         localStorage.setItem('welkin-chat-name', myName);
-        dismissLogin();
-        connectSocket();
+        dismissLogin(); connectSocket();
       } catch (e) { errEl.textContent = 'Network error. Try again.'; btn.disabled = false }
     }
 
@@ -1648,43 +1784,36 @@
 
     function dismissLogin() {
       const overlay = document.getElementById('login-overlay');
-      overlay.style.transition = 'opacity .3s ease';
-      overlay.style.opacity = '0';
+      overlay.style.transition = 'opacity .3s ease'; overlay.style.opacity = '0';
       setTimeout(() => overlay.remove(), 320);
       setTimeout(() => document.getElementById('msg-input').focus(), 350);
     }
 
-    // Try auto-login from saved token
     (async () => {
       const savedToken = localStorage.getItem('welkin-chat-token');
-      const savedName = localStorage.getItem('welkin-chat-name');
       if (!savedToken) return;
       try {
         const res = await fetch('/api/chat/resume', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token: savedToken }) });
         const data = await res.json();
-        if (data.ok) {
-          myToken = savedToken; myName = data.username;
-          dismissLogin();
-          connectSocket();
-        }
+        if (data.ok) { myToken = savedToken; myName = data.username; dismissLogin(); connectSocket(); }
       } catch (e) { }
     })();
 
     // ═══════════════════════════════════════════
     //  SOCKET + CHAT
     // ═══════════════════════════════════════════
-    let socket;
-
     function connectSocket() {
       socket = io({ path: '/socket.io/' });
 
-      socket.on('connect', () => socket.emit('chat:join', { token: myToken }));
-      socket.on('chat:auth-error', () => {
-        localStorage.removeItem('welkin-chat-token');
-        location.reload();
-      });
+      // Tell sidebar.js's counter callback about our socket so it
+      // doesn't open a second connection just for the count
+      if (typeof window._welkinCounterReady === 'function') {
+        window._welkinCounterReady(socket);
+      }
 
-      // Server sends authoritative live member list
+      socket.on('connect', () => socket.emit('chat:join', { token: myToken }));
+      socket.on('chat:auth-error', () => { localStorage.removeItem('welkin-chat-token'); location.reload(); });
+
       socket.on('members:update', names => {
         document.getElementById('online-num').textContent = names.length;
         document.getElementById('member-count').textContent = names.length;
@@ -1694,68 +1823,30 @@
           const ci = colorIdx(name);
           const el = document.createElement('div');
           el.className = 'member-item';
-          el.innerHTML = `<div class="member-avatar av-${ci}">${esc(initials(name))}</div><div style="flex:1;min-width:0"><div class="member-name">${esc(name)}</div><div class="member-handle">@${esc(name.toLowerCase().replace(/\s+/g, '_'))}</div></div>${name !== myName ? `<button class="member-dm-btn" onclick="openDM('${esc(name)}')">DM</button>` : ''}`.trim();
+          el.innerHTML = `<div class="member-avatar av-${ci}">${esc(initials(name))}</div><div style="flex:1;min-width:0"><div class="member-name">${esc(name)}</div><div class="member-handle">@${esc(name.toLowerCase().replace(/\s+/g, '_'))}</div></div>${name !== myName ? `<button class="member-dm-btn" onclick="closeFriendsModal();openDM('${esc(name)}')">DM</button>` : ''}`;
           list.appendChild(el);
         });
       });
 
-      // Chat history
-      let lastAuthor = null, lastTs = 0;
-      const area = document.getElementById('messages-area');
-
-      function renderMsg(data, animate) {
-        if (data.type === 'system') {
-          const el = document.createElement('div');
-          el.className = 'msg-system' + (animate ? ' msg-new' : '');
-          el.innerHTML = `<span>${esc(data.text)}</span>`;
-          area.appendChild(el);
-          lastAuthor = null;
-          scrollBottom(); return;
-        }
-        const grouped = data.name === lastAuthor && data.ts - lastTs < 5 * 60 * 1000;
-        lastAuthor = data.name; lastTs = data.ts;
-        const ci = colorIdx(data.name);
-        const div = document.createElement('div');
-        div.className = 'msg-group' + (grouped ? ' grouped' : ' has-header') + (animate ? ' msg-new' : '');
-        div.innerHTML = `${grouped ? `<span class="hover-time">${formatTime(data.ts)}</span>` : ''}
-      <div class="msg-avatar av-${ci}">${esc(initials(data.name))}</div>
-      <div class="msg-body">
-        <div class="msg-meta"><span class="msg-name nc-${ci}">${esc(data.name)}</span><span class="msg-time">Today at ${formatTime(data.ts)}</span></div>
-        <div class="msg-text">${esc(data.text)}</div>
-      </div>`;
-        area.appendChild(div); scrollBottom();
-      }
-
-      function scrollBottom() { area.scrollTop = area.scrollHeight }
-
+      // Chat history (per channel; server currently sends global history — we filter client-side by channel tag)
       socket.on('chat:history', history => {
-        chatHistoryCache = history; // save for channel re-render
-        const banner = document.getElementById('welcome-banner');
-        area.innerHTML = ''; area.appendChild(banner);
-        lastAuthor = null; lastTs = 0;
-        history.forEach(m => renderMsg(m, false));
+        // Reset both channels' caches from history
+        chatHistoryByChannel['general'] = [];
+        chatHistoryByChannel['unblocked-links'] = [];
+        history.forEach(m => {
+          const ch = m.channel || 'general';
+          if (chatHistoryByChannel[ch]) chatHistoryByChannel[ch].push(m);
+        });
+        renderCurrentChannel();
       });
-      // Keep cache updated as new messages arrive
+
       socket.on('chat:message', m => {
-        if (m.name) chatHistoryCache.push(m);
-        if (!currentDMTarget) renderMsg(m, true);
+        const ch = m.channel || 'general';
+        if (chatHistoryByChannel[ch]) chatHistoryByChannel[ch].push(m);
+        if (!currentDMTarget && currentChannel === ch) renderMsg(m, true);
       });
 
-      // Send
-      function sendMsg() {
-        const input = document.getElementById('msg-input');
-        const text = input.value.trim();
-        if (!text) return;
-        socket.emit('chat:send', { text });
-        input.value = ''; input.style.height = 'auto';
-      }
-      document.getElementById('send-btn').addEventListener('click', sendMsg);
-      document.getElementById('msg-input').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMsg() } });
-      document.getElementById('msg-input').addEventListener('input', function () { this.style.height = 'auto'; this.style.height = Math.min(this.scrollHeight, 120) + 'px' });
-
-      // Voice signaling registered via registerVoiceSignaling()
-
-      // ── DM messages ──
+      // DMs
       socket.on('dm:message', msg => {
         const other = msg.from === myName ? msg.to : msg.from;
         if (currentDMTarget === other) {
@@ -1773,347 +1864,166 @@
         }
       });
 
-      socket.on('friends:request', ({ from }) => {
-        showToast('👋 Friend request from ' + from);
-        loadFriends();
+      socket.on('friends:request', ({ from }) => { showToast('👋 Friend request from ' + from); loadFriends(); });
+      socket.on('friends:accepted', ({ from }) => { showToast('✅ ' + from + ' accepted your friend request!'); loadFriends(); });
+
+      // Send (channel or DM)
+      function sendMsg() {
+        const input = document.getElementById('msg-input');
+        const text = input.value.trim();
+        const hasPending = pendingImages.length > 0;
+        if (!text && !hasPending) return;
+
+        if (currentDMTarget) {
+          // DMs: send text first, then images
+          if (text) { socket.emit('dm:send', { to: currentDMTarget, text }); }
+          pendingImages.forEach(({ dataUrl }) => socket.emit('dm:send', { to: currentDMTarget, image: dataUrl }));
+        } else {
+          if (text) { socket.emit('chat:send', { text, channel: currentChannel }); }
+          pendingImages.forEach(({ dataUrl }) => socket.emit('chat:send', { image: dataUrl, channel: currentChannel }));
+        }
+        input.value = ''; input.style.height = 'auto';
+        clearPendingImages();
+      }
+
+      document.getElementById('send-btn').addEventListener('click', sendMsg);
+      document.getElementById('msg-input').addEventListener('keydown', e => {
+        if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMsg(); }
+      });
+      document.getElementById('msg-input').addEventListener('input', function () {
+        this.style.height = 'auto'; this.style.height = Math.min(this.scrollHeight, 120) + 'px';
       });
 
-      socket.on('friends:accepted', ({ from }) => {
-        showToast('✅ ' + from + ' accepted your friend request!');
-        loadFriends();
-      });
-
+      loadFriends();
       registerVoiceSignaling();
     }
 
-    // Sidebar channel switching (visual)
+    // ─── Channel switching ───────────────────────────────────────────────────────
+    let lastAuthor = null, lastTs = 0;
+    const CHANNEL_DESCS = {
+      'general': 'Welcome to Welkin',
+      'unblocked-links': 'Share unblocked game and site links here'
+    };
+    const CHANNEL_BANNERS = {
+      'general': '☁️ #general',
+      'unblocked-links': '🔗 #unblocked-links'
+    };
+    const CHANNEL_BANNER_SUBS = {
+      'general': 'The beginning of the #general channel. Say hello!',
+      'unblocked-links': 'Share links to games, proxies, and unblocked sites!'
+    };
+
+    function switchChannel(ch) {
+      currentChannel = ch; currentDMTarget = null;
+      document.querySelectorAll('.channel-item').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('.dm-item').forEach(c => c.classList.remove('active'));
+      const el = document.querySelector(`.channel-item[data-ch="${ch}"]`);
+      if (el) el.classList.add('active');
+      document.querySelector('#channel-header .hash').textContent = '#';
+      document.querySelector('#channel-header .channel-name').textContent = ch;
+      document.querySelector('#channel-header .channel-desc').textContent = CHANNEL_DESCS[ch] || '';
+      document.getElementById('online-pill').style.display = '';
+      document.getElementById('msg-input').placeholder = 'Message #' + ch;
+      renderCurrentChannel();
+    }
+
+    function renderCurrentChannel() {
+      const area = document.getElementById('messages-area');
+      const ch = currentChannel;
+      const bannerHTML = `<div id="welcome-banner"><h2>${CHANNEL_BANNERS[ch] || '#' + ch}</h2><p>${CHANNEL_BANNER_SUBS[ch] || ''}</p></div>`;
+      area.innerHTML = bannerHTML;
+      lastAuthor = null; lastTs = 0;
+      (chatHistoryByChannel[ch] || []).forEach(m => renderMsg(m, false));
+    }
+
     document.querySelectorAll('.channel-item').forEach(el => {
-      el.addEventListener('click', function () {
-        document.querySelectorAll('.channel-item').forEach(c => c.classList.remove('active'));
-        this.classList.add('active');
-        const hashEl = this.querySelector('.hash');
-        const name = hashEl ? this.textContent.replace(hashEl.textContent, '').trim() : this.textContent.trim();
-        document.querySelector('#channel-header .channel-name').textContent = name;
-        document.getElementById('msg-input').placeholder = `Message #${name}`;
-      });
+      el.addEventListener('click', () => switchChannel(el.dataset.ch));
     });
 
-    // ═══════════════════════════════════════════
-    //  VOICE CHAT (WebRTC)
-    // ═══════════════════════════════════════════
-    const peerConnections = new Map(); // peerId -> { pc, name }
-    let localStream = null;
-    let localVideoStream = null; // separate camera stream
-    let inVoice = false;
-    let muted = false;
-    let videoEnabled = false;
+    // ─── Render messages ─────────────────────────────────────────────────────────
+    const area = document.getElementById('messages-area');
 
-    const ICE = [
-      { urls: 'stun:stun.l.google.com:19302' },
-      { urls: 'stun:stun1.l.google.com:19302' },
-    ];
-
-    // ── Join voice ──
-    async function joinVoice() {
-      if (!socket || !myName || inVoice) return;
-      try {
-        localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
-      } catch (e) {
-        alert('Microphone access denied — please allow it in your browser and try again.');
-        return;
+    function renderMsg(data, animate) {
+      if (data.type === 'system') {
+        const el = document.createElement('div');
+        el.className = 'msg-system' + (animate ? ' msg-new' : '');
+        el.innerHTML = `<span>${esc(data.text)}</span>`;
+        area.appendChild(el); lastAuthor = null; scrollBottom(); return;
       }
-      inVoice = true;
-      document.getElementById('voice-channel-btn').classList.add('in-voice');
-      document.getElementById('voice-bar').classList.add('active');
-      document.getElementById('input-wrap').style.paddingBottom = '68px';
-      socket.emit('voice:join');
+      const grouped = data.name === lastAuthor && data.ts - lastTs < 5 * 60 * 1000;
+      lastAuthor = data.name; lastTs = data.ts;
+      const ci = colorIdx(data.name);
+      const div = document.createElement('div');
+      div.className = 'msg-group' + (grouped ? ' grouped' : ' has-header') + (animate ? ' msg-new' : '');
+      div.dataset.ts = data.ts;
+
+      let contentHTML = '';
+      if (data.text) contentHTML += `<div class="msg-text">${esc(data.text)}</div>`;
+      if (data.image) contentHTML += `<img class="msg-img" src="${data.image}" alt="image" onclick="openLightbox(this.src)">`;
+
+      div.innerHTML = `${grouped ? `<span class="hover-time">${formatTime(data.ts)}</span>` : ''}
+    <div class="msg-avatar av-${ci}">${esc(initials(data.name))}</div>
+    <div class="msg-body">
+      <div class="msg-meta"><span class="msg-name nc-${ci}">${esc(data.name)}</span><span class="msg-time">Today at ${formatTime(data.ts)}</span></div>
+      ${contentHTML}
+    </div>`;
+      area.appendChild(div); scrollBottom();
     }
 
-    // ── Leave voice ──
-    function leaveVoice() {
-      if (!inVoice) return;
-      inVoice = false;
-      socket.emit('voice:leave');
-      peerConnections.forEach(({ pc }) => pc.close());
-      peerConnections.clear();
-      if (localStream) { localStream.getTracks().forEach(t => t.stop()); localStream = null; }
-      if (localVideoStream) { localVideoStream.getTracks().forEach(t => t.stop()); localVideoStream = null; }
-      videoEnabled = false;
-      document.getElementById('remote-audio-container').innerHTML = '';
-      document.getElementById('video-grid').innerHTML = '';
-      document.getElementById('video-grid').classList.remove('has-video');
-      document.getElementById('voice-channel-btn').classList.remove('in-voice');
-      document.getElementById('voice-bar').classList.remove('active');
-      document.getElementById('voice-members-sidebar').innerHTML = '';
-      document.getElementById('voice-peers-bar').innerHTML = '';
-      document.getElementById('input-wrap').style.paddingBottom = '';
-      muted = false;
-      const mb = document.getElementById('voice-mute-btn');
-      mb.classList.remove('muted'); mb.textContent = '🎤 Mute';
-      const cb = document.getElementById('voice-cam-btn');
-      cb.classList.remove('cam-on'); cb.textContent = '📷 Camera';
+    function scrollBottom() { area.scrollTop = area.scrollHeight }
+
+    // ─── Image lightbox ───────────────────────────────────────────────────────────
+    function openLightbox(src) {
+      document.getElementById('lightbox-img').src = src;
+      document.getElementById('lightbox').classList.add('open');
     }
 
-    // ── Mute toggle ──
-    function toggleMute() {
-      muted = !muted;
-      if (localStream) localStream.getAudioTracks().forEach(t => t.enabled = !muted);
-      const btn = document.getElementById('voice-mute-btn');
-      btn.classList.toggle('muted', muted);
-      btn.textContent = muted ? '🔇 Unmute' : '🎤 Mute';
-    }
-
-    // ── Camera toggle ──
-    async function toggleCamera() {
-      if (!inVoice) return;
-      const btn = document.getElementById('voice-cam-btn');
-      const grid = document.getElementById('video-grid');
-
-      if (!videoEnabled) {
-        // Turn camera ON
-        try {
-          localVideoStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
-        } catch (e) {
-          alert('Camera access denied — please allow it in your browser.');
-          return;
-        }
-        videoEnabled = true;
-        btn.classList.add('cam-on');
-        btn.textContent = '📹 Camera On';
-
-        // Show local tile
-        showVideoTile('local', myName, localVideoStream, true);
-
-        // Add video track to all existing peer connections
-        const videoTrack = localVideoStream.getVideoTracks()[0];
-        peerConnections.forEach(({ pc }, peerId) => {
-          pc.addTrack(videoTrack, localVideoStream);
-          // Renegotiate with this peer
-          renegotiate(peerId, pc);
-        });
-
-        socket.emit('voice:video-state', { enabled: true });
-      } else {
-        // Turn camera OFF
-        videoEnabled = false;
-        btn.classList.remove('cam-on');
-        btn.textContent = '📷 Camera';
-
-        if (localVideoStream) {
-          localVideoStream.getTracks().forEach(t => t.stop());
-          localVideoStream = null;
-        }
-
-        // Remove our local tile
-        removeVideoTile('local');
-
-        // Remove video sender from all peer connections
-        peerConnections.forEach(({ pc }, peerId) => {
-          const senders = pc.getSenders().filter(s => s.track?.kind === 'video');
-          senders.forEach(s => pc.removeTrack(s));
-          renegotiate(peerId, pc);
-        });
-
-        socket.emit('voice:video-state', { enabled: false });
-      }
-
-      updateVideoGridVisibility();
-    }
-
-    async function renegotiate(peerId, pc) {
-      try {
-        const offer = await pc.createOffer();
-        await pc.setLocalDescription(offer);
-        socket.emit('voice:offer', { to: peerId, offer });
-      } catch (e) { console.warn('renegotiate failed:', e); }
-    }
-
-    // ── Video tile helpers ──
-    function showVideoTile(id, name, stream, mirror) {
-      const grid = document.getElementById('video-grid');
-      let tile = document.getElementById('vtile-' + id);
-      if (!tile) {
-        tile = document.createElement('div');
-        tile.className = 'video-tile';
-        tile.id = 'vtile-' + id;
-        const video = document.createElement('video');
-        video.autoplay = true;
-        video.setAttribute('playsinline', '');
-        if (mirror) video.style.transform = 'scaleX(-1)';
-        const label = document.createElement('div');
-        label.className = 'vt-label';
-        label.textContent = name + (mirror ? ' (You)' : '');
-        tile.appendChild(video);
-        tile.appendChild(label);
-        grid.appendChild(tile);
-      }
-      tile.querySelector('video').srcObject = stream;
-      updateVideoGridVisibility();
-    }
-
-    function removeVideoTile(id) {
-      const tile = document.getElementById('vtile-' + id);
-      if (tile) tile.remove();
-      updateVideoGridVisibility();
-    }
-
-    function updateVideoGridVisibility() {
-      const grid = document.getElementById('video-grid');
-      const hasTiles = grid.querySelectorAll('.video-tile').length > 0;
-      grid.classList.toggle('has-video', hasTiles);
-    }
-
-    document.getElementById('voice-channel-btn').addEventListener('click', () => {
-      if (inVoice) leaveVoice(); else joinVoice();
+    // ─── Image attach ─────────────────────────────────────────────────────────────
+    document.getElementById('img-attach-btn').addEventListener('click', () => document.getElementById('file-input').click());
+    document.getElementById('file-input').addEventListener('change', function () {
+      Array.from(this.files).forEach(addPendingImage);
+      this.value = '';
     });
 
-    // ── Create a peer connection for a remote peer ──
-    function createPC(peerId, peerName) {
-      if (peerConnections.has(peerId)) return peerConnections.get(peerId).pc;
+    // Paste images
+    document.getElementById('msg-input').addEventListener('paste', e => {
+      const items = e.clipboardData?.items || [];
+      for (const item of items) {
+        if (item.type.startsWith('image/')) {
+          e.preventDefault();
+          addPendingImage(item.getAsFile());
+        }
+      }
+    });
 
-      const pc = new RTCPeerConnection({ iceServers: ICE });
-      peerConnections.set(peerId, { pc, name: peerName });
-
-      // Add local tracks
-      if (localStream) localStream.getTracks().forEach(t => pc.addTrack(t, localStream));
-
-      // Send ICE candidates as they arrive
-      pc.onicecandidate = ({ candidate }) => {
-        if (candidate) socket.emit('voice:ice', { to: peerId, candidate });
+    function addPendingImage(file) {
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = ev => {
+        pendingImages.push({ dataUrl: ev.target.result, file });
+        renderPreviews();
       };
-
-      pc.oniceconnectionstatechange = () => {
-        if (pc.iceConnectionState === 'failed') pc.restartIce();
-      };
-
-      // Play remote audio and show video tiles
-      pc.ontrack = ({ track, streams }) => {
-        if (track.kind === 'audio') {
-          let el = document.getElementById('audio-' + peerId);
-          if (!el) {
-            el = document.createElement('audio');
-            el.id = 'audio-' + peerId;
-            el.autoplay = true;
-            el.setAttribute('playsinline', '');
-            document.getElementById('remote-audio-container').appendChild(el);
-          }
-          el.srcObject = streams[0];
-        } else if (track.kind === 'video') {
-          // Build a MediaStream with just this video track so we can display it
-          const vs = new MediaStream([track]);
-          showVideoTile(peerId, peerName, vs, false);
-          track.onended = () => removeVideoTile(peerId);
-        }
-      };
-
-      return pc;
+      reader.readAsDataURL(file);
     }
 
-    function removePC(peerId) {
-      const entry = peerConnections.get(peerId);
-      if (entry) { entry.pc.close(); peerConnections.delete(peerId); }
-      const el = document.getElementById('audio-' + peerId);
-      if (el) el.remove();
-      removeVideoTile(peerId);
+    function renderPreviews() {
+      const row = document.getElementById('img-preview-row');
+      row.innerHTML = '';
+      pendingImages.forEach((p, i) => {
+        const wrap = document.createElement('div');
+        wrap.className = 'img-preview-thumb';
+        wrap.innerHTML = `<img src="${p.dataUrl}" alt=""><button class="img-preview-remove" onclick="removePendingImage(${i})">×</button>`;
+        row.appendChild(wrap);
+      });
+      row.classList.toggle('has-img', pendingImages.length > 0);
     }
 
-    // ── Voice signaling — registered inside connectSocket ──
-    function registerVoiceSignaling() {
-      // Server tells us who is already in the room
-      socket.on('voice:peers', async (peers) => {
-        for (const { peerId, name } of peers) {
-          const pc = createPC(peerId, name);
-          const offer = await pc.createOffer();
-          await pc.setLocalDescription(offer);
-          socket.emit('voice:offer', { to: peerId, offer });
-        }
-      });
+    function removePendingImage(i) { pendingImages.splice(i, 1); renderPreviews(); }
+    function clearPendingImages() { pendingImages = []; renderPreviews(); }
 
-      // A new peer joined — they will send us an offer
-      socket.on('voice:peer-joined', ({ peerId, name }) => {
-        // Just pre-create the PC so it's ready; offer comes next
-        createPC(peerId, name);
-      });
-
-      socket.on('voice:peer-left', ({ peerId }) => {
-        removePC(peerId);
-        removeVideoTile(peerId);
-        updateVoiceBar();
-      });
-
-      // A peer toggled their camera — if they turned it off, remove their tile
-      socket.on('voice:peer-video', ({ peerId, name, enabled }) => {
-        if (!enabled) removeVideoTile(peerId);
-        // If enabled, the video track will arrive via ontrack
-      });
-
-      socket.on('voice:offer', async ({ from, name, offer }) => {
-        const pc = createPC(from, name);
-        await pc.setRemoteDescription(new RTCSessionDescription(offer));
-        const answer = await pc.createAnswer();
-        await pc.setLocalDescription(answer);
-        socket.emit('voice:answer', { to: from, answer });
-      });
-
-      socket.on('voice:answer', async ({ from, answer }) => {
-        const entry = peerConnections.get(from);
-        if (entry) {
-          try { await entry.pc.setRemoteDescription(new RTCSessionDescription(answer)); } catch (e) { }
-        }
-      });
-
-      socket.on('voice:ice', async ({ from, candidate }) => {
-        const entry = peerConnections.get(from);
-        if (entry && candidate) {
-          try { await entry.pc.addIceCandidate(new RTCIceCandidate(candidate)); } catch (e) { }
-        }
-      });
-
-      socket.on('voice:members', members => {
-        updateVoiceSidebar(members);
-        updateVoiceBar(members);
-      });
-    }
-
-    function updateVoiceSidebar(members) {
-      const sidebar = document.getElementById('voice-members-sidebar');
-      sidebar.innerHTML = '';
-      members.forEach(({ name }) => {
-        const chip = document.createElement('div');
-        chip.className = 'voice-member-chip';
-        chip.innerHTML = `<span class="vm-dot"></span><span>${esc(name)}</span>`;
-        sidebar.appendChild(chip);
-      });
-    }
-
-    function updateVoiceBar(members) {
-      const bar = document.getElementById('voice-peers-bar');
-      bar.innerHTML = '';
-      (members || [...peerConnections.values()].map(e => ({ name: e.name }))).forEach(({ name }) => {
-        const chip = document.createElement('div');
-        chip.className = 'vpeer-chip';
-        chip.textContent = name;
-        bar.appendChild(chip);
-      });
-    }
-
-    // ════════════════════════════════════════════
+    // ═══════════════════════════════════════════
     //  FRIENDS & DM
-    // ════════════════════════════════════════════
-    let currentDMTarget = null;
-    let chatHistoryCache = [];
-    let dmUnread = {};
-    let friendsData = { friends: [], incoming: [], outgoing: [] };
-    let activeFTab = 'friends';
-
-    function showToast(msg) {
-      const t = document.getElementById('toast');
-      t.textContent = msg;
-      t.classList.add('show');
-      setTimeout(() => t.classList.remove('show'), 3500);
-    }
-
-    // ── Friends modal ──
+    // ═══════════════════════════════════════════
     function openFriendsModal() {
       document.getElementById('friends-modal').classList.add('open');
       renderFriendsList();
@@ -2195,15 +2105,14 @@
 
     async function acceptFriend(name) {
       await fetch('/api/chat/friends/accept', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: name, token: myToken }) });
-      loadFriends();
-      showToast(`✅ Now friends with ${name}!`);
+      loadFriends(); showToast(`✅ Now friends with ${name}!`);
     }
     async function removeFriend(name) {
       await fetch('/api/chat/friends/remove', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: name, token: myToken }) });
       loadFriends();
     }
 
-    // ── DM sidebar list ──
+    // ── DM sidebar ───────────────────────────────────────────────────────────────
     function renderDMSidebar() {
       const list = document.getElementById('dm-list');
       if (!list) return;
@@ -2225,42 +2134,32 @@
       });
     }
 
-    // ── Open a DM conversation ──
     async function openDM(name) {
-      currentDMTarget = name;
+      currentDMTarget = name; currentChannel = null;
       dmUnread[name] = 0;
-
-      // Sidebar will be refreshed after history loads
-
-      // Header — show as DM channel
       document.querySelector('#channel-header .hash').textContent = '@';
       document.querySelector('#channel-header .channel-name').textContent = name;
       const desc = document.querySelector('#channel-header .channel-desc');
       if (desc) desc.textContent = 'Direct Message';
       document.getElementById('online-pill').style.display = 'none';
       document.getElementById('msg-input').placeholder = `Message ${name}…`;
-
-      // Highlight DM item in sidebar — deactivate channels first
       document.querySelectorAll('.channel-item').forEach(c => c.classList.remove('active'));
-      document.querySelectorAll('.dm-item').forEach(c => {
-        c.classList.toggle('active', c.dataset.dmName === name);
-      });
+      document.querySelectorAll('.dm-item').forEach(c => c.classList.toggle('active', c.dataset.dmName === name));
 
-      // Clear + show DM banner
-      const area = document.getElementById('messages-area');
+      const msgArea = document.getElementById('messages-area');
       const ci = colorIdx(name);
-      area.innerHTML = `<div class="dm-banner"><div class="dm-banner-av av-${ci}">${esc(initials(name))}</div><h2>${esc(name)}</h2><p>Beginning of your DM with ${esc(name)}.</p></div>`;
+      msgArea.innerHTML = `<div class="dm-banner"><div class="dm-banner-av av-${ci}">${esc(initials(name))}</div><h2>${esc(name)}</h2><p>Beginning of your DM with ${esc(name)}.</p></div>`;
 
-      // Load history
       try {
         const res = await fetch('/api/chat/dm/' + encodeURIComponent(name) + '?token=' + encodeURIComponent(myToken));
         const data = await res.json();
         if (data.ok) {
           let lA = null, lT = 0;
-          data.messages.forEach(m => { renderDMBubble(m, false, area, lA, lT); lA = m.from; lT = m.ts; });
-          area.scrollTop = area.scrollHeight;
+          data.messages.forEach(m => { renderDMBubble(m, false, msgArea, lA, lT); lA = m.from; lT = m.ts; });
+          msgArea.scrollTop = msgArea.scrollHeight;
         }
       } catch (e) { }
+      renderDMSidebar();
     }
 
     function renderDMBubble(msg, animate, area, lastAuthor, lastTs) {
@@ -2269,95 +2168,195 @@
       const div = document.createElement('div');
       div.className = 'msg-group' + (grouped ? ' grouped' : ' has-header') + (animate ? ' msg-new' : '');
       div.dataset.ts = msg.ts;
+
+      let contentHTML = '';
+      if (msg.text) contentHTML += `<div class="msg-text">${esc(msg.text)}</div>`;
+      if (msg.image) contentHTML += `<img class="msg-img" src="${msg.image}" alt="image" onclick="openLightbox(this.src)">`;
+
       div.innerHTML = `${grouped ? `<span class="hover-time">${formatTime(msg.ts)}</span>` : ''}
     <div class="msg-avatar av-${ci}">${esc(initials(msg.from))}</div>
     <div class="msg-body">
       <div class="msg-meta"><span class="msg-name nc-${ci}">${esc(msg.from)}</span><span class="msg-time">Today at ${formatTime(msg.ts)}</span></div>
-      <div class="msg-text">${esc(msg.text)}</div>
+      ${contentHTML}
     </div>`;
       area.appendChild(div);
     }
 
-    // ── Intercept send for DM mode ──
-    function sendMsgPatched() {
-      if (currentDMTarget) {
-        const input = document.getElementById('msg-input');
-        const text = input.value.trim();
-        if (!text) return;
-        if (socket) socket.emit('dm:send', { to: currentDMTarget, text });
-        input.value = ''; input.style.height = 'auto';
-      } else {
-        sendMsg();
-      }
+    // ═══════════════════════════════════════════
+    //  VOICE CHAT (WebRTC)
+    // ═══════════════════════════════════════════
+    const peerConnections = new Map();
+    let localStream = null, localVideoStream = null, inVoice = false, muted = false, videoEnabled = false;
+    const ICE = [{ urls: 'stun:stun.l.google.com:19302' }, { urls: 'stun:stun1.l.google.com:19302' }];
+
+    async function joinVoice() {
+      if (!socket || !myName || inVoice) return;
+      try { localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false }); }
+      catch (e) { alert('Microphone access denied — please allow it in your browser.'); return; }
+      inVoice = true;
+      document.getElementById('voice-channel-btn').classList.add('in-voice');
+      document.getElementById('voice-bar').classList.add('active');
+      document.getElementById('input-wrap').style.paddingBottom = '68px';
+      socket.emit('voice:join');
     }
-    document.getElementById('send-btn').addEventListener('click', sendMsgPatched);
-    document.getElementById('msg-input').addEventListener('keydown', e => {
-      if (e.key === 'Enter' && !e.shiftKey && currentDMTarget) { e.preventDefault(); e.stopImmediatePropagation(); sendMsgPatched(); }
-    }, true);
 
-    // Patch channel clicks to reset DM mode
-    document.querySelectorAll('.channel-item').forEach(el => {
-      el.addEventListener('click', () => {
-        currentDMTarget = null;
-        document.querySelector('#channel-header .hash').textContent = '#';
-        document.getElementById('online-pill').style.display = '';
-        // Get channel name without the hash prefix
-        const chName = el.querySelector('.hash')
-          ? el.textContent.replace(el.querySelector('.hash').textContent, '').trim()
-          : el.textContent.trim();
-        document.querySelector('#channel-header .channel-name').textContent = chName;
-        document.querySelector('#channel-header .channel-desc').textContent = 'Welcome to Welkin';
-        document.getElementById('msg-input').placeholder = 'Message #' + chName;
-        renderDMSidebar();
+    function leaveVoice() {
+      if (!inVoice) return;
+      inVoice = false;
+      socket.emit('voice:leave');
+      peerConnections.forEach(({ pc }) => pc.close()); peerConnections.clear();
+      if (localStream) { localStream.getTracks().forEach(t => t.stop()); localStream = null; }
+      if (localVideoStream) { localVideoStream.getTracks().forEach(t => t.stop()); localVideoStream = null; }
+      videoEnabled = false;
+      document.getElementById('remote-audio-container').innerHTML = '';
+      document.getElementById('video-grid').innerHTML = '';
+      document.getElementById('video-grid').classList.remove('has-video');
+      document.getElementById('voice-channel-btn').classList.remove('in-voice');
+      document.getElementById('voice-bar').classList.remove('active');
+      document.getElementById('voice-members-sidebar').innerHTML = '';
+      document.getElementById('voice-peers-bar').innerHTML = '';
+      document.getElementById('input-wrap').style.paddingBottom = '';
+      muted = false;
+      document.getElementById('voice-mute-btn').classList.remove('muted');
+      document.getElementById('voice-mute-btn').textContent = '🎤 Mute';
+      document.getElementById('voice-cam-btn').classList.remove('cam-on');
+      document.getElementById('voice-cam-btn').textContent = '📷 Camera';
+    }
+
+    function toggleMute() {
+      muted = !muted;
+      if (localStream) localStream.getAudioTracks().forEach(t => t.enabled = !muted);
+      const btn = document.getElementById('voice-mute-btn');
+      btn.classList.toggle('muted', muted);
+      btn.textContent = muted ? '🔇 Unmute' : '🎤 Mute';
+    }
+
+    async function toggleCamera() {
+      if (!inVoice) return;
+      const btn = document.getElementById('voice-cam-btn');
+      if (!videoEnabled) {
+        try { localVideoStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false }); }
+        catch (e) { alert('Camera access denied.'); return; }
+        videoEnabled = true; btn.classList.add('cam-on'); btn.textContent = '📹 Camera On';
+        showVideoTile('local', myName, localVideoStream, true);
+        const videoTrack = localVideoStream.getVideoTracks()[0];
+        peerConnections.forEach(({ pc }, peerId) => { pc.addTrack(videoTrack, localVideoStream); renegotiate(peerId, pc); });
+        socket.emit('voice:video-state', { enabled: true });
+      } else {
+        videoEnabled = false; btn.classList.remove('cam-on'); btn.textContent = '📷 Camera';
+        if (localVideoStream) { localVideoStream.getTracks().forEach(t => t.stop()); localVideoStream = null; }
+        removeVideoTile('local');
+        peerConnections.forEach(({ pc }, peerId) => {
+          pc.getSenders().filter(s => s.track?.kind === 'video').forEach(s => pc.removeTrack(s));
+          renegotiate(peerId, pc);
+        });
+        socket.emit('voice:video-state', { enabled: false });
+      }
+      updateVideoGridVisibility();
+    }
+
+    async function renegotiate(peerId, pc) {
+      try { const offer = await pc.createOffer(); await pc.setLocalDescription(offer); socket.emit('voice:offer', { to: peerId, offer }); }
+      catch (e) { }
+    }
+
+    function showVideoTile(id, name, stream, mirror) {
+      const grid = document.getElementById('video-grid');
+      let tile = document.getElementById('vtile-' + id);
+      if (!tile) {
+        tile = document.createElement('div'); tile.className = 'video-tile'; tile.id = 'vtile-' + id;
+        const video = document.createElement('video');
+        video.autoplay = true; video.setAttribute('playsinline', '');
+        if (mirror) video.style.transform = 'scaleX(-1)';
+        const label = document.createElement('div'); label.className = 'vt-label';
+        label.textContent = name + (mirror ? ' (You)' : '');
+        tile.appendChild(video); tile.appendChild(label); grid.appendChild(tile);
+      }
+      tile.querySelector('video').srcObject = stream;
+      updateVideoGridVisibility();
+    }
+    function removeVideoTile(id) { const t = document.getElementById('vtile-' + id); if (t) t.remove(); updateVideoGridVisibility(); }
+    function updateVideoGridVisibility() {
+      const grid = document.getElementById('video-grid');
+      grid.classList.toggle('has-video', grid.querySelectorAll('.video-tile').length > 0);
+    }
+
+    document.getElementById('voice-channel-btn').addEventListener('click', () => { if (inVoice) leaveVoice(); else joinVoice(); });
+
+    function createPC(peerId, peerName) {
+      if (peerConnections.has(peerId)) return peerConnections.get(peerId).pc;
+      const pc = new RTCPeerConnection({ iceServers: ICE });
+      peerConnections.set(peerId, { pc, name: peerName });
+      if (localStream) localStream.getTracks().forEach(t => pc.addTrack(t, localStream));
+      if (localVideoStream) localVideoStream.getTracks().forEach(t => pc.addTrack(t, localVideoStream));
+      pc.onicecandidate = ({ candidate }) => { if (candidate) socket.emit('voice:ice', { to: peerId, candidate }); };
+      pc.oniceconnectionstatechange = () => { if (pc.iceConnectionState === 'failed') pc.restartIce(); };
+      pc.ontrack = ({ track, streams }) => {
+        if (track.kind === 'audio') {
+          let el = document.getElementById('audio-' + peerId);
+          if (!el) { el = document.createElement('audio'); el.id = 'audio-' + peerId; el.autoplay = true; el.setAttribute('playsinline', ''); document.getElementById('remote-audio-container').appendChild(el); }
+          el.srcObject = streams[0];
+        } else if (track.kind === 'video') {
+          const vs = new MediaStream([track]); showVideoTile(peerId, peerName, vs, false);
+          track.onended = () => removeVideoTile(peerId);
+        }
+      };
+      return pc;
+    }
+
+    function removePC(peerId) {
+      const entry = peerConnections.get(peerId);
+      if (entry) { entry.pc.close(); peerConnections.delete(peerId); }
+      const el = document.getElementById('audio-' + peerId); if (el) el.remove();
+      removeVideoTile(peerId);
+    }
+
+    function registerVoiceSignaling() {
+      socket.on('voice:peers', async (peers) => {
+        for (const { peerId, name } of peers) { const pc = createPC(peerId, name); const offer = await pc.createOffer(); await pc.setLocalDescription(offer); socket.emit('voice:offer', { to: peerId, offer }); }
       });
-    });
+      socket.on('voice:peer-joined', ({ peerId, name }) => createPC(peerId, name));
+      socket.on('voice:peer-left', ({ peerId }) => { removePC(peerId); updateVoiceBar(); });
+      socket.on('voice:peer-video', ({ peerId, enabled }) => { if (!enabled) removeVideoTile(peerId); });
+      socket.on('voice:offer', async ({ from, name, offer }) => {
+        const pc = createPC(from, name);
+        await pc.setRemoteDescription(new RTCSessionDescription(offer));
+        const answer = await pc.createAnswer(); await pc.setLocalDescription(answer);
+        socket.emit('voice:answer', { to: from, answer });
+      });
+      socket.on('voice:answer', async ({ from, answer }) => {
+        const entry = peerConnections.get(from);
+        if (entry) try { await entry.pc.setRemoteDescription(new RTCSessionDescription(answer)); } catch (e) { }
+      });
+      socket.on('voice:ice', async ({ from, candidate }) => {
+        const entry = peerConnections.get(from);
+        if (entry && candidate) try { await entry.pc.addIceCandidate(new RTCIceCandidate(candidate)); } catch (e) { }
+      });
+      socket.on('voice:members', members => { updateVoiceSidebar(members); updateVoiceBar(members); });
+    }
 
-    // ── Socket listeners for DM + friends (hooked after connectSocket runs) ──
+    function updateVoiceSidebar(members) {
+      const sb = document.getElementById('voice-members-sidebar'); sb.innerHTML = '';
+      members.forEach(({ name }) => {
+        const chip = document.createElement('div'); chip.className = 'voice-member-chip';
+        chip.innerHTML = `<span class="vm-dot"></span><span>${esc(name)}</span>`;
+        sb.appendChild(chip);
+      });
+    }
+    function updateVoiceBar(members) {
+      const bar = document.getElementById('voice-peers-bar'); bar.innerHTML = '';
+      (members || [...peerConnections.values()].map(e => ({ name: e.name }))).forEach(({ name }) => {
+        const chip = document.createElement('div'); chip.className = 'vpeer-chip'; chip.textContent = name; bar.appendChild(chip);
+      });
+    }
 
-
-    // Load friends once token is available
-    const _waitForToken = setInterval(() => {
-      if (!myToken) return;
-      clearInterval(_waitForToken);
-      loadFriends();
-    }, 200);
-
-
-    // ── Logout ──
+    // ── Logout ───────────────────────────────────────────────────────────────────
     function logout() {
       localStorage.removeItem('welkin-chat-token');
       localStorage.removeItem('welkin-chat-name');
       location.reload();
     }
-
   </script>
-
-  <!-- FRIENDS MODAL -->
-  <!--
-  <div id="friends-modal">
-    <div id="friends-card">
-      <div id="friends-card-header">
-        <h2>👥 Friends</h2>
-        <button id="friends-close" onclick="closeFriendsModal()">✕</button>
-      </div>
-      <div id="friends-add-row">
-        <input id="friends-add-input" type="text" placeholder="Add friend by username…" maxlength="24"
-          spellcheck="false">
-        <button id="friends-add-btn" onclick="sendFriendRequest()">Send Request</button>
-      </div>
-      <div id="friends-add-msg"></div>
-      <div id="friends-tabs">
-        <button class="ftab active" onclick="switchFTab(this,'friends')">Friends</button>
-        <button class="ftab" onclick="switchFTab(this,'incoming')">Pending <span class="ftab-badge" id="ftab-badge"
-            style="display:none"></span></button>
-        <button class="ftab" onclick="switchFTab(this,'outgoing')">Sent</button>
-      </div>
-      <div id="friends-list"></div>
-    </div>
-  </div>
-  
-  <div id="toast"></div>
-  -->
 </body>
 
 </html>
