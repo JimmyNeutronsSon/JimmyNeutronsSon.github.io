@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <script src="cloak.js"></script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Welkin Chat</title>
@@ -813,26 +814,129 @@
         justify-content: center;
       }
 
+      .file-card {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 14px;
+        background: rgba(22, 58, 107, 0.4);
+        border: 1px solid rgba(108, 180, 240, 0.2);
+        border-radius: 10px;
+        margin-top: 6px;
+        max-width: 400px;
+        transition: border-color 0.2s, background 0.2s;
+      }
+      .file-card:hover {
+        background: rgba(22, 58, 107, 0.6);
+        border-color: rgba(108, 180, 240, 0.4);
+      }
+      .file-icon {
+        font-size: 24px;
+        color: var(--daylight);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        background: rgba(108, 180, 240, 0.1);
+        border-radius: 8px;
+        flex-shrink: 0;
+      }
+      .file-info {
+        flex: 1;
+        min-width: 0;
+      }
+      .file-name {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--cumulus);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .file-meta {
+        font-size: 11px;
+        color: var(--nimbus);
+        margin-top: 2px;
+      }
+      .file-download-btn {
+        background: var(--azure);
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        padding: 6px 10px;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: opacity 0.15s;
+        text-decoration: none;
+        display: inline-block;
+      }
+      .file-download-btn:hover {
+        opacity: 0.9;
+      }
+
+      .img-preview-thumb .file-preview-icon {
+        width: 60px;
+        height: 60px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(108, 180, 240, 0.2);
+        border-radius: 6px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2px;
+        padding: 4px;
+      }
+      .file-preview-icon span {
+        font-size: 18px;
+      }
+      .file-preview-icon .file-ext {
+        font-size: 9px;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: var(--daylight);
+        width: 100%;
+        text-align: center;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
       #input-row {
         display: flex;
         align-items: flex-end;
         width: 100%;
       }
 
-      #img-attach-btn {
-        margin: 10px 0 10px 12px;
+      #img-attach-btn,
+      #camera-btn {
+        margin: 10px 0 10px 8px;
         padding: 6px 8px;
-        background: transparent;
+        background: transparent !important;
         border: none;
         color: var(--nimbus);
         cursor: pointer;
         font-size: 18px;
-        transition: color 0.15s;
+        transition:
+          color 0.15s,
+          transform 0.15s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         flex-shrink: 0;
+        outline: none;
+        box-shadow: none;
       }
 
-      #img-attach-btn:hover {
+      #img-attach-btn:hover,
+      #camera-btn:hover {
         color: var(--daylight);
+        transform: scale(1.1);
+      }
+
+      #img-attach-btn {
+        margin-left: 12px;
       }
 
       #msg-input {
@@ -2030,6 +2134,52 @@
         flex-shrink: 0;
       }
 
+      /* Voice Channels */
+      #voice-channel-btn {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 10px;
+        border-radius: 8px;
+        font-size: 14px;
+        color: var(--nimbus);
+        cursor: pointer;
+        transition: all 0.15s;
+        margin: 0 8px 1px;
+        font-weight: 500;
+      }
+      #voice-channel-btn:hover {
+        background: rgba(108, 180, 240, 0.08);
+        color: var(--mist);
+      }
+      #voice-channel-btn.in-voice {
+        color: #43c99b;
+        background: rgba(67, 201, 155, 0.1);
+      }
+      #voice-members-sidebar {
+        margin: 4px 18px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      .v-member {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        color: var(--nimbus);
+        padding-left: 20px;
+      }
+      .v-member .v-av {
+        width: 16px;
+        height: 16px;
+        border-radius: 4px;
+        font-size: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
       /* TOAST */
       #toast {
         position: fixed;
@@ -2297,8 +2447,9 @@
           <div id="input-box">
             <div id="img-preview-row"></div>
             <div id="input-row">
-              <button id="img-attach-btn" title="Attach image">📎</button>
-              <input type="file" id="file-input" accept="image/*" multiple />
+              <button id="img-attach-btn" title="Attach file">📎</button>
+              <button id="camera-btn" title="Take photo" onclick="openCamera()">📷</button>
+              <input type="file" id="file-input" multiple />
               <textarea
                 id="msg-input"
                 placeholder="Message #general"
@@ -2498,6 +2649,22 @@
     </div>
 
     <div id="toast"></div>
+    <div id="camera-modal" class="modal-overlay">
+      <div class="modal-card" style="max-width: 480px">
+        <div class="modal-header">
+          <h2>📷 Take Photo</h2>
+          <button class="modal-close" onclick="closeCamera()">✕</button>
+        </div>
+        <div class="modal-body" style="padding: 0; background: #000; position: relative">
+          <video id="camera-video" autoplay playsinline style="width: 100%; display: block"></video>
+          <canvas id="camera-canvas" style="display: none"></canvas>
+        </div>
+        <div class="modal-footer" style="justify-content: center; gap: 12px">
+          <button class="btn-decline" onclick="closeCamera()" style="padding: 10px 20px">Cancel</button>
+          <button class="gc-create-btn" onclick="capturePhoto()" style="padding: 10px 20px; flex: 0 0 auto">Capture & Attach</button>
+        </div>
+      </div>
+    </div>
 
     <script>
       // ══════════════════════════════════════
@@ -2678,6 +2845,7 @@
       let currentVoiceRoom = "voice"; // default general voice room
       let channelUnread = {};
       let isMuted = localStorage.getItem("welkin-notif-muted") === "true";
+      let dmPartners = new Set();
 
       const peerConnections = new Map();
       let localStream = null,
@@ -2887,6 +3055,7 @@
 
         socket.on("dm:message", (msg) => {
           const other = msg.from === myName ? msg.to : msg.from;
+          dmPartners.add(other);
           if (currentDMTarget === other) {
             renderDMMsg(msg, true);
           } else {
@@ -2987,48 +3156,61 @@
           const text = input.value.trim();
           if (!text && !pendingImages.length) return;
 
+          const getPayload = (p) => {
+            const payload = {};
+            if (p.isImage) {
+              payload.image = p.dataUrl;
+            } else {
+              payload.file = {
+                name: p.name,
+                data: p.dataUrl,
+                type: p.type,
+                size: p.size,
+              };
+            }
+            return payload;
+          };
+
           if (currentDMTarget) {
-            // Send text + first image together, rest as separate
             if (text || pendingImages.length) {
               const payload = { to: currentDMTarget };
               if (text) payload.text = text;
-              if (pendingImages.length)
-                payload.image = pendingImages[0].dataUrl;
+              if (pendingImages.length) {
+                Object.assign(payload, getPayload(pendingImages[0]));
+              }
               socket.emit("dm:send", payload);
-              // Send remaining images
               for (let i = 1; i < pendingImages.length; i++) {
-                socket.emit("dm:send", {
-                  to: currentDMTarget,
-                  image: pendingImages[i].dataUrl,
-                });
+                const p = getPayload(pendingImages[i]);
+                p.to = currentDMTarget;
+                socket.emit("dm:send", p);
               }
             }
           } else if (currentGCId) {
             if (text || pendingImages.length) {
               const payload = { gcId: currentGCId };
               if (text) payload.text = text;
-              if (pendingImages.length)
-                payload.image = pendingImages[0].dataUrl;
+              if (pendingImages.length) {
+                Object.assign(payload, getPayload(pendingImages[0]));
+              }
               socket.emit("gc:send", payload);
               for (let i = 1; i < pendingImages.length; i++) {
-                socket.emit("gc:send", {
-                  gcId: currentGCId,
-                  image: pendingImages[i].dataUrl,
-                });
+                const p = getPayload(pendingImages[i]);
+                p.gcId = currentGCId;
+                socket.emit("gc:send", p);
               }
             }
           } else {
             if (text || pendingImages.length) {
               const payload = { channel: currentChannel };
               if (text) payload.text = text;
-              if (pendingImages.length)
-                payload.image = pendingImages[0].dataUrl;
+              if (pendingImages.length) {
+                Object.assign(payload, getPayload(pendingImages[0]));
+              }
               socket.emit("chat:send", payload);
               for (let i = 1; i < pendingImages.length; i++) {
-                socket.emit("chat:send", {
-                  image: pendingImages[i].dataUrl,
-                  channel: currentChannel,
-                });
+                const p = getPayload(pendingImages[i]);
+                p.channel = currentChannel;
+                socket.emit("chat:send", p);
               }
             }
           }
@@ -3231,6 +3413,24 @@
         area.scrollTop = area.scrollHeight;
       }
 
+      function renderFileCard(file) {
+        if (!file) return "";
+        const size = file.size
+          ? file.size > 1024 * 1024
+            ? (file.size / (1024 * 1024)).toFixed(1) + " MB"
+            : (file.size / 1024).toFixed(1) + " KB"
+          : "Unknown size";
+        const ext = file.name.split(".").pop().toUpperCase();
+        return `<div class="file-card">
+          <div class="file-icon">📄</div>
+          <div class="file-info">
+            <div class="file-name">${esc(file.name)}</div>
+            <div class="file-meta">${esc(ext)} • ${size}</div>
+          </div>
+          <a href="${file.data}" download="${esc(file.name)}" class="file-download-btn">Download</a>
+        </div>`;
+      }
+
       function renderMsg(data, animate) {
         if (data.type === "system") {
           const el = document.createElement("div");
@@ -3241,6 +3441,7 @@
           scrollBottom();
           return;
         }
+
         const grouped = data.name === lastAuthor && data.ts - lastTs < 300000;
         lastAuthor = data.name;
         lastTs = data.ts;
@@ -3259,6 +3460,7 @@
         }
         if (data.image)
           body += `<img class="msg-img" src="${data.image}" alt="" onclick="openLightbox(this.src)">`;
+        if (data.file) body += renderFileCard(data.file);
         body += reactionPillsHTML(data.reactions, data.id || data.ts);
         let actions = `<div class="msg-actions">`;
         if (data.id) {
@@ -3300,6 +3502,7 @@
         }
         if (msg.image)
           body += `<img class="msg-img" src="${msg.image}" alt="" onclick="openLightbox(this.src)">`;
+        if (msg.file) body += renderFileCard(msg.file);
         
         let actions = `<div class="msg-actions">`;
         if (msg.id) {
@@ -3365,7 +3568,14 @@
         if (!file) return;
         const reader = new FileReader();
         reader.onload = (ev) => {
-          pendingImages.push({ dataUrl: ev.target.result });
+          const isImg = file.type.startsWith("image/");
+          pendingImages.push({
+            dataUrl: ev.target.result,
+            name: file.name,
+            type: file.type,
+            size: file.size,
+            isImage: isImg,
+          });
           renderPreviews();
         };
         reader.readAsDataURL(file);
@@ -3376,7 +3586,12 @@
         pendingImages.forEach((p, i) => {
           const wrap = document.createElement("div");
           wrap.className = "img-preview-thumb";
-          wrap.innerHTML = `<img src="${p.dataUrl}" alt=""><button class="img-preview-remove" onclick="removePendingImage(${i})">×</button>`;
+          if (p.isImage) {
+            wrap.innerHTML = `<img src="${p.dataUrl}" alt=""><button class="img-preview-remove" onclick="removePendingImage(${i})">×</button>`;
+          } else {
+            const ext = p.name.split(".").pop();
+            wrap.innerHTML = `<div class="file-preview-icon"><span>📄</span><div class="file-ext">${esc(ext)}</div></div><button class="img-preview-remove" onclick="removePendingImage(${i})">×</button>`;
+          }
           row.appendChild(wrap);
         });
         row.classList.toggle("has-img", pendingImages.length > 0);
@@ -3457,6 +3672,8 @@
           const data = await res.json();
           if (data.ok) {
             friendsData = data;
+            // Add friends to dmPartners
+            data.friends.forEach((f) => dmPartners.add(f));
             updateFriendsBadge();
             renderDMSidebar();
             renderFriendsList();
@@ -3566,16 +3783,55 @@
         pendingCallRoomId = null;
       }
 
+      // Camera logic
+      let cameraStream = null;
+      async function openCamera() {
+        try {
+          cameraStream = await navigator.mediaDevices.getUserMedia({ video: true });
+          const video = document.getElementById("camera-video");
+          video.srcObject = cameraStream;
+          document.getElementById("camera-modal").classList.add("open");
+        } catch (e) {
+          alert("Camera access denied or not available.");
+        }
+      }
+      function closeCamera() {
+        if (cameraStream) {
+          cameraStream.getTracks().forEach(t => t.stop());
+          cameraStream = null;
+        }
+        document.getElementById("camera-modal").classList.remove("open");
+      }
+      function capturePhoto() {
+        const video = document.getElementById("camera-video");
+        const canvas = document.getElementById("camera-canvas");
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(video, 0, 0);
+        const dataUrl = canvas.toDataURL("image/jpeg", 0.8);
+        
+        pendingImages.push({
+          dataUrl: dataUrl,
+          name: "photo_" + Date.now() + ".jpg",
+          type: "image/jpeg",
+          size: Math.round(dataUrl.length * 0.75),
+          isImage: true
+        });
+        renderPreviews();
+        closeCamera();
+      }
+
       function renderDMSidebar() {
         const list = document.getElementById("dm-list");
         if (!list) return;
         list.innerHTML = "";
-        if (!friendsData.friends.length) {
+        if (!dmPartners.size) {
           list.innerHTML =
             '<div style="padding:3px 18px;font-size:12px;color:var(--nimbus)">Add friends to DM</div>';
           return;
         }
-        friendsData.friends.forEach((name) => {
+        [...dmPartners].sort().forEach((name) => {
           const ci = colorIdx(name);
           const isActive = currentDMTarget === name;
           const hasUnread = (dmUnread[name] || 0) > 0 && !isActive;
@@ -3589,6 +3845,7 @@
       }
       async function openDM(name) {
         currentDMTarget = name;
+        dmPartners.add(name);
         currentChannel = null;
         currentGCId = null;
         dmUnread[name] = 0;

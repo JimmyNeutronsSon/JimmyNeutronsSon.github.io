@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Not Sophisticated</title>
+  <link rel="icon" type="image/x-icon" href="/warning-hazard-sign-on-transparent-background-free-png.ico" />
+  <meta name="description"
+    content="Welkin is dedicated to giving you the best experience at school. Surf the web freely and play games without restrictions." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css?v=3" />
+  <script type="importmap">
+      {
+        "imports": {
+          "three": "/lib/three.module.js",
+          "three/examples/jsm/loaders/OBJLoader.js": "/lib/OBJLoader.js"
+        }
+      }
+    </script>
+  <style>
+    .hero {
+      flex: 1;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    @keyframes fadeOutDown {
+      from {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+
+      to {
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
+      }
+    }
+
+    .update-popup {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      background: rgba(11, 30, 61, 0.6);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .update-popup.hiding {
+      animation: fadeOutDown 0.4s cubic-bezier(0.7, 0, 0.3, 1) forwards;
+    }
+
+    .update-card {
+      background: linear-gradient(180deg,
+          rgba(10, 45, 110, 0.6),
+          rgba(22, 58, 107, 0.7));
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(108, 180, 240, 0.25);
+      border-radius: 20px;
+      padding: 2.5rem 3rem;
+      max-width: 480px;
+      text-align: center;
+      box-shadow: 0 25px 50px -12px rgba(10, 45, 110, 0.4);
+      position: relative;
+    }
+
+    .update-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: 20px;
+      padding: 1px;
+      background: linear-gradient(135deg,
+          rgba(108, 180, 240, 0.4),
+          transparent 60%,
+          rgba(58, 143, 224, 0.2));
+      -webkit-mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+    }
+
+    .update-icon {
+      width: 64px;
+      height: 64px;
+      background: linear-gradient(180deg, #1e6cc7 0%, #0a2d6e 100%);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.5rem;
+      font-size: 28px;
+      box-shadow: 0 10px 30px rgba(30, 108, 199, 0.4);
+    }
+
+    .update-title {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #f7faff;
+      margin-bottom: 1rem;
+      letter-spacing: -0.02em;
+    }
+
+    .update-desc {
+      color: #d6e5f5;
+      font-size: 1rem;
+      line-height: 1.6;
+      margin-bottom: 2rem;
+    }
+
+    .update-desc strong {
+      color: #f7faff;
+    }
+
+    .update-btn {
+      background: linear-gradient(180deg, #3a8fe0 0%, #1e6cc7 100%);
+      border: none;
+      color: #f7faff;
+      padding: 0.875rem 2.5rem;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: 12px;
+      cursor: pointer;
+      transition:
+        transform 0.2s,
+        box-shadow 0.2s;
+    }
+
+    .btn-music-flash {
+      background: rgba(255, 255, 255, 0.05) !important;
+      backdrop-filter: blur(10px) !important;
+      -webkit-backdrop-filter: blur(10px) !important;
+      color: white !important;
+      border: 1px solid rgba(255, 255, 255, 0.2) !important;
+      font-weight: 800 !important;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+      transition: all 0.3s ease-in-out !important;
+    }
+
+    .btn-music-flash:hover {
+      background: rgba(255, 255, 255, 0.1) !important;
+      border-color: rgba(255, 255, 255, 0.4) !important;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- HERO SECTION (HOME PAGE CONTENT)              -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <section class="hero" id="hero">
+    <div class="hero-bg" id="canvas-container"></div>
+    <div class="hero-content">
+      <div class="hero-badge" id="hero-badge" style="position: relative">
+        <span class="badge-dot"></span>
+        <span id="online-counter">Currently Online: 🐻</span>
+        <div id="online-tooltip" style="
+              position: absolute;
+              top: 140%;
+              left: 50%;
+              transform: translateX(-50%) translateY(10px);
+              background: rgba(10, 45, 110, 0.35);
+              backdrop-filter: blur(16px);
+              -webkit-backdrop-filter: blur(16px);
+              border: 1px solid rgba(108, 180, 240, 0.25);
+              padding: 12px 20px;
+              border-radius: 14px;
+              font-size: 14px;
+              font-weight: 500;
+              color: #fff;
+              pointer-events: none;
+              opacity: 0;
+              transition:
+                opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+              white-space: nowrap;
+              z-index: 100;
+              box-shadow: 
+                0 10px 40px -10px rgba(0, 0, 0, 0.5),
+                inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+              text-align: center;
+              letter-spacing: 0.3px;
+            ">
+          Loading...
+        </div>
+      </div>
+      <style>
+        #hero-badge:hover #online-tooltip {
+          opacity: 1 !important;
+          transform: translateX(-50%) translateY(0) !important;
+        }
+      </style>
+      <h1 class="hero-heading" id="hero-heading">Welkin.</h1>
+      <p class="hero-sub landing-phrases" id="hero-sub" style="transition: opacity 0.5s ease; min-height: 2em">
+        Kanye the GOAT
+      </p>
+      <div class="hero-ctas" id="hero-ctas" style="flex-direction: column; align-items: center; gap: 1rem">
+        <div style="display: flex; gap: 1rem">
+          <a href="/chat.html" class="btn btn-outline" id="btn-chat">Chat</a>
+          <a href="/browse.html" class="btn btn-primary" id="btn-surf">
+            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <line x1="7" y1="17" x2="17" y2="7" />
+              <polyline points="7 7 17 7 17 17" />
+            </svg>
+            Surf the Web
+          </a>
+          <a href="/games_dashboard.html" class="btn btn-outline" id="btn-games">Play Games</a>
+          <a href="/memusic-webplayer/dist/index.html" class="btn btn-music-flash" id="btn-music">Listen to Music</a>
+          <a href="/hacks.html" class="btn btn-outline" id="btn-hacks">Hacks</a>
+        </div>
+        <a href="#" class="btn btn-outline" id="btn-bookmarklet" style="
+              cursor: grab;
+              border-color: rgba(59, 130, 246, 0.5);
+              color: #fff;
+              padding: 0.5rem 1rem;
+              font-size: 13px;
+            " title="Drag me to your bookmarks bar!">☁️</a>
+      </div>
+    </div>
+    <div class="scroll-indicator" id="scroll-indicator">
+      <div class="scroll-line"></div>
+    </div>
+  </section>
+
+  <footer id="footer">
+    <div class="footer-inner">
+      <span class="footer-logo">Welkin<span class="logo-dot">.</span></span>
+      <span class="footer-copy">&copy; 2026 Welkin. All rights reserved.</span>
+    </div>
+  </footer>
+
+  <!-- Persistent Music Player (injected by music.js) -->
+
+  <script type="module" src="3d-cloud.js"></script>
+
+  <!-- Socket.io client -->
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <script>
+    (function () {
+      const CURRENT_VERSION = "00b23f1";
+      const lastSeen = localStorage.getItem("updateVersion");
+
+      if (lastSeen === CURRENT_VERSION) return;
+
+      const popup = document.createElement("div");
+      popup.className = "update-popup";
+      popup.innerHTML = `
+        <div class="update-card">
+          <h2 class="update-title"><strong>❗❗IMPORTANT❗❗</strong></h2>
+          <p class="update-desc">
+            As you guys know the previous link got blocked<br>
+            So to prevent that from happening again, here are the new features to save this link<br>
+            <strong>Alt+Q --> Class Link</strong><br>
+            <strong>You can now send pictures in chat like Snapchat👻</strong><br>
+            <strong>❗❗PLEASE DO NOT SHARE THIS LINK EVERYWHERE (especially 7th graders and girls)❗❗</strong><br>
+            <strong>Or it will get blocked again</strong><br>
+          </p>
+          <button class="update-btn" id="update-close">Got it!</button>
+        </div>
+      `;
+
+      document.body.appendChild(popup);
+
+      function dismiss() {
+        popup.classList.add("hiding");
+        setTimeout(() => popup.remove(), 400);
+        localStorage.setItem("updateVersion", CURRENT_VERSION);
+      }
+
+      document
+        .getElementById("update-close")
+        .addEventListener("click", dismiss);
+      popup.addEventListener("click", function (e) {
+        if (e.target === popup) dismiss();
+      });
+    })();
+  </script>
+
+  <script src="main.js"></script>
+  <script src="music.js"></script>
+  <script src="music_v2.js"></script>
+  <script src="sidebar.js"></script>
+  <script src="youtube.js"></script>
+  <script src="/ai.js"></script>
+</body>
+
+</html>

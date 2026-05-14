@@ -99,11 +99,11 @@ window.initSidebar = function () {
     </div>
     <aside id="glass-sidebar" class="glass-sidebar">
       <div class="sidebar-header">
-        <a href="/index.html" class="logo">Welkin<span class="logo-square"></span></a>
+        <a href="/home.html" class="logo">Welkin<span class="logo-square"></span></a>
         <button id="sidebar-close" class="sidebar-close">&times;</button>
       </div>
       <nav class="sidebar-nav">
-        <a href="/index.html" class="sidebar-link">Home</a>
+        <a href="/home.html" class="sidebar-link">Home</a>
         <a href="/browse.html" class="sidebar-link">Browse</a>
         <a href="/games_dashboard.html" class="sidebar-link">Games</a>
         <a href="/memusic-webplayer/dist/" class="sidebar-link" id="music-toggle">Music</a>
@@ -159,6 +159,14 @@ window.initSidebar = function () {
       closeSidebar();
     });
   }
+
+  // ── Alt+Q Shortcut for ClassLink ──────────────────────────────────────────
+  document.addEventListener("keydown", (e) => {
+    if (e.altKey && (e.key === "q" || e.key === "Q")) {
+      e.preventDefault();
+      window.top.location.replace("https://myapps.classlink.com/home");
+    }
+  });
 };
 
 if (document.readyState === "loading") {
@@ -228,8 +236,8 @@ if (document.readyState === "loading") {
         notifAudio = new Audio("/dragon-studio-new-notification-3-398649.mp3");
       notifAudio.volume = 0.5;
       notifAudio.currentTime = 0;
-      notifAudio.play().catch(() => {});
-    } catch (e) {}
+      notifAudio.play().catch(() => { });
+    } catch (e) { }
   }
 
   // ── Unread title badge ──

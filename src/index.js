@@ -939,7 +939,7 @@ function initSocketIO() {
     });
 
     // ── Chat: send message ──
-    socket.on("chat:send", ({ text, image, channel }) => {
+    socket.on("chat:send", ({ text, image, file, channel }) => {
       if (!socket.chatName) return;
       const ch =
         typeof channel === "string" &&
@@ -948,18 +948,33 @@ function initSocketIO() {
           : "general";
       let cleanText = null;
       let cleanImage = null;
+      let cleanFile = null;
       if (text !== undefined && text !== null)
-        cleanText = String(text).trim().slice(0, 500) || null;
+        cleanText = String(text).trim().slice(0, 1000) || null;
       if (image !== undefined && image !== null) {
         if (
           typeof image === "string" &&
           image.startsWith("data:image/") &&
-          image.length <= 2_200_000
+          image.length <= 5_000_000
         ) {
           cleanImage = image;
         }
       }
-      if (!cleanText && !cleanImage) return;
+      if (file && typeof file === "object" && file.data && file.name) {
+        if (
+          typeof file.data === "string" &&
+          file.data.startsWith("data:") &&
+          file.data.length <= 10_000_000
+        ) {
+          cleanFile = {
+            name: String(file.name).slice(0, 100),
+            data: file.data,
+            type: String(file.type || "application/octet-stream"),
+            size: Number(file.size) || 0,
+          };
+        }
+      }
+      if (!cleanText && !cleanImage && !cleanFile) return;
       const msg = {
         name: socket.chatName,
         ts: Date.now(),
@@ -968,6 +983,7 @@ function initSocketIO() {
       };
       if (cleanText) msg.text = cleanText;
       if (cleanImage) msg.image = cleanImage;
+      if (cleanFile) msg.file = cleanFile;
       msg.reactions = {};
       pushMsg(msg);
       io.emit("chat:message", msg);
@@ -1031,25 +1047,41 @@ function initSocketIO() {
     });
 
     // ── DM: send direct message ──
-    socket.on("dm:send", ({ to, text, image }) => {
+    socket.on("dm:send", ({ to, text, image, file }) => {
       if (!socket.chatName || !to) return;
       let cleanText = null;
       let cleanImage = null;
+      let cleanFile = null;
       if (text !== undefined && text !== null)
-        cleanText = String(text).trim().slice(0, 500) || null;
+        cleanText = String(text).trim().slice(0, 1000) || null;
       if (image !== undefined && image !== null) {
         if (
           typeof image === "string" &&
           image.startsWith("data:image/") &&
-          image.length <= 2_200_000
+          image.length <= 5_000_000
         ) {
           cleanImage = image;
         }
       }
-      if (!cleanText && !cleanImage) return;
+      if (file && typeof file === "object" && file.data && file.name) {
+        if (
+          typeof file.data === "string" &&
+          file.data.startsWith("data:") &&
+          file.data.length <= 10_000_000
+        ) {
+          cleanFile = {
+            name: String(file.name).slice(0, 100),
+            data: file.data,
+            type: String(file.type || "application/octet-stream"),
+            size: Number(file.size) || 0,
+          };
+        }
+      }
+      if (!cleanText && !cleanImage && !cleanFile) return;
       const msg = { from: socket.chatName, to, ts: Date.now() };
       if (cleanText) msg.text = cleanText;
       if (cleanImage) msg.image = cleanImage;
+      if (cleanFile) msg.file = cleanFile;
       pushDM(socket.chatName, to, msg);
       socket.emit("dm:message", msg);
       [...liveMembers.entries()]
@@ -1184,24 +1216,39 @@ function initSocketIO() {
       });
     });
 
-    socket.on("gc:send", ({ gcId, text, image }) => {
+    socket.on("gc:send", ({ gcId, text, image, file }) => {
       if (!socket.chatName || !gcId) return;
       const gc = groupChatsData[gcId];
       if (!gc || !gc.members.includes(socket.chatName)) return;
       let cleanText = null;
       let cleanImage = null;
+      let cleanFile = null;
       if (text !== undefined && text !== null)
-        cleanText = String(text).trim().slice(0, 500) || null;
+        cleanText = String(text).trim().slice(0, 1000) || null;
       if (image !== undefined && image !== null) {
         if (
           typeof image === "string" &&
           image.startsWith("data:image/") &&
-          image.length <= 2_200_000
+          image.length <= 5_000_000
         ) {
           cleanImage = image;
         }
       }
-      if (!cleanText && !cleanImage) return;
+      if (file && typeof file === "object" && file.data && file.name) {
+        if (
+          typeof file.data === "string" &&
+          file.data.startsWith("data:") &&
+          file.data.length <= 10_000_000
+        ) {
+          cleanFile = {
+            name: String(file.name).slice(0, 100),
+            data: file.data,
+            type: String(file.type || "application/octet-stream"),
+            size: Number(file.size) || 0,
+          };
+        }
+      }
+      if (!cleanText && !cleanImage && !cleanFile) return;
       const msg = {
         gcId,
         from: socket.chatName,
@@ -1210,6 +1257,7 @@ function initSocketIO() {
       };
       if (cleanText) msg.text = cleanText;
       if (cleanImage) msg.image = cleanImage;
+      if (cleanFile) msg.file = cleanFile;
       if (!gc.messages) gc.messages = [];
       gc.messages.push(msg);
       if (gc.messages.length > MAX_DM) gc.messages.shift();

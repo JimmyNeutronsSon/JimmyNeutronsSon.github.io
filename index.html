@@ -1,313 +1,929 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Not Sophisticated</title>
-  <link rel="icon" type="image/x-icon" href="/warning-hazard-sign-on-transparent-background-free-png.ico" />
-  <meta name="description"
-    content="Welkin is dedicated to giving you the best experience at school. Surf the web freely and play games without restrictions." />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+  <title>Sora - Explore</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Nunito+Sans:wght@300;400;600&display=swap"
     rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=3" />
-  <script type="importmap">
-      {
-        "imports": {
-          "three": "/lib/three.module.js",
-          "three/examples/jsm/loaders/OBJLoader.js": "/lib/OBJLoader.js"
-        }
-      }
-    </script>
+  <link rel="icon" type="image/x-icon" href="/favicon-192.png" />
+
+  <script src="cloak.js"></script>
   <style>
-    .hero {
-      flex: 1;
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
 
-    @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(20px) scale(0.95);
-      }
-
-      to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-      }
+    :root {
+      --indigo: #5b6bdf;
+      --white: #ffffff;
+      --off: #f7f8fc;
+      --border: #e4e8f0;
+      --text: #1a2333;
+      --muted: #6b7a99;
+      --card: #243a50;
+      --green: #27ae60;
+      --bottom: 72px;
     }
 
-    @keyframes fadeOutDown {
-      from {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-      }
-
-      to {
-        opacity: 0;
-        transform: translateY(20px) scale(0.95);
-      }
-    }
-
-    .update-popup {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
+    html,
+    body {
       height: 100%;
+    }
+
+    body {
+      font-family: 'Nunito Sans', sans-serif;
+      background: var(--off);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* TOP NAV */
+    .topnav {
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+      height: 64px;
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+      justify-content: flex-end;
+      gap: 12px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .btn-search {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 7px 12px;
+      border-radius: 8px;
+      transition: background .15s;
+    }
+
+    .btn-search:hover {
+      background: var(--off);
+    }
+
+    .icon-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 1.5px solid var(--border);
       display: flex;
       align-items: center;
       justify-content: center;
-      z-index: 9999;
-      background: rgba(11, 30, 61, 0.6);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+      cursor: pointer;
+      background: var(--white);
+      transition: .15s;
     }
 
-    .update-popup.hiding {
-      animation: fadeOutDown 0.4s cubic-bezier(0.7, 0, 0.3, 1) forwards;
+    .icon-btn:hover {
+      background: var(--off);
+      border-color: var(--indigo);
     }
 
-    .update-card {
-      background: linear-gradient(180deg,
-          rgba(10, 45, 110, 0.6),
-          rgba(22, 58, 107, 0.7));
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid rgba(108, 180, 240, 0.25);
+    svg.i {
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* MAIN */
+    .main {
+      flex: 1;
+      overflow-y: auto;
+      padding-bottom: calc(var(--bottom) + 16px);
+    }
+
+    .content {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 28px 20px 0;
+    }
+
+    .page-title {
+      font-family: 'Nunito', sans-serif;
+      font-size: 30px;
+      font-weight: 900;
+      margin-bottom: 4px;
+    }
+
+    .district {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 14px;
+      color: var(--muted);
+      font-weight: 600;
+      margin-bottom: 18px;
+      cursor: pointer;
+    }
+
+    /* PILLS */
+    .pills {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 22px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 14px;
       border-radius: 20px;
-      padding: 2.5rem 3rem;
-      max-width: 480px;
-      text-align: center;
-      box-shadow: 0 25px 50px -12px rgba(10, 45, 110, 0.4);
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      user-select: none;
+      transition: .15s;
+    }
+
+    .pill-out {
+      border: 1.5px solid var(--border);
+      background: var(--white);
+    }
+
+    .pill-out:hover {
+      border-color: var(--indigo);
+      color: var(--indigo);
+    }
+
+    .pill-fill {
+      background: var(--text);
+      color: var(--white);
+      border: 1.5px solid var(--text);
+    }
+
+    .pill-fill:hover {
+      background: #2a3a52;
+    }
+
+    .pill-x {
+      width: 15px;
+      height: 15px;
+      background: rgba(255, 255, 255, .22);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 9px;
+    }
+
+    /* COLLECTIONS ROW */
+    .coll-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .coll-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 15px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .coll-chev {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 1.5px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .filter-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .badge {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--indigo);
+      color: var(--white);
+      font-size: 11px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* FEATURED CARD */
+    .featured {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 32px 28px;
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      margin-bottom: 24px;
+      overflow: hidden;
       position: relative;
     }
 
-    .update-card::before {
-      content: "";
+    .featured::before {
+      content: '';
       position: absolute;
       inset: 0;
-      border-radius: 20px;
-      padding: 1px;
-      background: linear-gradient(135deg,
-          rgba(108, 180, 240, 0.4),
-          transparent 60%,
-          rgba(58, 143, 224, 0.2));
-      -webkit-mask:
-        linear-gradient(#fff 0 0) content-box,
-        linear-gradient(#fff 0 0);
-      -webkit-mask-composite: xor;
-      mask-composite: exclude;
+      background: radial-gradient(ellipse 400px 300px at 75% 50%, rgba(74, 144, 217, .14) 0%, transparent 70%);
       pointer-events: none;
     }
 
-    .update-icon {
-      width: 64px;
-      height: 64px;
-      background: linear-gradient(180deg, #1e6cc7 0%, #0a2d6e 100%);
-      border-radius: 16px;
+    .feat-text {
+      flex: 0 0 190px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .feat-text h2 {
+      font-family: 'Nunito', sans-serif;
+      font-size: 19px;
+      font-weight: 900;
+      color: var(--white);
+      margin-bottom: 7px;
+      line-height: 1.25;
+    }
+
+    .feat-text p {
+      font-size: 13px;
+      color: #8faabf;
+      line-height: 1.6;
+      margin-bottom: 14px;
+    }
+
+    .feat-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--white);
+      text-decoration: none;
+    }
+
+    .feat-link:hover {
+      color: #7ec8e3;
+    }
+
+    /* GRID inside featured */
+    .feat-grid {
+      flex: 1;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-template-rows: repeat(2, 1fr);
+      gap: 9px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .feat-cover {
+      border-radius: 6px;
+      overflow: hidden;
+      aspect-ratio: 2/3;
+      background: #2a4255;
+      cursor: pointer;
+      transition: transform .2s, box-shadow .2s;
+      position: relative;
+    }
+
+    .feat-cover:hover {
+      transform: translateY(-3px) scale(1.04);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, .4);
+    }
+
+    .feat-cover img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* SECTION */
+    .sec-head {
       display: flex;
       align-items: center;
-      justify-content: center;
-      margin: 0 auto 1.5rem;
-      font-size: 28px;
-      box-shadow: 0 10px 30px rgba(30, 108, 199, 0.4);
+      justify-content: space-between;
+      margin: 28px 0 14px;
     }
 
-    .update-title {
-      font-size: 1.75rem;
+    .sec-head h3 {
+      font-family: 'Nunito', sans-serif;
+      font-size: 17px;
+      font-weight: 900;
+    }
+
+    .see-all {
+      font-size: 13px;
       font-weight: 700;
-      color: #f7faff;
-      margin-bottom: 1rem;
-      letter-spacing: -0.02em;
+      color: var(--indigo);
+      text-decoration: none;
     }
 
-    .update-desc {
-      color: #d6e5f5;
-      font-size: 1rem;
-      line-height: 1.6;
-      margin-bottom: 2rem;
+    .see-all:hover {
+      text-decoration: underline;
     }
 
-    .update-desc strong {
-      color: #f7faff;
+    .books-row {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 14px;
     }
 
-    .update-btn {
-      background: linear-gradient(180deg, #3a8fe0 0%, #1e6cc7 100%);
-      border: none;
-      color: #f7faff;
-      padding: 0.875rem 2.5rem;
-      font-size: 1rem;
-      font-weight: 600;
-      border-radius: 12px;
+    .book {
       cursor: pointer;
-      transition:
-        transform 0.2s,
-        box-shadow 0.2s;
     }
 
-    .btn-music-flash {
-      background: rgba(255, 255, 255, 0.05) !important;
-      backdrop-filter: blur(10px) !important;
-      -webkit-backdrop-filter: blur(10px) !important;
-      color: white !important;
-      border: 1px solid rgba(255, 255, 255, 0.2) !important;
-      font-weight: 800 !important;
-      letter-spacing: 0.05em;
+    .book .cover {
+      border-radius: 8px;
+      overflow: hidden;
+      aspect-ratio: 2/3;
+      margin-bottom: 8px;
+      background: #d0d5e8;
+      transition: transform .2s, box-shadow .2s;
+      position: relative;
+    }
+
+    .book:hover .cover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, .14);
+    }
+
+    .book .cover img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .avail {
+      position: absolute;
+      bottom: 6px;
+      right: 6px;
+      background: var(--green);
+      color: var(--white);
+      font-size: 9px;
+      font-weight: 800;
+      padding: 2px 6px;
+      border-radius: 4px;
+      letter-spacing: .04em;
+    }
+
+    .book-title {
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1.3;
+      margin-bottom: 2px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .book-auth {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    /* Loading shimmer */
+    .shimmer {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, #e0e4ee 25%, #eef0f7 50%, #e0e4ee 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.2s infinite;
+    }
+
+    .shimmer-dark {
+      background: linear-gradient(90deg, #2a4255 25%, #3a5570 50%, #2a4255 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.2s infinite;
+    }
+
+    @keyframes shimmer {
+      to {
+        background-position: -200% 0;
+      }
+    }
+
+    /* BOTTOM NAV */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: var(--bottom);
+      background: var(--white);
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 8px 8px;
+      z-index: 100;
+    }
+
+    .nav-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      padding: 8px 4px;
+      cursor: pointer;
+      border-radius: 10px;
+      transition: background .15s;
+      text-decoration: none;
+      position: relative;
+    }
+
+    .nav-item:hover {
+      background: var(--off);
+    }
+
+    .nav-item svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    .nav-label {
+      font-family: 'Nunito', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .nav-item.off svg {
+      stroke: var(--muted);
+      fill: none;
+    }
+
+    .nav-item.off .nav-label {
+      color: var(--muted);
+    }
+
+    .nav-item.on svg {
+      stroke: var(--indigo);
+      fill: none;
+    }
+
+    .nav-item.on .nav-label {
+      color: var(--indigo);
+    }
+
+    .nav-item.on::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 24px;
+      height: 3px;
+      border-radius: 2px;
+      background: var(--indigo);
+    }
+
+    /* SEARCH MODAL */
+    .overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: rgba(0, 0, 0, .45);
+      backdrop-filter: blur(4px);
+      align-items: flex-start;
+      justify-content: center;
+      padding-top: 80px;
+    }
+
+    .overlay.open {
+      display: flex;
+    }
+
+    .sbox {
+      background: var(--white);
+      border-radius: 16px;
+      width: 90%;
+      max-width: 560px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, .2);
+    }
+
+    .sbox-top {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .sbox-top input {
+      flex: 1;
+      border: none;
+      outline: none;
+      font-family: 'Nunito Sans', sans-serif;
+      font-size: 16px;
+      color: var(--text);
+    }
+
+    .sbox-top input::placeholder {
+      color: var(--muted);
+    }
+
+    .sugg {
+      padding: 10px 0;
+    }
+
+    .sugg-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 20px;
+      cursor: pointer;
+      transition: background .1s;
+    }
+
+    .sugg-item:hover {
+      background: var(--off);
+    }
+
+    .sugg-item span {
+      font-size: 14px;
+    }
+
+    .sclose {
+      padding: 10px 20px;
+      text-align: center;
+      cursor: pointer;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
       text-transform: uppercase;
-      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-      transition: all 0.3s ease-in-out !important;
+      letter-spacing: .06em;
+      border-top: 1px solid var(--border);
     }
 
-    .btn-music-flash:hover {
-      background: rgba(255, 255, 255, 0.1) !important;
-      border-color: rgba(255, 255, 255, 0.4) !important;
+    .sclose:hover {
+      color: var(--indigo);
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(16px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    .content>* {
+      animation: fadeUp .4s ease both;
+    }
+
+    .content>*:nth-child(1) {
+      animation-delay: .05s
+    }
+
+    .content>*:nth-child(2) {
+      animation-delay: .10s
+    }
+
+    .content>*:nth-child(3) {
+      animation-delay: .15s
+    }
+
+    .content>*:nth-child(4) {
+      animation-delay: .20s
+    }
+
+    .content>*:nth-child(5) {
+      animation-delay: .25s
+    }
+
+    .content>*:nth-child(6) {
+      animation-delay: .30s
+    }
+
+    .content>*:nth-child(7) {
+      animation-delay: .35s
+    }
+
+    @media(max-width:640px) {
+      .books-row {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .featured {
+        flex-direction: column;
+      }
+
+      .feat-text {
+        flex: none;
+        width: 100%;
+      }
+    }
+
+    /* Hide Sidebar Trigger */
+    #sidebar-trigger,
+    .sidebar-trigger {
+      display: none !important;
     }
   </style>
 </head>
 
 <body>
-  <!-- ═══════════════════════════════════════════════ -->
-  <!-- HERO SECTION (HOME PAGE CONTENT)              -->
-  <!-- ═══════════════════════════════════════════════ -->
-  <section class="hero" id="hero">
-    <div class="hero-bg" id="canvas-container"></div>
-    <div class="hero-content">
-      <div class="hero-badge" id="hero-badge" style="position: relative">
-        <span class="badge-dot"></span>
-        <span id="online-counter">Currently Online: 🐻</span>
-        <div id="online-tooltip" style="
-              position: absolute;
-              top: 140%;
-              left: 50%;
-              transform: translateX(-50%) translateY(10px);
-              background: rgba(10, 45, 110, 0.35);
-              backdrop-filter: blur(16px);
-              -webkit-backdrop-filter: blur(16px);
-              border: 1px solid rgba(108, 180, 240, 0.25);
-              padding: 12px 20px;
-              border-radius: 14px;
-              font-size: 14px;
-              font-weight: 500;
-              color: #fff;
-              pointer-events: none;
-              opacity: 0;
-              transition:
-                opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
-                transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-              white-space: nowrap;
-              z-index: 100;
-              box-shadow: 
-                0 10px 40px -10px rgba(0, 0, 0, 0.5),
-                inset 0 0 0 1px rgba(255, 255, 255, 0.1);
-              text-align: center;
-              letter-spacing: 0.3px;
-            ">
-          Loading...
+
+  <!-- TOP NAV -->
+  <nav class="topnav">
+    <div class="btn-search" onclick="openSearch()">
+      <svg class="i" width="20" height="20" viewBox="0 0 24 24">
+        <circle cx="11" cy="11" r="8" />
+        <path d="m21 21-4.35-4.35" />
+      </svg>
+      Search
+    </div>
+    <div class="icon-btn">
+      <svg class="i" width="18" height="18" viewBox="0 0 24 24">
+        <line x1="12" y1="5" x2="12" y2="19" />
+        <line x1="5" y1="12" x2="19" y2="12" />
+      </svg>
+    </div>
+    <div class="icon-btn">
+      <svg class="i" width="18" height="18" viewBox="0 0 24 24">
+        <line x1="3" y1="6" x2="21" y2="6" />
+        <line x1="3" y1="12" x2="21" y2="12" />
+        <line x1="3" y1="18" x2="21" y2="18" />
+      </svg>
+    </div>
+  </nav>
+
+  <div class="main">
+    <div class="content">
+
+      <h1 class="page-title">Explore</h1>
+      <div class="district">
+        Lake Washington School District 414
+        <svg class="i" width="14" height="14" viewBox="0 0 24 24">
+          <path d="m6 9 6 6 6-6" />
+        </svg>
+      </div>
+
+      <div class="pills">
+        <span class="pill pill-out">Ebooks</span>
+        <span class="pill pill-fill">Available books <span class="pill-x"
+            onclick="this.parentElement.remove()">✕</span></span>
+        <span class="pill pill-fill">English <span class="pill-x" onclick="this.parentElement.remove()">✕</span></span>
+      </div>
+
+      <div class="coll-row">
+        <div class="coll-label">
+          Collections
+          <svg class="i" width="18" height="18" viewBox="0 0 24 24">
+            <rect x="3" y="3" width="7" height="7" rx="1" />
+            <rect x="14" y="3" width="7" height="7" rx="1" />
+            <rect x="3" y="14" width="7" height="7" rx="1" />
+            <rect x="14" y="14" width="7" height="7" rx="1" />
+          </svg>
+          <div class="coll-chev"><svg class="i" width="13" height="13" viewBox="0 0 24 24">
+              <path d="m9 18 6-6-6-6" />
+            </svg></div>
+        </div>
+        <div class="filter-row">
+          <div class="badge">2</div>
+          <svg class="i" width="16" height="16" viewBox="0 0 24 24">
+            <line x1="4" y1="6" x2="20" y2="6" />
+            <line x1="8" y1="12" x2="16" y2="12" />
+            <line x1="11" y1="18" x2="13" y2="18" />
+          </svg>
+          Filters
         </div>
       </div>
-      <style>
-        #hero-badge:hover #online-tooltip {
-          opacity: 1 !important;
-          transform: translateX(-50%) translateY(0) !important;
-        }
-      </style>
-      <h1 class="hero-heading" id="hero-heading">Welkin.</h1>
-      <p class="hero-sub landing-phrases" id="hero-sub" style="transition: opacity 0.5s ease; min-height: 2em">
-        Kanye the GOAT
-      </p>
-      <div class="hero-ctas" id="hero-ctas" style="flex-direction: column; align-items: center; gap: 1rem">
-        <div style="display: flex; gap: 1rem">
-          <a href="/chat.html" class="btn btn-outline" id="btn-chat">Chat</a>
-          <a href="/browse.html" class="btn btn-primary" id="btn-surf">
-            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-              stroke-linecap="round" stroke-linejoin="round">
-              <line x1="7" y1="17" x2="17" y2="7" />
-              <polyline points="7 7 17 7 17 17" />
+
+      <!-- Featured -->
+      <div class="featured">
+        <div class="feat-text">
+          <h2>Try Me! Always Available Titles</h2>
+          <p>New to Sora? These titles have unlimited checkouts!</p>
+          <a class="feat-link" href="#">
+            Over 70 titles
+            <svg class="i" width="14" height="14" viewBox="0 0 24 24">
+              <path d="m9 18 6-6-6-6" />
             </svg>
-            Surf the Web
           </a>
-          <a href="/games_dashboard.html" class="btn btn-outline" id="btn-games">Play Games</a>
-          <a href="/memusic-webplayer/dist/index.html" class="btn btn-music-flash" id="btn-music">Listen to Music</a>
-          <a href="/hacks.html" class="btn btn-outline" id="btn-hacks">Hacks</a>
         </div>
-        <a href="#" class="btn btn-outline" id="btn-bookmarklet" style="
-              cursor: grab;
-              border-color: rgba(59, 130, 246, 0.5);
-              color: #fff;
-              padding: 0.5rem 1rem;
-              font-size: 13px;
-            " title="Drag me to your bookmarks bar!">☁️</a>
+        <div class="feat-grid" id="featGrid"></div>
       </div>
+
+      <div class="sec-head">
+        <h3>New Arrivals</h3>
+        <a class="see-all" href="#">See all</a>
+      </div>
+      <div class="books-row" id="newRow"></div>
+
+      <div class="sec-head">
+        <h3>Popular This Week</h3>
+        <a class="see-all" href="#">See all</a>
+      </div>
+      <div class="books-row" id="popRow"></div>
+
+      <div style="height:20px"></div>
     </div>
-    <div class="scroll-indicator" id="scroll-indicator">
-      <div class="scroll-line"></div>
+  </div>
+
+  <!-- Bottom Nav -->
+  <nav class="bottom-nav">
+    <a class="nav-item off" href="#">
+      <svg class="i" viewBox="0 0 24 24">
+        <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+        <polyline points="9 22 9 12 15 12 15 22" />
+      </svg>
+      <span class="nav-label">Home</span>
+    </a>
+    <a class="nav-item on" href="#">
+      <svg class="i" viewBox="0 0 24 24">
+        <circle cx="11" cy="11" r="8" />
+        <path d="m21 21-4.35-4.35" />
+      </svg>
+      <span class="nav-label">Explore</span>
+    </a>
+    <a class="nav-item off" href="#">
+      <svg class="i" viewBox="0 0 24 24">
+        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+      </svg>
+      <span class="nav-label">Shelf</span>
+    </a>
+    <a class="nav-item off" href="#">
+      <svg class="i" viewBox="0 0 24 24">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+        <circle cx="12" cy="7" r="4" />
+      </svg>
+      <span class="nav-label">Me</span>
+    </a>
+  </nav>
+
+  <!-- Search -->
+  <div class="overlay" id="ov" onclick="if(event.target===this)closeSearch()">
+    <div class="sbox">
+      <div class="sbox-top">
+        <svg class="i" width="20" height="20" viewBox="0 0 24 24" style="color:var(--muted)">
+          <circle cx="11" cy="11" r="8" />
+          <path d="m21 21-4.35-4.35" />
+        </svg>
+        <input type="text" placeholder="Search titles, authors, subjects…" id="si" />
+      </div>
+      <div class="sugg">
+        <div class="sugg-item"><svg class="i" width="15" height="15" viewBox="0 0 24 24" style="color:var(--muted)">
+            <circle cx="11" cy="11" r="8" />
+            <path d="m21 21-4.35-4.35" />
+          </svg><span>Harry Potter series</span></div>
+        <div class="sugg-item"><svg class="i" width="15" height="15" viewBox="0 0 24 24" style="color:var(--muted)">
+            <circle cx="11" cy="11" r="8" />
+            <path d="m21 21-4.35-4.35" />
+          </svg><span>Diary of a Wimpy Kid</span></div>
+        <div class="sugg-item"><svg class="i" width="15" height="15" viewBox="0 0 24 24" style="color:var(--muted)">
+            <circle cx="11" cy="11" r="8" />
+            <path d="m21 21-4.35-4.35" />
+          </svg><span>Non-fiction science</span></div>
+        <div class="sugg-item"><svg class="i" width="15" height="15" viewBox="0 0 24 24" style="color:var(--muted)">
+            <circle cx="11" cy="11" r="8" />
+            <path d="m21 21-4.35-4.35" />
+          </svg><span>Always available</span></div>
+      </div>
+      <div class="sclose" onclick="closeSearch()">Close</div>
     </div>
-  </section>
+  </div>
 
-  <footer id="footer">
-    <div class="footer-inner">
-      <span class="footer-logo">Welkin<span class="logo-dot">.</span></span>
-      <span class="footer-copy">&copy; 2026 Welkin. All rights reserved.</span>
-    </div>
-  </footer>
-
-  <!-- Persistent Music Player (injected by music.js) -->
-
-  <script type="module" src="3d-cloud.js"></script>
-
-  <!-- Socket.io client -->
-  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
   <script>
-    (function () {
-      const CURRENT_VERSION = "00b23f1";
-      const lastSeen = localStorage.getItem("updateVersion");
+    // Real book data: title, author, Open Library Work ID (for cover), ISBN fallback
+    const BOOKS = {
+      featured: [
+        { olid: 'OL151089W', title: 'Tintin in America', isbn: '0316133809' },
+        { olid: 'OL45804W', title: 'Charlotte\'s Web', isbn: '0064404994' },
+        { olid: 'OL76228W', title: 'Where the Wild Things Are', isbn: '0060254920' },
+        { olid: 'OL261011W', title: 'Holes', isbn: '0440414806' },
+        { olid: 'OL7353617W', title: 'Wonder', isbn: '0375869026' },
+        { olid: 'OL3349382W', title: 'Diary of a Wimpy Kid', isbn: '0810993139' },
+        { olid: 'OL36417W', title: 'James and the Giant Peach', isbn: '0142410381' },
+        { olid: 'OL893415W', title: 'Hatchet', isbn: '1416936475' },
+      ],
+      newArrivals: [
+        { olid: 'OL17929547W', title: 'The Midnight Library', author: 'Matt Haig', isbn: '0525559477' },
+        { olid: 'OL20604628W', title: 'They Both Die at the End', author: 'Adam Silvera', isbn: '9780062457790' },
+        { olid: 'OL20038279W', title: 'An Ember in the Ashes', author: 'Sabaa Tahir', isbn: '9781595148032' },
+        { olid: 'OL17364524W', title: 'The Maze Runner', author: 'James Dashner', isbn: '9780385737951' },
+        { olid: 'OL8432688W', title: 'Divergent', author: 'Veronica Roth', isbn: '9780062024022' },
+      ],
+      popular: [
+        { olid: 'OL15520525W', title: 'The Hunger Games', author: 'Suzanne Collins', isbn: '9780439023481' },
+        { olid: 'OL18417W', title: 'Charlie & the Chocolate Factory', author: 'Roald Dahl', isbn: '0142410314' },
+        { olid: 'OL509183W', title: 'A Wrinkle in Time', author: 'Madeleine L\'Engle', isbn: '9780312367541' },
+        { olid: 'OL261011W', title: 'Holes', author: 'Louis Sachar', isbn: '0440414806' },
+        { olid: 'OL151089W', title: 'Tintin in America', author: 'Herge', isbn: '0316133809' },
+      ]
+    };
 
-      if (lastSeen === CURRENT_VERSION) return;
+    function coverUrl(isbn) {
+      // Open Library free cover CDN — no API key needed
+      return `https://covers.openlibrary.org/b/isbn/${isbn}-M.jpg`;
+    }
 
-      const popup = document.createElement("div");
-      popup.className = "update-popup";
-      popup.innerHTML = `
-        <div class="update-card">
-          <h2 class="update-title">New Features and Fixes!</h2>
-          <p class="update-desc">
-            Fixed the <strong>online counter</strong> and <strong>video issues</strong>.<br>
-            There is now a screenshare in VC and <strong>notifications for new messages</strong>!<br>
-            (You can turn this off with the button on bottom left).<br>
-            There is also now group chats (buggy), and a fullscreen button for videos and screenshares.<br>
-            ❗<strong>ALL ACCOUNTS HAVE BEEN DELETED(hopefully for the last time)</strong>❗<br>
-            Many things are still being updated so expect bugs and glitches!
-          </p>
-          <button class="update-btn" id="update-close">Got it!</button>
-        </div>
-      `;
+    function shimDiv(dark) {
+      const d = document.createElement('div');
+      d.className = dark ? 'shimmer shimmer-dark' : 'shimmer';
+      return d;
+    }
 
-      document.body.appendChild(popup);
+    function buildImg(isbn, dark) {
+      const img = document.createElement('img');
+      const sh = shimDiv(dark);
+      img.src = coverUrl(isbn);
+      img.style.opacity = '0';
+      img.style.transition = 'opacity .3s';
+      img.onload = () => { if (img.naturalWidth > 2) { sh.remove(); img.style.opacity = '1'; } };
+      img.onerror = () => { sh.style.background = dark ? '#2a3e52' : '#c8cfe0'; };
+      return { img, sh };
+    }
 
-      function dismiss() {
-        popup.classList.add("hiding");
-        setTimeout(() => popup.remove(), 400);
-        localStorage.setItem("updateVersion", CURRENT_VERSION);
-      }
+    // Featured grid
+    const fg = document.getElementById('featGrid');
+    BOOKS.featured.forEach(b => {
+      const wrap = document.createElement('div');
+      wrap.className = 'feat-cover';
+      const { img, sh } = buildImg(b.isbn, true);
+      img.alt = b.title; img.title = b.title;
+      wrap.appendChild(sh);
+      wrap.appendChild(img);
+      fg.appendChild(wrap);
+    });
 
-      document
-        .getElementById("update-close")
-        .addEventListener("click", dismiss);
-      popup.addEventListener("click", function (e) {
-        if (e.target === popup) dismiss();
+    // Row builder helper
+    function buildRow(containerId, books) {
+      const row = document.getElementById(containerId);
+      books.forEach(b => {
+        const item = document.createElement('div');
+        item.className = 'book';
+        const coverDiv = document.createElement('div');
+        coverDiv.className = 'cover';
+        const { img, sh } = buildImg(b.isbn, false);
+        img.alt = b.title; img.title = b.title;
+        const avail = document.createElement('div');
+        avail.className = 'avail';
+        avail.textContent = 'Available';
+        coverDiv.appendChild(sh);
+        coverDiv.appendChild(img);
+        coverDiv.appendChild(avail);
+        const titleEl = document.createElement('div');
+        titleEl.className = 'book-title';
+        titleEl.textContent = b.title;
+        const authEl = document.createElement('div');
+        authEl.className = 'book-auth';
+        authEl.textContent = b.author || '';
+        item.appendChild(coverDiv);
+        item.appendChild(titleEl);
+        item.appendChild(authEl);
+        row.appendChild(item);
       });
-    })();
-  </script>
+    }
 
-  <script src="main.js"></script>
-  <script src="music.js"></script>
-  <script src="music_v2.js"></script>
-  <script src="sidebar.js"></script>
-  <script src="youtube.js"></script>
-  <script src="/ai.js"></script>
+    buildRow('newRow', BOOKS.newArrivals);
+    buildRow('popRow', BOOKS.popular);
+
+    function openSearch() {
+      document.getElementById('ov').classList.add('open');
+      setTimeout(() => document.getElementById('si').focus(), 80);
+    }
+    function closeSearch() { document.getElementById('ov').classList.remove('open'); }
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSearch(); });
+  </script>
 </body>
 
 </html>
