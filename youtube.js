@@ -3,33 +3,36 @@
  * Based on Norepted (wea-f/Norepted)
  */
 
-(function() {
-    // --- Norepted Functionality ---
-    function extractVideoId(url) {
-        const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/|youtube\.com\/shorts\/)([^"&?\/\s]{11})/;
-        const match = url.match(regex);
-        return match ? match[1] : null;
-    }
+(function () {
+  // --- Norepted Functionality ---
+  function extractVideoId(url) {
+    const regex =
+      /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/|youtube\.com\/shorts\/)([^"&?\/\s]{11})/;
+    const match = url.match(regex);
+    return match ? match[1] : null;
+  }
 
-    function toggleCloak() {
-        document.title = "Google";
-        let link = document.querySelector("link[rel*='icon']") || document.createElement('link');
-        link.type = 'image/x-icon';
-        link.rel = 'shortcut icon';
-        link.href = 'https://www.google.com/favicon.ico';
-        document.getElementsByTagName('head')[0].appendChild(link);
-        console.log('Cloak activated.');
-    }
+  function toggleCloak() {
+    document.title = "Google";
+    let link =
+      document.querySelector("link[rel*='icon']") ||
+      document.createElement("link");
+    link.type = "image/x-icon";
+    link.rel = "shortcut icon";
+    link.href = "https://www.google.com/favicon.ico";
+    document.getElementsByTagName("head")[0].appendChild(link);
+    console.log("Cloak activated.");
+  }
 
-    function clearHistory() {
-        // Norepted feature: closes players and clears history (as much as JS can)
-        const players = document.querySelectorAll('.yt-player-container');
-        players.forEach(p => p.remove());
-        console.log('Players cleared.');
-    }
+  function clearHistory() {
+    // Norepted feature: closes players and clears history (as much as JS can)
+    const players = document.querySelectorAll(".yt-player-container");
+    players.forEach((p) => p.remove());
+    console.log("Players cleared.");
+  }
 
-    // --- Popup Design (Welkin Style) ---
-    const popupHTML = `
+  // --- Popup Design (Welkin Style) ---
+  const popupHTML = `
         <div id="yt-overlay" class="music-player-overlay">
             <div class="music-player-card yt-card">
                 <div class="music-close-btn" id="yt-close">&times;</div>
@@ -56,7 +59,7 @@
         </div>
     `;
 
-    const popupCSS = `
+  const popupCSS = `
         .yt-card {
             flex-direction: column !important;
             padding: 40px;
@@ -162,52 +165,54 @@
         }
     `;
 
-    function init() {
-        // Inject CSS
-        const style = document.createElement('style');
-        style.textContent = popupCSS;
-        document.head.appendChild(style);
+  function init() {
+    // Inject CSS
+    const style = document.createElement("style");
+    style.textContent = popupCSS;
+    document.head.appendChild(style);
 
-        // Inject HTML
-        document.body.insertAdjacentHTML('beforeend', popupHTML);
+    // Inject HTML
+    document.body.insertAdjacentHTML("beforeend", popupHTML);
 
-        const overlay = document.getElementById('yt-overlay');
-        const closeBtn = document.getElementById('yt-close');
-        const loadBtn = document.getElementById('yt-load-btn');
-        const input = document.getElementById('yt-url-input');
-        const container = document.getElementById('yt-player-container');
+    const overlay = document.getElementById("yt-overlay");
+    const closeBtn = document.getElementById("yt-close");
+    const loadBtn = document.getElementById("yt-load-btn");
+    const input = document.getElementById("yt-url-input");
+    const container = document.getElementById("yt-player-container");
 
-        window.toggleYouTube = () => {
-            overlay.classList.add('open');
-            overlay.style.display = 'flex';
-            setTimeout(() => overlay.style.opacity = '1', 10);
-        };
+    window.toggleYouTube = () => {
+      overlay.classList.add("open");
+      overlay.style.display = "flex";
+      setTimeout(() => (overlay.style.opacity = "1"), 10);
+    };
 
-        const closePopup = () => {
-            overlay.style.opacity = '0';
-            setTimeout(() => {
-                overlay.classList.remove('open');
-                overlay.style.display = 'none';
-                // Stop video on close
-                container.innerHTML = `
+    const closePopup = () => {
+      overlay.style.opacity = "0";
+      setTimeout(() => {
+        overlay.classList.remove("open");
+        overlay.style.display = "none";
+        // Stop video on close
+        container.innerHTML = `
                     <div class="yt-empty-state">
                         <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="2"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"></path><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"></polygon></svg>
                         <p>Enter a URL above to start watching</p>
                     </div>
                 `;
-            }, 300);
-        };
+      }, 300);
+    };
 
-        closeBtn.onclick = closePopup;
-        overlay.onclick = (e) => { if (e.target === overlay) closePopup(); };
+    closeBtn.onclick = closePopup;
+    overlay.onclick = (e) => {
+      if (e.target === overlay) closePopup();
+    };
 
-        loadBtn.onclick = () => {
-            const url = input.value.trim();
-            const videoId = extractVideoId(url) || url;
-            
-            if (videoId.length === 11 || videoId.length > 11) {
-                const finalId = extractVideoId(url) || videoId;
-                container.innerHTML = `
+    loadBtn.onclick = () => {
+      const url = input.value.trim();
+      const videoId = extractVideoId(url) || url;
+
+      if (videoId.length === 11 || videoId.length > 11) {
+        const finalId = extractVideoId(url) || videoId;
+        container.innerHTML = `
                     <iframe 
                         class="yt-iframe"
                         src="https://www.youtube-nocookie.com/embed/${finalId}?autoplay=1&origin=${window.location.origin}" 
@@ -215,34 +220,34 @@
                         allowfullscreen>
                     </iframe>
                 `;
-            } else {
-                alert("Invalid YouTube URL or ID");
-            }
-        };
+      } else {
+        alert("Invalid YouTube URL or ID");
+      }
+    };
 
-        input.onkeydown = (e) => {
-            if (e.key === 'Enter') loadBtn.click();
-        };
+    input.onkeydown = (e) => {
+      if (e.key === "Enter") loadBtn.click();
+    };
 
-        // Hotkeys from Norepted
-        document.addEventListener('keydown', (e) => {
-            if (document.activeElement.tagName === 'INPUT') return;
+    // Hotkeys from Norepted
+    document.addEventListener("keydown", (e) => {
+      if (document.activeElement.tagName === "INPUT") return;
 
-            if (e.key === "'") {
-                e.preventDefault();
-                toggleCloak();
-            }
-            if (e.key === "-") {
-                e.preventDefault();
-                clearHistory();
-                closePopup();
-            }
-        });
-    }
+      if (e.key === "'") {
+        e.preventDefault();
+        toggleCloak();
+      }
+      if (e.key === "-") {
+        e.preventDefault();
+        clearHistory();
+        closePopup();
+      }
+    });
+  }
 
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', init);
-    } else {
-        init();
-    }
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
 })();

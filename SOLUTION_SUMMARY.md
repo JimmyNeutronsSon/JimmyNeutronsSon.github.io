@@ -27,18 +27,21 @@ The original `launchWgGame` function in `welkin-gamebar.js` had a critical issue
 ### 1. Switched from Blob URLs to `srcdoc`
 
 **Before:**
+
 ```javascript
-const blob = new Blob([fixedHtml], { type: 'text/html' });
+const blob = new Blob([fixedHtml], { type: "text/html" });
 const blobUrl = URL.createObjectURL(blob);
 frame.src = blobUrl;
 ```
 
 **After:**
+
 ```javascript
 frame.srcdoc = fixedHtml;
 ```
 
 **Why `srcdoc` works better:**
+
 - Designed specifically for inline HTML content
 - Executes scripts in the context of the parent document's origin
 - No blob URL origin issues
@@ -47,10 +50,11 @@ frame.srcdoc = fixedHtml;
 ### 2. Proper Sandbox Configuration
 
 ```javascript
-frame.sandbox = 'allow-scripts allow-same-origin allow-popups allow-modals';
+frame.sandbox = "allow-scripts allow-same-origin allow-popups allow-modals";
 ```
 
 **Permissions granted:**
+
 - `allow-scripts`: Enables JavaScript execution in the iframe
 - `allow-same-origin`: Treats content as same-origin (needed for relative URLs and CDN resources)
 - `allow-popups`: Allows `window.open()` and similar
@@ -62,22 +66,24 @@ frame.sandbox = 'allow-scripts allow-same-origin allow-popups allow-modals';
 
 ```javascript
 const processHtml = (html, baseUrl) => {
-  return html
-    // Rewrite resource URLs (src, href, action)
-    .replace(/(src|href|action)=["']([^"']+)["']/gi, (m, attr, path) => {
-      if (path.match(/^(https?:|data:|blob:|#|\/\/|javascript:)/i)) return m;
-      return `${attr}="${wrapUrl(baseUrl + path)}"`;
-    })
-    // Rewrite CSS url() references
-    .replace(/url\(\s*['"]?([^'")]+)['"]?\s*\)/g, (m, path) => {
-      if (path.match(/^(https?:|data:|blob:|#|\/\/)/i)) return m;
-      return `url("${wrapUrl(baseUrl + path)}")`;
-    })
-    // Rewrite source URLs in <source> tags
-    .replace(/(<source[^>]+src=)["']([^"']+)["']/gi, (m, prefix, path) => {
-      if (path.match(/^(https?:|data:|blob:)/i)) return m;
-      return `${prefix}"${wrapUrl(baseUrl + path)}"`;
-    });
+  return (
+    html
+      // Rewrite resource URLs (src, href, action)
+      .replace(/(src|href|action)=["']([^"']+)["']/gi, (m, attr, path) => {
+        if (path.match(/^(https?:|data:|blob:|#|\/\/|javascript:)/i)) return m;
+        return `${attr}="${wrapUrl(baseUrl + path)}"`;
+      })
+      // Rewrite CSS url() references
+      .replace(/url\(\s*['"]?([^'")]+)['"]?\s*\)/g, (m, path) => {
+        if (path.match(/^(https?:|data:|blob:|#|\/\/)/i)) return m;
+        return `url("${wrapUrl(baseUrl + path)}")`;
+      })
+      // Rewrite source URLs in <source> tags
+      .replace(/(<source[^>]+src=)["']([^"']+)["']/gi, (m, prefix, path) => {
+        if (path.match(/^(https?:|data:|blob:)/i)) return m;
+        return `${prefix}"${wrapUrl(baseUrl + path)}"`;
+      })
+  );
 };
 ```
 
@@ -86,16 +92,20 @@ const processHtml = (html, baseUrl) => {
 ```javascript
 const loadGame = async () => {
   if (isLoaded && retryCount >= MAX_RETRIES) return;
-  
-  msg.innerText = retryCount > 0 ? `Retrying... (${retryCount}/${MAX_RETRIES})` : 'Loading Game...';
-  
+
+  msg.innerText =
+    retryCount > 0
+      ? `Retrying... (${retryCount}/${MAX_RETRIES})`
+      : "Loading Game...";
+
   try {
     const response = await fetch(wrapUrl(url));
-    if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-    
+    if (!response.ok)
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+
     const html = await response.text();
-    const baseUrl = url.substring(0, url.lastIndexOf('/') + 1);
-    
+    const baseUrl = url.substring(0, url.lastIndexOf("/") + 1);
+
     loadGameContent(html, baseUrl);
     isLoaded = true;
     retryCount = 0;
@@ -105,13 +115,14 @@ const loadGame = async () => {
       // Exponential backoff retry
       setTimeout(() => loadGame(), 1000 * retryCount);
     } else {
-      showError('Failed to load game. Click Retry to try again.', err);
+      showError("Failed to load game. Click Retry to try again.", err);
     }
   }
 };
 ```
 
 **Features:**
+
 - Exponential backoff (1s, 2s delays)
 - Maximum 2 retries
 - Manual retry button on final failure
@@ -122,18 +133,21 @@ const loadGame = async () => {
 ```javascript
 const cleanup = () => {
   isLoaded = true; // Prevent further retries
-  cleanupHandlers.forEach(fn => {
-    try { fn(); } catch (e) { }
+  cleanupHandlers.forEach((fn) => {
+    try {
+      fn();
+    } catch (e) {}
   });
   cleanupHandlers = [];
   try {
-    frame.src = 'about:blank';
-    frame.srcdoc = '';
-  } catch (e) { }
+    frame.src = "about:blank";
+    frame.srcdoc = "";
+  } catch (e) {}
 };
 ```
 
 **Cleanup handlers manage:**
+
 - Event listener removal
 - Timeout clearing
 - Error monitor cleanup
@@ -141,6 +155,7 @@ const cleanup = () => {
 - Blob URL revocation
 
 **Additional features:**
+
 - Page visibility change handling
 - Runtime error monitoring
 - Unhandled rejection tracking
@@ -153,12 +168,13 @@ const onLoad = () => {
   clearTimeout(loadTimer);
   // Small delay to allow scripts to initialize
   setTimeout(() => {
-    if (msg) msg.style.display = 'none';
+    if (msg) msg.style.display = "none";
   }, 200);
 };
 ```
 
 The 200ms delay after load ensures:
+
 - DOM is fully constructed
 - Inline scripts have executed
 - Entry point functions are available
@@ -209,12 +225,14 @@ A test file `test_gamebar.html` is provided to verify:
 ## Migration Notes
 
 The change is backward compatible:
+
 - Same function signature: `launchWgGame(url, title)`
 - Same window creation behavior
 - Same UI/UX
 - Only the loading mechanism changed
 
 No changes required to:
+
 - Game HTML files
 - CDN resources
 - Proxy configuration

@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
-import { Album } from '../types';
-import { getAlbumDetails } from '../services/jioSaavnApi';
+import { useState, useEffect } from "react";
+import { Album } from "../types";
+import { getAlbumDetails } from "../services/jioSaavnApi";
 
 export const useAlbum = (albumId: string) => {
   const [album, setAlbum] = useState<Album | null>(null);
@@ -16,21 +16,21 @@ export const useAlbum = (albumId: string) => {
         if (response.success) {
           setAlbum(response.data);
         } else {
-          setError('Failed to fetch album details.');
+          setError("Failed to fetch album details.");
         }
       } catch (err) {
         console.error("Failed to fetch album details:", err);
-        setError('An error occurred while fetching album details.');
+        setError("An error occurred while fetching album details.");
       } finally {
         setLoading(false);
       }
     };
-    
+
     if (albumId) {
-        fetchAlbum();
+      fetchAlbum();
     } else {
-        setLoading(false);
-        setAlbum(null);
+      setLoading(false);
+      setAlbum(null);
     }
   }, [albumId]);
 

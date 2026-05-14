@@ -1,104 +1,149 @@
-
-import React, { useContext } from 'react';
-import { Playlist } from '../../types';
-import { PlayerContext } from '../../context/PlayerContext';
-import { UserMusicContext } from '../../context/UserMusicContext';
-import { searchSongs } from '../../services/jioSaavnApi';
-import { useTranslation } from '../../context/LanguageContext';
+import React, { useContext } from "react";
+import { Playlist } from "../../types";
+import { PlayerContext } from "../../context/PlayerContext";
+import { UserMusicContext } from "../../context/UserMusicContext";
+import { searchSongs } from "../../services/jioSaavnApi";
+import { useTranslation } from "../../context/LanguageContext";
 
 const PlayIcon = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg {...props} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-    <path fillRule="evenodd" d="M4.5 5.653c0-1.426 1.529-2.33 2.779-1.643l11.54 6.648c1.295.742 1.295 2.545 0 3.286L7.279 20.99c-1.25.717-2.779-.217-2.779-1.643V5.653z" clipRule="evenodd" />
+  <svg
+    {...props}
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="currentColor"
+  >
+    <path
+      fillRule="evenodd"
+      d="M4.5 5.653c0-1.426 1.529-2.33 2.779-1.643l11.54 6.648c1.295.742 1.295 2.545 0 3.286L7.279 20.99c-1.25.717-2.779-.217-2.779-1.643V5.653z"
+      clipRule="evenodd"
+    />
   </svg>
 );
 
 const HeartIcon = (props: React.SVGProps<SVGSVGElement>) => (
-    <svg {...props} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
-    </svg>
+  <svg
+    {...props}
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={1.5}
+    stroke="currentColor"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"
+    />
+  </svg>
 );
 
 const PlaylistPlaceholderIcon = (props: React.SVGProps<SVGSVGElement>) => (
-    <svg {...props} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 010 3.75H5.625a1.875 1.875 0 010-3.75z" />
-    </svg>
+  <svg
+    {...props}
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={1.5}
+    stroke="currentColor"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 010 3.75H5.625a1.875 1.875 0 010-3.75z"
+    />
+  </svg>
 );
-
 
 interface PlaylistCardProps {
   playlist: Playlist;
   onClick: (playlist: Playlist) => void;
 }
 
-export const PlaylistCard: React.FC<PlaylistCardProps> = React.memo(({ playlist, onClick }) => {
-  const imageUrl = playlist.image?.find(img => img.quality === '150x150')?.url || playlist.image?.[0]?.url;
-  const { playSong, contextId, togglePlay } = useContext(PlayerContext);
-  const { isFavoriteApiPlaylist, toggleFavoriteApiPlaylist } = useContext(UserMusicContext);
-  const { t } = useTranslation();
-  
-  const isFav = isFavoriteApiPlaylist(playlist.id);
-  const isPlaylistCurrentlyPlaying = contextId === playlist.id;
+export const PlaylistCard: React.FC<PlaylistCardProps> = React.memo(
+  ({ playlist, onClick }) => {
+    const imageUrl =
+      playlist.image?.find((img) => img.quality === "150x150")?.url ||
+      playlist.image?.[0]?.url;
+    const { playSong, contextId, togglePlay } = useContext(PlayerContext);
+    const { isFavoriteApiPlaylist, toggleFavoriteApiPlaylist } =
+      useContext(UserMusicContext);
+    const { t } = useTranslation();
 
-  const handlePlayClick = async (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (isPlaylistCurrentlyPlaying) {
+    const isFav = isFavoriteApiPlaylist(playlist.id);
+    const isPlaylistCurrentlyPlaying = contextId === playlist.id;
+
+    const handlePlayClick = async (e: React.MouseEvent) => {
+      e.stopPropagation();
+      if (isPlaylistCurrentlyPlaying) {
         togglePlay();
         return;
-    }
-    try {
+      }
+      try {
         const response = await searchSongs(playlist.name, 1, 50);
         if (response.success && response.data.results.length > 0) {
-            playSong(response.data.results[0], response.data.results, { type: 'api_playlist', id: playlist.id });
+          playSong(response.data.results[0], response.data.results, {
+            type: "api_playlist",
+            id: playlist.id,
+          });
         } else {
-            alert(`Could not find any songs matching "${playlist.name}"`);
+          alert(`Could not find any songs matching "${playlist.name}"`);
         }
-    } catch (error) {
+      } catch (error) {
         console.error("Failed to play playlist:", error);
-    }
-  };
-  
-  const handleFavoriteClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    toggleFavoriteApiPlaylist(playlist);
-  }
+      }
+    };
 
-  return (
-    <div 
+    const handleFavoriteClick = (e: React.MouseEvent) => {
+      e.stopPropagation();
+      toggleFavoriteApiPlaylist(playlist);
+    };
+
+    return (
+      <div
         onClick={() => onClick(playlist)}
         className="group relative bg-white/5 p-4 rounded-2xl hover:bg-white/10 transition-all duration-300 cursor-pointer border border-white/5 hover:border-white/10 hover:shadow-2xl hover:-translate-y-1"
-    >
+      >
         <button
           onClick={handleFavoriteClick}
           className="absolute top-3 right-3 p-2 rounded-full bg-black/40 backdrop-blur-md text-white opacity-0 group-hover:opacity-100 transition-all hover:bg-black/60 z-20 hover:scale-110"
-          aria-label={isFav ? t('albumView.removeFromFav') : t('albumView.addToFav')}
-          title={isFav ? t('albumView.removeFromFav') : t('albumView.addToFav')}
+          aria-label={
+            isFav ? t("albumView.removeFromFav") : t("albumView.addToFav")
+          }
+          title={isFav ? t("albumView.removeFromFav") : t("albumView.addToFav")}
         >
-          <HeartIcon className={`w-5 h-5 transition-all ${isFav ? 'fill-[#3A8FE0] text-[#3A8FE0]' : 'text-gray-300'}`} />
+          <HeartIcon
+            className={`w-5 h-5 transition-all ${isFav ? "fill-[#3A8FE0] text-[#3A8FE0]" : "text-gray-300"}`}
+          />
         </button>
-       <div className="relative w-full aspect-square mb-4 overflow-hidden rounded-xl">
-        {imageUrl ? (
-            <img 
-                src={imageUrl} 
-                alt={playlist.name} 
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 animate-image-appear" 
-                loading="lazy" 
+        <div className="relative w-full aspect-square mb-4 overflow-hidden rounded-xl">
+          {imageUrl ? (
+            <img
+              src={imageUrl}
+              alt={playlist.name}
+              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 animate-image-appear"
+              loading="lazy"
             />
-        ) : (
-             <div className="w-full h-full bg-gradient-to-br from-[#163A6B] to-[#0B1E3D] flex items-center justify-center rounded-md border border-white/5">
-                <PlaylistPlaceholderIcon className="w-1/2 h-1/2 text-white/10" />
+          ) : (
+            <div className="w-full h-full bg-gradient-to-br from-[#163A6B] to-[#0B1E3D] flex items-center justify-center rounded-md border border-white/5">
+              <PlaylistPlaceholderIcon className="w-1/2 h-1/2 text-white/10" />
             </div>
-        )}
-        <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-         <button
-          onClick={handlePlayClick}
-          className="absolute bottom-3 right-3 w-12 h-12 bg-[#3A8FE0] rounded-full flex items-center justify-center text-black shadow-lg shadow-[#3A8FE0]/40 opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 z-20 hover:scale-105 active:scale-95"
-          aria-label={`Play songs from ${playlist.name}`}
-        >
+          )}
+          <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          <button
+            onClick={handlePlayClick}
+            className="absolute bottom-3 right-3 w-12 h-12 bg-[#3A8FE0] rounded-full flex items-center justify-center text-black shadow-lg shadow-[#3A8FE0]/40 opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 z-20 hover:scale-105 active:scale-95"
+            aria-label={`Play songs from ${playlist.name}`}
+          >
             <PlayIcon className="w-6 h-6 ml-1" />
-        </button>
+          </button>
+        </div>
+        <h4 className="font-bold text-white mt-1 truncate text-lg tracking-tight group-hover:text-[#3A8FE0] transition-colors">
+          {playlist.name}
+        </h4>
+        <p className="text-sm text-gray-400 truncate mt-0.5">
+          {playlist.songCount} songs
+        </p>
       </div>
-      <h4 className="font-bold text-white mt-1 truncate text-lg tracking-tight group-hover:text-[#3A8FE0] transition-colors">{playlist.name}</h4>
-      <p className="text-sm text-gray-400 truncate mt-0.5">{playlist.songCount} songs</p>
-    </div>
-  );
-});
+    );
+  },
+);

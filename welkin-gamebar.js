@@ -17,14 +17,19 @@
     const WELKIN_DOMAIN = "https://welkin.blueshadows.cl";
 
     // If it's a relative path, make it absolute against the Welkin domain
-    if (!url.startsWith("http") && !url.startsWith("//") && !url.startsWith("data:")) {
+    if (
+      !url.startsWith("http") &&
+      !url.startsWith("//") &&
+      !url.startsWith("data:")
+    ) {
       return WELKIN_DOMAIN + (url.startsWith("/") ? "" : "/") + url;
     }
 
     // Only proxy external absolute URLs to avoid breaking local Welkin paths
     if (url.startsWith("http") || url.startsWith("//")) {
       // Don't proxy if it's already a Welkin domain URL to save overhead
-      if (url.includes("welkin.blueshadows.cl") || url.includes("localhost")) return url;
+      if (url.includes("welkin.blueshadows.cl") || url.includes("localhost"))
+        return url;
       const proxyBase = WELKIN_DOMAIN + "/proxy";
       return `${proxyBase}?url=${encodeURIComponent(url)}`;
     }
@@ -140,10 +145,18 @@
     fullBtn.onclick = (e) => {
       e.stopPropagation();
       if (!document.fullscreenElement) {
-        const req = win.requestFullscreen || win.webkitRequestFullscreen || win.mozRequestFullScreen || win.msRequestFullscreen;
+        const req =
+          win.requestFullscreen ||
+          win.webkitRequestFullscreen ||
+          win.mozRequestFullScreen ||
+          win.msRequestFullscreen;
         if (req) req.call(win);
       } else {
-        const exit = document.exitFullscreen || document.webkitExitFullscreen || document.mozCancelFullScreen || document.msExitFullscreen;
+        const exit =
+          document.exitFullscreen ||
+          document.webkitExitFullscreen ||
+          document.mozCancelFullScreen ||
+          document.msExitFullscreen;
         if (exit) exit.call(document);
       }
     };
@@ -352,12 +365,20 @@
         if (url.toLowerCase().endsWith(".svg")) {
           // Load SVG directly in iframe as-is, same as opening in browser
           frame.src = url;
-          frame.onload = () => { msg.style.display = "none"; };
-          frame.onerror = () => { msg.innerText = "Failed to load game."; };
+          frame.onload = () => {
+            msg.style.display = "none";
+          };
+          frame.onerror = () => {
+            msg.innerText = "Failed to load game.";
+          };
         } else {
           frame.src = wrapUrl(url);
-          frame.onload = () => { msg.style.display = "none"; };
-          frame.onerror = () => { msg.innerText = "Failed to load game."; };
+          frame.onload = () => {
+            msg.style.display = "none";
+          };
+          frame.onerror = () => {
+            msg.innerText = "Failed to load game.";
+          };
         }
       },
       true,
@@ -386,7 +407,8 @@
     input.onfocus = () => {
       input.style.background = "rgba(255,255,255,0.08)";
       input.style.borderColor = "rgba(58, 143, 224, 0.5)";
-      input.style.boxShadow = "0 0 20px rgba(58, 143, 224, 0.2), inset 0 2px 4px rgba(0,0,0,0.2)";
+      input.style.boxShadow =
+        "0 0 20px rgba(58, 143, 224, 0.2), inset 0 2px 4px rgba(0,0,0,0.2)";
     };
     input.onblur = () => {
       input.style.background = "rgba(255,255,255,0.05)";
@@ -516,7 +538,8 @@
     input.onfocus = () => {
       input.style.background = "rgba(255,255,255,0.08)";
       input.style.borderColor = "rgba(58, 143, 224, 0.5)";
-      input.style.boxShadow = "0 0 20px rgba(58, 143, 224, 0.2), inset 0 2px 4px rgba(0,0,0,0.2)";
+      input.style.boxShadow =
+        "0 0 20px rgba(58, 143, 224, 0.2), inset 0 2px 4px rgba(0,0,0,0.2)";
     };
     input.onblur = () => {
       input.style.background = "rgba(255,255,255,0.05)";

@@ -1,1 +1,346 @@
-import{u as S,j as e,R as M,r as d,P as D,U as O,M as Q,S as G,C as J}from"./index-Jbwo0tuu.js";const F=t=>e.jsx("svg",{...t,xmlns:"http://www.w3.org/2000/svg",viewBox:"0 0 24 24",fill:"currentColor",children:e.jsx("path",{d:"M5 3l14 9-14 9V3z"})}),K=t=>e.jsxs("svg",{...t,xmlns:"http://www.w3.org/2000/svg",viewBox:"0 0 24 24",fill:"currentColor",children:[e.jsx("rect",{x:"6",y:"4",width:"4",height:"16",rx:"2"}),e.jsx("rect",{x:"14",y:"4",width:"4",height:"16",rx:"2"})]}),X=t=>e.jsx("svg",{...t,xmlns:"http://www.w3.org/2000/svg",viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:2.5,strokeLinecap:"round",strokeLinejoin:"round",children:e.jsx("path",{d:"M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"})}),Y=t=>e.jsxs("svg",{...t,xmlns:"http://www.w3.org/2000/svg",viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:2.5,strokeLinecap:"round",strokeLinejoin:"round",children:[e.jsx("polyline",{points:"3 6 5 6 21 6"}),e.jsx("path",{d:"M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"})]}),Z=t=>e.jsxs("svg",{...t,xmlns:"http://www.w3.org/2000/svg",viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:2.5,strokeLinecap:"round",strokeLinejoin:"round",children:[e.jsx("circle",{cx:"12",cy:"12",r:"1"}),e.jsx("circle",{cx:"19",cy:"12",r:"1"}),e.jsx("circle",{cx:"5",cy:"12",r:"1"})]}),I=t=>e.jsxs("svg",{...t,xmlns:"http://www.w3.org/2000/svg",viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:2.5,strokeLinecap:"round",strokeLinejoin:"round",children:[e.jsx("circle",{cx:"12",cy:"12",r:"2"}),e.jsx("path",{d:"M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"})]}),ee=t=>{if(t===null)return"-:--";const r=Math.floor(t/60),i=Math.floor(t%60);return`${r}:${i<10?"0":""}${i}`},te=M.memo(({song:t,index:r,songs:i,playlistId:h,context:l,navigateToArtist:m,onInteraction:n,navigateToPlaylist:g})=>{var N,k,C,P;const{playSong:j,addSongNext:E,addSongsToEnd:L,playRadio:A,currentSong:p,isPlaying:$}=d.useContext(D),{isFavoriteSong:R,toggleFavoriteSong:B,removeSongFromPlaylist:T,playlists:z,createPlaylist:W,addSongToPlaylist:U}=d.useContext(O),{showModal:V,hideModal:v}=d.useContext(Q),{t:c}=S(),[f,u]=d.useState(!1),y=d.useRef(null),x=(p==null?void 0:p.id)===t.id,b=()=>{n==null||n(),l.type==="search"?j(t,[t],l):j(t,i,l)},o=s=>{n==null||n(),s(),u(!1)},_=s=>{V({title:c("modals.createPlaylist.title"),content:e.jsx(J,{initialSong:s,onCancel:v,onConfirm:(a,w)=>{const q=W(a,w,[s]);v(),g&&g(q.id)}})})},H=((k=(N=t.image)==null?void 0:N.find(s=>s.quality==="50x50"))==null?void 0:k.url)||((P=(C=t.image)==null?void 0:C[0])==null?void 0:P.url);return e.jsxs("div",{onMouseLeave:()=>u(!1),className:`group flex items-center p-3 rounded-xl transition-all duration-200 border border-transparent ${x?"bg-white/10 border-white/5":"hover:bg-white/5 hover:border-white/5"} cursor-pointer`,children:[e.jsx("div",{className:`w-8 text-center mr-4 flex-shrink-0 font-medium ${x?"text-[#3A8FE0]":"text-gray-500 group-hover:hidden"}`,children:x?$?e.jsx(K,{className:"w-4 h-4 mx-auto text-[#3A8FE0]"}):e.jsx(F,{className:"w-4 h-4 mx-auto text-[#3A8FE0]"}):r+1}),e.jsx("button",{onClick:b,className:`w-8 h-8 items-center justify-center rounded-full text-white mr-4 flex-shrink-0 bg-[#3A8FE0] shadow-lg shadow-[#3A8FE0]/30 ${x?"hidden":"hidden group-hover:flex animate-in zoom-in"}`,children:e.jsx(F,{className:"w-4 h-4 ml-0.5"})}),e.jsx("img",{src:H,alt:t.name,className:`w-12 h-12 rounded-lg mr-4 flex-shrink-0 object-cover shadow-sm transition-transform duration-300 ${x?"scale-105 shadow-[#3A8FE0]/20":"group-hover:scale-105"}`,loading:"lazy"}),e.jsxs("div",{className:"flex-1 min-w-0",onClick:b,children:[e.jsx("p",{className:`font-semibold leading-snug line-clamp-1 ${x?"text-[#3A8FE0]":"text-white"}`,title:t.name,children:t.name}),e.jsx("p",{className:"text-sm text-gray-400 truncate leading-snug",children:t.artists.primary.map((s,a)=>e.jsxs(M.Fragment,{children:[e.jsx("span",{onClick:w=>{w.stopPropagation(),m(s.id)},className:"hover:text-white hover:underline cursor-pointer transition-colors",children:s.name}),a<t.artists.primary.length-1&&", "]},s.id))})]}),e.jsxs("div",{className:"flex items-center space-x-2 ml-4 relative",children:[e.jsx("button",{onClick:s=>{s.stopPropagation(),o(()=>B(t))},className:"text-gray-400 hover:text-[#3A8FE0] p-2 rounded-full hover:bg-white/10 transition-colors",children:e.jsx(X,{className:`w-5 h-5 transition-transform active:scale-125 ${R(t.id)?"fill-[#3A8FE0] text-[#3A8FE0] drop-shadow-[0_0_5px_rgba(58,143,224,0.5)]":""}`})}),h&&e.jsx("button",{onClick:s=>{s.stopPropagation(),o(()=>T(h,t.id))},className:"text-gray-400 hover:text-red-500 p-2 rounded-full hover:bg-white/10 transition-colors",children:e.jsx(Y,{className:"w-5 h-5"})}),e.jsx("button",{ref:y,onClick:s=>{s.stopPropagation(),u(a=>!a)},className:`p-2 rounded-full hover:bg-white/10 transition-colors ${f?"text-white bg-white/10":"text-gray-400 hover:text-white"}`,children:e.jsx(Z,{className:"w-5 h-5"})}),e.jsx(G,{isOpen:f,onClose:()=>u(!1),triggerRef:y,children:e.jsxs("div",{className:"flex flex-col py-1",children:[e.jsxs("button",{onClick:s=>{s.stopPropagation(),o(()=>A(t))},className:"flex items-center gap-2 text-left px-3 py-2 text-sm rounded-md hover:bg-white/10 text-white transition-colors",children:[e.jsx(I,{className:"w-4 h-4"})," ",c("songlist.menu.goToRadio")]}),e.jsx("button",{onClick:s=>{s.stopPropagation(),o(()=>E(t))},className:"text-left px-3 py-2 text-sm rounded-md hover:bg-white/10 text-white transition-colors",children:c("songlist.menu.playNext")}),e.jsx("button",{onClick:s=>{s.stopPropagation(),o(()=>L([t]))},className:"text-left px-3 py-2 text-sm rounded-md hover:bg-white/10 text-white transition-colors",children:c("songlist.menu.addToQueue")}),e.jsx("hr",{className:"border-t border-white/10 my-1"}),e.jsx("p",{className:"px-3 py-1.5 text-xs text-gray-400 font-bold uppercase tracking-wider",children:c("player.addToPlaylist")}),e.jsxs("div",{className:"max-h-48 overflow-y-auto custom-scrollbar",children:[e.jsx("button",{onClick:s=>{s.stopPropagation(),o(()=>_(t))},className:"w-full text-left px-3 py-2 text-sm rounded-md hover:bg-white/10 text-white transition-colors",children:c("player.newPlaylist")}),z.map(s=>e.jsx("button",{onClick:a=>{a.stopPropagation(),o(()=>U(s.id,t))},className:"w-full text-left px-3 py-2 text-sm rounded-md hover:bg-white/10 truncate text-white transition-colors",children:s.name},s.id))]})]})}),e.jsx("p",{className:"text-sm text-gray-400 w-12 text-right hidden sm:block font-variant-numeric tabular-nums",children:ee(t.duration)})]})]})}),re=t=>{const{songs:r,...i}=t,{t:h}=S();return!r||r.length===0?e.jsx("p",{className:"text-gray-400 p-8 text-center",children:h("songlist.noSongs")}):e.jsx("div",{className:"space-y-1",children:r.map((l,m)=>e.jsx(te,{song:l,index:m,songs:r,...i},l.id+m))})};export{re as S};
+import {
+  u as S,
+  j as e,
+  R as M,
+  r as d,
+  P as D,
+  U as O,
+  M as Q,
+  S as G,
+  C as J,
+} from "./index-Jbwo0tuu.js";
+const F = (t) =>
+    e.jsx("svg", {
+      ...t,
+      xmlns: "http://www.w3.org/2000/svg",
+      viewBox: "0 0 24 24",
+      fill: "currentColor",
+      children: e.jsx("path", { d: "M5 3l14 9-14 9V3z" }),
+    }),
+  K = (t) =>
+    e.jsxs("svg", {
+      ...t,
+      xmlns: "http://www.w3.org/2000/svg",
+      viewBox: "0 0 24 24",
+      fill: "currentColor",
+      children: [
+        e.jsx("rect", { x: "6", y: "4", width: "4", height: "16", rx: "2" }),
+        e.jsx("rect", { x: "14", y: "4", width: "4", height: "16", rx: "2" }),
+      ],
+    }),
+  X = (t) =>
+    e.jsx("svg", {
+      ...t,
+      xmlns: "http://www.w3.org/2000/svg",
+      viewBox: "0 0 24 24",
+      fill: "none",
+      stroke: "currentColor",
+      strokeWidth: 2.5,
+      strokeLinecap: "round",
+      strokeLinejoin: "round",
+      children: e.jsx("path", {
+        d: "M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z",
+      }),
+    }),
+  Y = (t) =>
+    e.jsxs("svg", {
+      ...t,
+      xmlns: "http://www.w3.org/2000/svg",
+      viewBox: "0 0 24 24",
+      fill: "none",
+      stroke: "currentColor",
+      strokeWidth: 2.5,
+      strokeLinecap: "round",
+      strokeLinejoin: "round",
+      children: [
+        e.jsx("polyline", { points: "3 6 5 6 21 6" }),
+        e.jsx("path", {
+          d: "M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2",
+        }),
+      ],
+    }),
+  Z = (t) =>
+    e.jsxs("svg", {
+      ...t,
+      xmlns: "http://www.w3.org/2000/svg",
+      viewBox: "0 0 24 24",
+      fill: "none",
+      stroke: "currentColor",
+      strokeWidth: 2.5,
+      strokeLinecap: "round",
+      strokeLinejoin: "round",
+      children: [
+        e.jsx("circle", { cx: "12", cy: "12", r: "1" }),
+        e.jsx("circle", { cx: "19", cy: "12", r: "1" }),
+        e.jsx("circle", { cx: "5", cy: "12", r: "1" }),
+      ],
+    }),
+  I = (t) =>
+    e.jsxs("svg", {
+      ...t,
+      xmlns: "http://www.w3.org/2000/svg",
+      viewBox: "0 0 24 24",
+      fill: "none",
+      stroke: "currentColor",
+      strokeWidth: 2.5,
+      strokeLinecap: "round",
+      strokeLinejoin: "round",
+      children: [
+        e.jsx("circle", { cx: "12", cy: "12", r: "2" }),
+        e.jsx("path", {
+          d: "M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14",
+        }),
+      ],
+    }),
+  ee = (t) => {
+    if (t === null) return "-:--";
+    const r = Math.floor(t / 60),
+      i = Math.floor(t % 60);
+    return `${r}:${i < 10 ? "0" : ""}${i}`;
+  },
+  te = M.memo(
+    ({
+      song: t,
+      index: r,
+      songs: i,
+      playlistId: h,
+      context: l,
+      navigateToArtist: m,
+      onInteraction: n,
+      navigateToPlaylist: g,
+    }) => {
+      var N, k, C, P;
+      const {
+          playSong: j,
+          addSongNext: E,
+          addSongsToEnd: L,
+          playRadio: A,
+          currentSong: p,
+          isPlaying: $,
+        } = d.useContext(D),
+        {
+          isFavoriteSong: R,
+          toggleFavoriteSong: B,
+          removeSongFromPlaylist: T,
+          playlists: z,
+          createPlaylist: W,
+          addSongToPlaylist: U,
+        } = d.useContext(O),
+        { showModal: V, hideModal: v } = d.useContext(Q),
+        { t: c } = S(),
+        [f, u] = d.useState(!1),
+        y = d.useRef(null),
+        x = (p == null ? void 0 : p.id) === t.id,
+        b = () => {
+          (n == null || n(), l.type === "search" ? j(t, [t], l) : j(t, i, l));
+        },
+        o = (s) => {
+          (n == null || n(), s(), u(!1));
+        },
+        _ = (s) => {
+          V({
+            title: c("modals.createPlaylist.title"),
+            content: e.jsx(J, {
+              initialSong: s,
+              onCancel: v,
+              onConfirm: (a, w) => {
+                const q = W(a, w, [s]);
+                (v(), g && g(q.id));
+              },
+            }),
+          });
+        },
+        H =
+          ((k =
+            (N = t.image) == null
+              ? void 0
+              : N.find((s) => s.quality === "50x50")) == null
+            ? void 0
+            : k.url) ||
+          ((P = (C = t.image) == null ? void 0 : C[0]) == null
+            ? void 0
+            : P.url);
+      return e.jsxs("div", {
+        onMouseLeave: () => u(!1),
+        className: `group flex items-center p-3 rounded-xl transition-all duration-200 border border-transparent ${x ? "bg-white/10 border-white/5" : "hover:bg-white/5 hover:border-white/5"} cursor-pointer`,
+        children: [
+          e.jsx("div", {
+            className: `w-8 text-center mr-4 flex-shrink-0 font-medium ${x ? "text-[#3A8FE0]" : "text-gray-500 group-hover:hidden"}`,
+            children: x
+              ? $
+                ? e.jsx(K, { className: "w-4 h-4 mx-auto text-[#3A8FE0]" })
+                : e.jsx(F, { className: "w-4 h-4 mx-auto text-[#3A8FE0]" })
+              : r + 1,
+          }),
+          e.jsx("button", {
+            onClick: b,
+            className: `w-8 h-8 items-center justify-center rounded-full text-white mr-4 flex-shrink-0 bg-[#3A8FE0] shadow-lg shadow-[#3A8FE0]/30 ${x ? "hidden" : "hidden group-hover:flex animate-in zoom-in"}`,
+            children: e.jsx(F, { className: "w-4 h-4 ml-0.5" }),
+          }),
+          e.jsx("img", {
+            src: H,
+            alt: t.name,
+            className: `w-12 h-12 rounded-lg mr-4 flex-shrink-0 object-cover shadow-sm transition-transform duration-300 ${x ? "scale-105 shadow-[#3A8FE0]/20" : "group-hover:scale-105"}`,
+            loading: "lazy",
+          }),
+          e.jsxs("div", {
+            className: "flex-1 min-w-0",
+            onClick: b,
+            children: [
+              e.jsx("p", {
+                className: `font-semibold leading-snug line-clamp-1 ${x ? "text-[#3A8FE0]" : "text-white"}`,
+                title: t.name,
+                children: t.name,
+              }),
+              e.jsx("p", {
+                className: "text-sm text-gray-400 truncate leading-snug",
+                children: t.artists.primary.map((s, a) =>
+                  e.jsxs(
+                    M.Fragment,
+                    {
+                      children: [
+                        e.jsx("span", {
+                          onClick: (w) => {
+                            (w.stopPropagation(), m(s.id));
+                          },
+                          className:
+                            "hover:text-white hover:underline cursor-pointer transition-colors",
+                          children: s.name,
+                        }),
+                        a < t.artists.primary.length - 1 && ", ",
+                      ],
+                    },
+                    s.id,
+                  ),
+                ),
+              }),
+            ],
+          }),
+          e.jsxs("div", {
+            className: "flex items-center space-x-2 ml-4 relative",
+            children: [
+              e.jsx("button", {
+                onClick: (s) => {
+                  (s.stopPropagation(), o(() => B(t)));
+                },
+                className:
+                  "text-gray-400 hover:text-[#3A8FE0] p-2 rounded-full hover:bg-white/10 transition-colors",
+                children: e.jsx(X, {
+                  className: `w-5 h-5 transition-transform active:scale-125 ${R(t.id) ? "fill-[#3A8FE0] text-[#3A8FE0] drop-shadow-[0_0_5px_rgba(58,143,224,0.5)]" : ""}`,
+                }),
+              }),
+              h &&
+                e.jsx("button", {
+                  onClick: (s) => {
+                    (s.stopPropagation(), o(() => T(h, t.id)));
+                  },
+                  className:
+                    "text-gray-400 hover:text-red-500 p-2 rounded-full hover:bg-white/10 transition-colors",
+                  children: e.jsx(Y, { className: "w-5 h-5" }),
+                }),
+              e.jsx("button", {
+                ref: y,
+                onClick: (s) => {
+                  (s.stopPropagation(), u((a) => !a));
+                },
+                className: `p-2 rounded-full hover:bg-white/10 transition-colors ${f ? "text-white bg-white/10" : "text-gray-400 hover:text-white"}`,
+                children: e.jsx(Z, { className: "w-5 h-5" }),
+              }),
+              e.jsx(G, {
+                isOpen: f,
+                onClose: () => u(!1),
+                triggerRef: y,
+                children: e.jsxs("div", {
+                  className: "flex flex-col py-1",
+                  children: [
+                    e.jsxs("button", {
+                      onClick: (s) => {
+                        (s.stopPropagation(), o(() => A(t)));
+                      },
+                      className:
+                        "flex items-center gap-2 text-left px-3 py-2 text-sm rounded-md hover:bg-white/10 text-white transition-colors",
+                      children: [
+                        e.jsx(I, { className: "w-4 h-4" }),
+                        " ",
+                        c("songlist.menu.goToRadio"),
+                      ],
+                    }),
+                    e.jsx("button", {
+                      onClick: (s) => {
+                        (s.stopPropagation(), o(() => E(t)));
+                      },
+                      className:
+                        "text-left px-3 py-2 text-sm rounded-md hover:bg-white/10 text-white transition-colors",
+                      children: c("songlist.menu.playNext"),
+                    }),
+                    e.jsx("button", {
+                      onClick: (s) => {
+                        (s.stopPropagation(), o(() => L([t])));
+                      },
+                      className:
+                        "text-left px-3 py-2 text-sm rounded-md hover:bg-white/10 text-white transition-colors",
+                      children: c("songlist.menu.addToQueue"),
+                    }),
+                    e.jsx("hr", { className: "border-t border-white/10 my-1" }),
+                    e.jsx("p", {
+                      className:
+                        "px-3 py-1.5 text-xs text-gray-400 font-bold uppercase tracking-wider",
+                      children: c("player.addToPlaylist"),
+                    }),
+                    e.jsxs("div", {
+                      className: "max-h-48 overflow-y-auto custom-scrollbar",
+                      children: [
+                        e.jsx("button", {
+                          onClick: (s) => {
+                            (s.stopPropagation(), o(() => _(t)));
+                          },
+                          className:
+                            "w-full text-left px-3 py-2 text-sm rounded-md hover:bg-white/10 text-white transition-colors",
+                          children: c("player.newPlaylist"),
+                        }),
+                        z.map((s) =>
+                          e.jsx(
+                            "button",
+                            {
+                              onClick: (a) => {
+                                (a.stopPropagation(), o(() => U(s.id, t)));
+                              },
+                              className:
+                                "w-full text-left px-3 py-2 text-sm rounded-md hover:bg-white/10 truncate text-white transition-colors",
+                              children: s.name,
+                            },
+                            s.id,
+                          ),
+                        ),
+                      ],
+                    }),
+                  ],
+                }),
+              }),
+              e.jsx("p", {
+                className:
+                  "text-sm text-gray-400 w-12 text-right hidden sm:block font-variant-numeric tabular-nums",
+                children: ee(t.duration),
+              }),
+            ],
+          }),
+        ],
+      });
+    },
+  ),
+  re = (t) => {
+    const { songs: r, ...i } = t,
+      { t: h } = S();
+    return !r || r.length === 0
+      ? e.jsx("p", {
+          className: "text-gray-400 p-8 text-center",
+          children: h("songlist.noSongs"),
+        })
+      : e.jsx("div", {
+          className: "space-y-1",
+          children: r.map((l, m) =>
+            e.jsx(te, { song: l, index: m, songs: r, ...i }, l.id + m),
+          ),
+        });
+  };
+export { re as S };

@@ -1,9 +1,15 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en" style="--ui-scale: 1.33">
   <head>
-    <base href="https://cdn.jsdelivr.net/gh/genizy/google-class@main/shapezio/">
+    <base
+      href="https://cdn.jsdelivr.net/gh/genizy/google-class@main/shapezio/"
+    />
     <title>shapez Demo - Factory Automation Game</title>
-    <link rel="icon" type="image/x-icon" href="/warning-hazard-sign-on-transparent-background-free-png.ico" />
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="/warning-hazard-sign-on-transparent-background-free-png.ico"
+    />
     <link
       rel="stylesheet"
       type="text/css"
@@ -303,7 +309,7 @@
 
           if (
             ("" + event).indexOf(
-              "Cannot read property 'postMessage' of null"
+              "Cannot read property 'postMessage' of null",
             ) >= 0
           ) {
             console.warn("Safari can not read post message error:", event);
@@ -379,7 +385,7 @@
           console.log(
             "👀 Core responded at",
             Math.floor(performance.now()),
-            "ms"
+            "ms",
           );
           clearTimeout(loadTimeout);
           loadTimeout = null;
@@ -418,7 +424,7 @@
           xhr.onloadend = function () {
             if (!xhr.status.toString().match(/^2/)) {
               throw new Error(
-                "Failed to load bundle: " + xhr.status + " " + xhr.statusText
+                "Failed to load bundle: " + xhr.status + " " + xhr.statusText,
               );
             } else {
               if (!notifiedNotComputable) {
@@ -451,7 +457,7 @@
     </script>
   </head>
 
-  <body oncontextmenu="return!1" style="background: #393747">
+  <body oncontextmenu="return !1;" style="background: #393747">
     <div id="ll_fp">_</div>
     <div id="ll_p">
       <div id="ll_logo">

@@ -1,11 +1,20 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en-us">
   <head>
-    <base href="https://cdn.jsdelivr.net/gh/genizy/web-port@main/undertale-yellow/">
+    <base
+      href="https://cdn.jsdelivr.net/gh/genizy/web-port@main/undertale-yellow/"
+    />
     <meta charset="utf-8" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <meta name="viewport" content="viewport-fit=cover, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0" />
-    <link rel="icon" type="image/x-icon" href="/warning-hazard-sign-on-transparent-background-free-png.ico" />
+    <meta
+      name="viewport"
+      content="viewport-fit=cover, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"
+    />
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="/warning-hazard-sign-on-transparent-background-free-png.ico"
+    />
     <title>UNDERTALE YELLOW</title>
     <style>
       @-webkit-keyframes rotation {
@@ -49,7 +58,7 @@
       }
 
       html {
-        background: #FFFFFF;
+        background: #ffffff;
       }
 
       body {
@@ -66,11 +75,11 @@
           transparent 0%,
           transparent 100%
         );
-		background-color: black;
+        background-color: black;
         display: flex;
         flex-direction: column;
         overflow-x: hidden;
-		place-items: center;
+        place-items: center;
       }
 
       body.scrollingDisabled {
@@ -84,7 +93,7 @@
 
       div.emscripten {
         text-align: center;
-		font-family: "Lucida Console", Monaco, monospace;
+        font-family: "Lucida Console", Monaco, monospace;
       }
 
       /* the canvas *must not* have any border or padding, or mouse coords will be wrong */
@@ -96,12 +105,12 @@
         -webkit-transition: opacity 5s ease-in;
         opacity: 0;
         filter: blur(0) grayscale(0);
-        image-rendering: optimizeSpeed;             /* Older versions of FF          */
-        image-rendering: -moz-crisp-edges;          /* FF 6.0+                       */
+        image-rendering: optimizeSpeed; /* Older versions of FF          */
+        image-rendering: -moz-crisp-edges; /* FF 6.0+                       */
         image-rendering: -webkit-optimize-contrast; /* Safari                        */
-        image-rendering: -o-crisp-edges;            /* OS X & Windows Opera (12.02+) */
-        image-rendering: pixelated;                 /* Awesome future-browsers       */
-        -ms-interpolation-mode: nearest-neighbor;   /* IE                            */
+        image-rendering: -o-crisp-edges; /* OS X & Windows Opera (12.02+) */
+        image-rendering: pixelated; /* Awesome future-browsers       */
+        -ms-interpolation-mode: nearest-neighbor; /* IE                            */
       }
 
       canvas.active {
@@ -121,7 +130,9 @@
       }
 
       canvas.animatedSizeTransitions {
-        transition: width 0.3s ease, height 0.3s ease;
+        transition:
+          width 0.3s ease,
+          height 0.3s ease;
       }
 
       @keyframes fadeIn {
@@ -216,8 +227,8 @@
         cursor: pointer;
         background-color: black;
         color: white;
-		outline-color: #20c20e;
-		outline-style: dashed;
+        outline-color: #20c20e;
+        outline-style: dashed;
         font-family: "Lucida Console", Monaco, monospace;
       }
 
@@ -255,9 +266,9 @@
       }
 
       img.qrCode {
-         opacity: 1.0;
-         width: 50%;
-         height: 50%;
+        opacity: 1;
+        width: 50%;
+        height: 50%;
       }
 
       #pauseMenuContainer {
@@ -277,7 +288,7 @@
       }
 
       #pauseMenuBorder {
-        background: linear-gradient(135deg, #FA1E4E, transparent 40%);
+        background: linear-gradient(135deg, #fa1e4e, transparent 40%);
         padding: 1px;
         border-radius: 4px;
         clip-path: polygon(10.5px 0, 100% 0, 100% 100%, 0 100%, 0 10.5px);
@@ -289,7 +300,12 @@
         display: flex;
         flex-direction: column;
         padding: 60px 30px 60px 30px;
-        background: linear-gradient(180deg, #2E273F 16.15%, rgba(46, 39, 63, 0.79) 56.25%, #2E273F 91.15%);
+        background: linear-gradient(
+          180deg,
+          #2e273f 16.15%,
+          rgba(46, 39, 63, 0.79) 56.25%,
+          #2e273f 91.15%
+        );
         border-radius: 4px;
         clip-path: polygon(10px 0, 100% 0, 100% 100%, 0 100%, 0 10px);
         animation-name: fadeIn;
@@ -301,8 +317,8 @@
         font-weight: 500;
         font-size: 17px;
         color: white;
-        background: #FA1E4E;
-        border: 1px solid #FA1E4E;
+        background: #fa1e4e;
+        border: 1px solid #fa1e4e;
         border-radius: 6px;
         padding: 12px 24px;
         margin: 5px 0;
@@ -311,7 +327,7 @@
       }
 
       #pauseMenu button#quitButton {
-        background: #FA1E4E40;
+        background: #fa1e4e40;
       }
 
       #pauseMenu button:hover {
@@ -338,14 +354,10 @@
     <div id="pauseMenuContainer" hidden>
       <div id="pauseMenuBorder">
         <div id="pauseMenu">
-          <button id="resumeButton" onclick="resume()">
-            Resume
-          </button>
-          <button id="quitButton" onclick="quitIfSupported()">
-            Quit
-          </button>
+          <button id="resumeButton" onclick="resume()">Resume</button>
+          <button id="quitButton" onclick="quitIfSupported()">Quit</button>
         </div>
-        </div>
+      </div>
     </div>
     <div class="loading">
       <div class="spinner" id="spinner"></div>
@@ -355,72 +367,76 @@
     </div>
 
     <div id="message-container">
-      <div id="messages">
-      </div>
+      <div id="messages"></div>
     </div>
     <script>
       function mergeFiles(fileParts) {
-          return new Promise((resolve, reject) => {
-              let buffers = [];
-  
-              function fetchPart(index) {
-                  if (index >= fileParts.length) {
-                      let mergedBlob = new Blob(buffers);
-                      let mergedFileUrl = URL.createObjectURL(mergedBlob);
-                      resolve(mergedFileUrl);
-                      return;
-                  }
-                  fetch(fileParts[index]).then((response) => response.arrayBuffer()).then((data) => {
-                      buffers.push(data);
-                      fetchPart(index + 1);
-                  }).catch(reject);
-              }
-              fetchPart(0);
-          });
-      }
-  
-      function getParts(file, start, end) {
-          let parts = [];
-          for (let i = start; i <= end; i++) {
-              parts.push(file + ".part" + i);
+        return new Promise((resolve, reject) => {
+          let buffers = [];
+
+          function fetchPart(index) {
+            if (index >= fileParts.length) {
+              let mergedBlob = new Blob(buffers);
+              let mergedFileUrl = URL.createObjectURL(mergedBlob);
+              resolve(mergedFileUrl);
+              return;
+            }
+            fetch(fileParts[index])
+              .then((response) => response.arrayBuffer())
+              .then((data) => {
+                buffers.push(data);
+                fetchPart(index + 1);
+              })
+              .catch(reject);
           }
-          return parts;
+          fetchPart(0);
+        });
       }
-  
-      mergeFiles(getParts("game.unx", 1, 12)).then(async url => {
+
+      function getParts(file, start, end) {
+        let parts = [];
+        for (let i = start; i <= end; i++) {
+          parts.push(file + ".part" + i);
+        }
+        return parts;
+      }
+
+      mergeFiles(getParts("game.unx", 1, 12))
+        .then(async (url) => {
           window.gameUnxUrl = url;
-  
+
           const originalFetch = window.fetch;
           window.fetch = async function (...args) {
-              let [url, options] = args;
-              if (typeof url === 'string' && url.includes("game.unx")) {
-                  console.log("fetch:", url);
-                  url = window.gameUnxUrl;
-              } else if (url instanceof Request && url.url.includes("game.unx")) {
-                  console.log("fetch request:", url.url);
-                  url = new Request(window.gameUnxUrl, url);
-              }
-              return originalFetch.call(this, url, options);
+            let [url, options] = args;
+            if (typeof url === "string" && url.includes("game.unx")) {
+              console.log("fetch:", url);
+              url = window.gameUnxUrl;
+            } else if (url instanceof Request && url.url.includes("game.unx")) {
+              console.log("fetch request:", url.url);
+              url = new Request(window.gameUnxUrl, url);
+            }
+            return originalFetch.call(this, url, options);
           };
-  
+
           const originalOpen = XMLHttpRequest.prototype.open;
           XMLHttpRequest.prototype.open = function (method, url, ...rest) {
-              if (url.includes("game.unx")) {
-                  console.log("XHR:", url);
-                  url = window.gameUnxUrl;
-              }
-              return originalOpen.call(this, method, url, ...rest);
+            if (url.includes("game.unx")) {
+              console.log("XHR:", url);
+              url = window.gameUnxUrl;
+            }
+            return originalOpen.call(this, method, url, ...rest);
           };
           let index = document.createElement("script");
           index.src = "index.js";
           document.body.appendChild(index);
-  
+
           let runner = document.createElement("script");
           runner.src = "runner.js";
           document.body.appendChild(runner);
-      }).catch(error => {
+        })
+        .catch((error) => {
           console.error("Failed to merge files:", error);
-      });
-  </script>      
+        });
+    </script>
   </body>
 </html>

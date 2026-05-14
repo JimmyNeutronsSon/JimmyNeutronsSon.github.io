@@ -1,27 +1,37 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en-us">
   <head>
-    <meta charset="utf-8">
-    <base href="https://cdn.jsdelivr.net/gh/bubbls/ports@main/midnight-shift/">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta charset="utf-8" />
+    <base
+      href="https://cdn.jsdelivr.net/gh/bubbls/ports@main/midnight-shift/"
+    />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>Unity WebGL Player | Midnight Shift 1.2</title>
-    <link rel="icon" type="image/x-icon" href="/warning-hazard-sign-on-transparent-background-free-png.ico" />
-    <link rel="stylesheet" href="TemplateData/style.css">
-        <script>
-    window.fileMergerConfig = {
-      files: [
-        { name: 'cool.data.unityweb', parts: 2 },
-        { name: 'cool.asm.code.unityweb', parts: 2 }, 
-      ],
-      basePath: 'Build/',
-      debug: true
-    };
-  </script>
-  <script src="merge.js" ></script>
-    <script src="TemplateData/UnityProgress.js"></script>  
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="/warning-hazard-sign-on-transparent-background-free-png.ico"
+    />
+    <link rel="stylesheet" href="TemplateData/style.css" />
+    <script>
+      window.fileMergerConfig = {
+        files: [
+          { name: "cool.data.unityweb", parts: 2 },
+          { name: "cool.asm.code.unityweb", parts: 2 },
+        ],
+        basePath: "Build/",
+        debug: true,
+      };
+    </script>
+    <script src="merge.js"></script>
+    <script src="TemplateData/UnityProgress.js"></script>
     <script src="Build/UnityLoader.js"></script>
     <script>
-      var gameInstance = UnityLoader.instantiate("gameContainer", "Build/cool.json", {onProgress: UnityProgress});
+      var gameInstance = UnityLoader.instantiate(
+        "gameContainer",
+        "Build/cool.json",
+        { onProgress: UnityProgress },
+      );
     </script>
   </head>
   <body>
@@ -32,7 +42,7 @@
           overflow: hidden;
         }
       </style>
-      <div id="gameContainer" style="width: 100vw; height: 100vh;"></div>
+      <div id="gameContainer" style="width: 100vw; height: 100vh"></div>
       <div id="gameContainer" style="width: 896px; height: 504px"></div>
       <div class="footer">
         <div class="webgl-logo"></div>

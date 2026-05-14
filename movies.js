@@ -13,8 +13,7 @@
     vidsrc: {
       name: "VidSrc",
       movie: (id) => `https://vidlink.pro/movie/${id}`,
-      tv: (id, season, ep) =>
-        `https://vidlink.pro/tv/${id}/${season}/${ep}`,
+      tv: (id, season, ep) => `https://vidlink.pro/tv/${id}/${season}/${ep}`,
     },
     vidsrcme: {
       name: "VidSrcMe",
@@ -163,10 +162,11 @@
     return `
       <article class="movies-card" data-type="${type}" data-id="${item.id}">
         <div class="movies-card-poster-wrap">
-          ${poster
-        ? `<img src="${poster}" alt="" class="movies-card-poster" loading="lazy" width="150" height="225" />`
-        : `<div class="movies-card-poster movies-card-poster--empty"></div>`
-      }
+          ${
+            poster
+              ? `<img src="${poster}" alt="" class="movies-card-poster" loading="lazy" width="150" height="225" />`
+              : `<div class="movies-card-poster movies-card-poster--empty"></div>`
+          }
           <div class="movies-card-hover">
             <span class="movies-card-play" aria-hidden="true">▶</span>
           </div>
@@ -202,9 +202,10 @@
         return `
         <a href="#" class="movies-top10-item" data-type="movie" data-id="${item.id}">
           <span class="movies-top10-rank">${i + 1}</span>
-          ${poster
-            ? `<img src="${poster}" alt="" width="120" height="180" loading="lazy" />`
-            : `<div class="movies-top10-ph"></div>`
+          ${
+            poster
+              ? `<img src="${poster}" alt="" width="120" height="180" loading="lazy" />`
+              : `<div class="movies-top10-ph"></div>`
           }
           <span class="movies-top10-title">${title}</span>
         </a>`;
@@ -421,7 +422,7 @@
     seasonTabs.innerHTML = "";
     episodeGrid.innerHTML = "";
 
-    const seasons = (tvData.seasons || []).filter(s => s.season_number >= 1);
+    const seasons = (tvData.seasons || []).filter((s) => s.season_number >= 1);
     if (seasons.length === 0) {
       epSelector.hidden = true;
       return;
@@ -437,7 +438,7 @@
       tab.textContent = season.name || `S${season.season_number}`;
       tab.dataset.seasonNum = season.season_number;
       tab.addEventListener("click", () => {
-        $$(".season-tab").forEach(t => t.classList.remove("active"));
+        $$(".season-tab").forEach((t) => t.classList.remove("active"));
         tab.classList.add("active");
         loadEpisodes(tvData.id, season.season_number, episodeGrid, 3);
       });
@@ -451,39 +452,47 @@
   }
 
   async function loadEpisodes(tvId, seasonNum, container, retryCount = 3) {
-    container.innerHTML = "<p style='padding:1rem;color:#fff;'>Loading episodes...</p>";
+    container.innerHTML =
+      "<p style='padding:1rem;color:#fff;'>Loading episodes...</p>";
     try {
       const data = await api(`/api/tmdb/tv/${tvId}/season/${seasonNum}`);
       const eps = data.episodes || [];
       if (!eps.length) {
-        container.innerHTML = "<p style='padding:1rem;color:#fff;'>No episodes found.</p>";
+        container.innerHTML =
+          "<p style='padding:1rem;color:#fff;'>No episodes found.</p>";
         return;
       }
-      container.innerHTML = eps.map(ep => {
-        const epImg = imgUrl(ep.still_path, "w300");
-        const fallback = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='169' viewBox='0 0 300 169' fill='%23222'%3E%3C/svg%3E";
-        return `
+      container.innerHTML = eps
+        .map((ep) => {
+          const epImg = imgUrl(ep.still_path, "w300");
+          const fallback =
+            "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='169' viewBox='0 0 300 169' fill='%23222'%3E%3C/svg%3E";
+          return `
           <button type="button" class="episode-btn" data-season="${seasonNum}" data-ep="${ep.episode_number}">
             <div class="ep-img">
               <img src="${epImg || fallback}" alt="Episode ${ep.episode_number}" loading="lazy" width="300" height="169"/>
             </div>
             <div class="ep-info">
-              <span class="ep-num">${ep.episode_number}. ${escapeHtml(ep.name || 'Episode ' + ep.episode_number)}</span>
+              <span class="ep-num">${ep.episode_number}. ${escapeHtml(ep.name || "Episode " + ep.episode_number)}</span>
               <span class="ep-date">${yearFromDate(ep.air_date)}</span>
             </div>
           </button>
         `;
-      }).join("");
+        })
+        .join("");
 
-      container.querySelectorAll(".episode-btn").forEach(btn => {
+      container.querySelectorAll(".episode-btn").forEach((btn) => {
         btn.addEventListener("click", () => {
-          container.querySelectorAll(".episode-btn").forEach(b => b.classList.remove("active"));
+          container
+            .querySelectorAll(".episode-btn")
+            .forEach((b) => b.classList.remove("active"));
           btn.classList.add("active");
           playEpisode(tvId, btn.dataset.season, btn.dataset.ep);
         });
       });
     } catch (e) {
-      container.innerHTML = "<p style='padding:1rem;color:#fff;'>Failed to load episodes.</p>";
+      container.innerHTML =
+        "<p style='padding:1rem;color:#fff;'>Failed to load episodes.</p>";
     }
   }
 

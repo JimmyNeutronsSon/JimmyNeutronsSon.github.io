@@ -1,13 +1,20 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en-us">
   <head>
-    <base href="https://cdn.jsdelivr.net/gh/web-ports/scoutdingo@main/">
+    <base href="https://cdn.jsdelivr.net/gh/web-ports/scoutdingo@main/" />
     <meta charset="utf-8" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <meta name="viewport" content="viewport-fit=cover, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0" />
-	<!-- For Favicons -->
-    <link rel="icon" type="image/x-icon" href="/warning-hazard-sign-on-transparent-background-free-png.ico" />
-	<!-- For Page Title -->
+    <meta
+      name="viewport"
+      content="viewport-fit=cover, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"
+    />
+    <!-- For Favicons -->
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="/warning-hazard-sign-on-transparent-background-free-png.ico"
+    />
+    <!-- For Page Title -->
     <title>Pizza Tower: Scoutdigo Mod</title>
     <style>
       @-webkit-keyframes rotation {
@@ -51,7 +58,7 @@
       }
 
       html {
-        background: #FFFFFF;
+        background: #ffffff;
       }
 
       body {
@@ -68,11 +75,11 @@
           transparent 0%,
           transparent 100%
         );
-		background-color: black;
+        background-color: black;
         display: flex;
         flex-direction: column;
         overflow-x: hidden;
-		place-items: center;
+        place-items: center;
       }
 
       body.scrollingDisabled {
@@ -86,7 +93,7 @@
 
       div.emscripten {
         text-align: center;
-		font-family: "Lucida Console", Monaco, monospace;
+        font-family: "Lucida Console", Monaco, monospace;
       }
 
       /* the canvas *must not* have any border or padding, or mouse coords will be wrong */
@@ -98,12 +105,12 @@
         -webkit-transition: opacity 5s ease-in;
         opacity: 0;
         filter: blur(0) grayscale(0);
-        image-rendering: optimizeSpeed;             /* Older versions of FF          */
-        image-rendering: -moz-crisp-edges;          /* FF 6.0+                       */
+        image-rendering: optimizeSpeed; /* Older versions of FF          */
+        image-rendering: -moz-crisp-edges; /* FF 6.0+                       */
         image-rendering: -webkit-optimize-contrast; /* Safari                        */
-        image-rendering: -o-crisp-edges;            /* OS X & Windows Opera (12.02+) */
-        image-rendering: pixelated;                 /* Awesome future-browsers       */
-        -ms-interpolation-mode: nearest-neighbor;   /* IE                            */
+        image-rendering: -o-crisp-edges; /* OS X & Windows Opera (12.02+) */
+        image-rendering: pixelated; /* Awesome future-browsers       */
+        -ms-interpolation-mode: nearest-neighbor; /* IE                            */
       }
 
       canvas.active {
@@ -123,7 +130,9 @@
       }
 
       canvas.animatedSizeTransitions {
-        transition: width 0.3s ease, height 0.3s ease;
+        transition:
+          width 0.3s ease,
+          height 0.3s ease;
       }
 
       @keyframes fadeIn {
@@ -218,8 +227,8 @@
         cursor: pointer;
         background-color: black;
         color: white;
-		outline-color: #20c20e;
-		outline-style: dashed;
+        outline-color: #20c20e;
+        outline-style: dashed;
         font-family: "Lucida Console", Monaco, monospace;
       }
 
@@ -257,9 +266,9 @@
       }
 
       img.qrCode {
-         opacity: 1.0;
-         width: 50%;
-         height: 50%;
+        opacity: 1;
+        width: 50%;
+        height: 50%;
       }
 
       #pauseMenuContainer {
@@ -279,7 +288,7 @@
       }
 
       #pauseMenuBorder {
-        background: linear-gradient(135deg, #FA1E4E, transparent 40%);
+        background: linear-gradient(135deg, #fa1e4e, transparent 40%);
         padding: 1px;
         border-radius: 4px;
         clip-path: polygon(10.5px 0, 100% 0, 100% 100%, 0 100%, 0 10.5px);
@@ -291,7 +300,12 @@
         display: flex;
         flex-direction: column;
         padding: 60px 30px 60px 30px;
-        background: linear-gradient(180deg, #2E273F 16.15%, rgba(46, 39, 63, 0.79) 56.25%, #2E273F 91.15%);
+        background: linear-gradient(
+          180deg,
+          #2e273f 16.15%,
+          rgba(46, 39, 63, 0.79) 56.25%,
+          #2e273f 91.15%
+        );
         border-radius: 4px;
         clip-path: polygon(10px 0, 100% 0, 100% 100%, 0 100%, 0 10px);
         animation-name: fadeIn;
@@ -303,8 +317,8 @@
         font-weight: 500;
         font-size: 17px;
         color: white;
-        background: #FA1E4E;
-        border: 1px solid #FA1E4E;
+        background: #fa1e4e;
+        border: 1px solid #fa1e4e;
         border-radius: 6px;
         padding: 12px 24px;
         margin: 5px 0;
@@ -313,7 +327,7 @@
       }
 
       #pauseMenu button#quitButton {
-        background: #FA1E4E40;
+        background: #fa1e4e40;
       }
 
       #pauseMenu button:hover {
@@ -330,7 +344,18 @@
     </style>
   </head>
   <body>
-    <div id="loading-text" style="color: white; font-size: 48px; font-family: cursive; text-align: center; margin-top: 20px;"> LOADING... </div>
+    <div
+      id="loading-text"
+      style="
+        color: white;
+        font-size: 48px;
+        font-family: cursive;
+        text-align: center;
+        margin-top: 20px;
+      "
+    >
+      LOADING...
+    </div>
     <canvas
       class="emscripten"
       id="canvas"
@@ -341,14 +366,10 @@
     <div id="pauseMenuContainer" hidden>
       <div id="pauseMenuBorder">
         <div id="pauseMenu">
-          <button id="resumeButton" onclick="resume()">
-            Resume
-          </button>
-          <button id="quitButton" onclick="quitIfSupported()">
-            Quit
-          </button>
+          <button id="resumeButton" onclick="resume()">Resume</button>
+          <button id="quitButton" onclick="quitIfSupported()">Quit</button>
         </div>
-        </div>
+      </div>
     </div>
     <div class="loading">
       <div class="spinner" id="spinner"></div>
@@ -357,53 +378,95 @@
       <progress value="0" max="100" id="progress" hidden="1"></progress>
     </div>
     <div class="output-container" id="output-container">
-	  <!-- Stock Toggle Console Button -->
-      <button class="output-button" onclick="toggleConsole()" title="Lists Console Output and Loading Progress"+>
+      <!-- Stock Toggle Console Button -->
+      <button
+        class="output-button"
+        onclick="toggleConsole()"
+        title="Lists Console Output and Loading Progress"
+        +
+      >
         Toggle Console
       </button>
-	  <!-- Go to Github Repo Button -->
-      <button id="QRButton" class="output-button" onclick="togglegithub()" title="Sends you to My Github Repository of this Project"+>
+      <!-- Go to Github Repo Button -->
+      <button
+        id="QRButton"
+        class="output-button"
+        onclick="togglegithub()"
+        title="Sends you to My Github Repository of this Project"
+        +
+      >
         Visit Github Repo
       </button>
-	  <!-- CLear Site Cache Button -->
-      <button id="QR2Button" class="output-button" onclick="toggleclear_site_cache()" title="Fixes Crashes due to the Website being Updated, but also Deletes ALL Saves, so Continue with Caution"+>
+      <!-- CLear Site Cache Button -->
+      <button
+        id="QR2Button"
+        class="output-button"
+        onclick="toggleclear_site_cache()"
+        title="Fixes Crashes due to the Website being Updated, but also Deletes ALL Saves, so Continue with Caution"
+        +
+      >
         Clear Site Cache
       </button>
-		<!-- Enable FPS Counter Bookmarklet Button -->
-      <button class="output-button" id="stats-button" onclick="toggleFPS()" title="Enables External FPS Counter"+>
+      <!-- Enable FPS Counter Bookmarklet Button -->
+      <button
+        class="output-button"
+        id="stats-button"
+        onclick="toggleFPS()"
+        title="Enables External FPS Counter"
+        +
+      >
         Enable FPS Counter
       </button>
-	    <!-- Go to Web Port Website Button -->
-      <button class="output-button" id="share-button" onclick="togglewebports()" title="Sends you to My Personal Website with a List of All My Web Ports"+>
+      <!-- Go to Web Port Website Button -->
+      <button
+        class="output-button"
+        id="share-button"
+        onclick="togglewebports()"
+        title="Sends you to My Personal Website with a List of All My Web Ports"
+        +
+      >
         View All Web Ports
       </button>
-	    <!-- Join Discord Server Button -->
-	  <button class="output-button" onclick="togglejoin_discord()" title="Press to Join My Discord Server for Info and Updates"+>
+      <!-- Join Discord Server Button -->
+      <button
+        class="output-button"
+        onclick="togglejoin_discord()"
+        title="Press to Join My Discord Server for Info and Updates"
+        +
+      >
         Join Discord Server
       </button>
-	    <!-- Background Color Changer Button -->
-      <input id="colorpicker" type="color" onchange="changecolor(this)" title="Changes Color of the Website's Background"+>
+      <!-- Background Color Changer Button -->
+      <input
+        id="colorpicker"
+        type="color"
+        onchange="changecolor(this)"
+        title="Changes Color of the Website's Background"
+        +
+      />
       <textarea id="output" rows="8"></textarea>
     </div>
 
     <div id="message-container">
-      <div id="messages">
-      </div>
+      <div id="messages"></div>
     </div>
-	<!-- Ads Stuff for games that need it -->
-   <script async
-     data-ad-client="ca-pub-123"
-     data-ad-frequency-hint="30s"
-     data-adbreak-test="on"
-     src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js">
-   </script>
+    <!-- Ads Stuff for games that need it -->
+    <script
+      async
+      data-ad-client="ca-pub-123"
+      data-ad-frequency-hint="30s"
+      data-adbreak-test="on"
+      src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"
+    ></script>
 
-   <script>
-     window.adsbygoogle = window.adsbygoogle || [];
-     const adBreak =  adConfig = function(o) {adsbygoogle.push(o);}
-   </script>
-<script>
-        const loadingText = document.querySelector("#loading-text");
+    <script>
+      window.adsbygoogle = window.adsbygoogle || [];
+      const adBreak = (adConfig = function (o) {
+        adsbygoogle.push(o);
+      });
+    </script>
+    <script>
+      const loadingText = document.querySelector("#loading-text");
       let totalBytes = 315181892;
       let loadedBytes = 0;
 
@@ -467,42 +530,42 @@
         const gameunxs = [...gameunx];
         const [gameurl] = await Promise.all([mergeFiles(gameunxs)]);
 
-            window.gameUnxUrl = gameurl;
+        window.gameUnxUrl = gameurl;
 
-      const originalFetch = window.fetch;
-      window.fetch = async function (...args) {
+        const originalFetch = window.fetch;
+        window.fetch = async function (...args) {
           let [url, options] = args;
-          if (typeof url === 'string' && url.includes("game.unx")) {
-              console.log("fetch:", url);
-              url = window.gameUnxUrl;
+          if (typeof url === "string" && url.includes("game.unx")) {
+            console.log("fetch:", url);
+            url = window.gameUnxUrl;
           } else if (url instanceof Request && url.url.includes("game.unx")) {
-              console.log("fetch request:", url.url);
-              url = new Request(window.gameUnxUrl, url);
+            console.log("fetch request:", url.url);
+            url = new Request(window.gameUnxUrl, url);
           }
           return originalFetch.call(this, url, options);
-      };
+        };
 
-      const originalOpen = XMLHttpRequest.prototype.open;
-      XMLHttpRequest.prototype.open = function (method, url, ...rest) {
+        const originalOpen = XMLHttpRequest.prototype.open;
+        XMLHttpRequest.prototype.open = function (method, url, ...rest) {
           if (url.includes("game.unx")) {
-              console.log("XHR:", url);
-              url = window.gameUnxUrl;
+            console.log("XHR:", url);
+            url = window.gameUnxUrl;
           }
           return originalOpen.call(this, method, url, ...rest);
-      };
-      loadingText.remove();
-          var indexscript = document.createElement("script");
-  indexscript.src= "index.js";
-  indexscript.type="text/javascript";
+        };
+        loadingText.remove();
+        var indexscript = document.createElement("script");
+        indexscript.src = "index.js";
+        indexscript.type = "text/javascript";
 
-    var runnerscript = document.createElement("script");
-  runnerscript.src= "runner.js";
-  runnerscript.async= true;
-  runnerscript.type="text/javascript";
+        var runnerscript = document.createElement("script");
+        runnerscript.src = "runner.js";
+        runnerscript.async = true;
+        runnerscript.type = "text/javascript";
 
-  document.body.appendChild(indexscript);
-    document.body.appendChild(runnerscript);
+        document.body.appendChild(indexscript);
+        document.body.appendChild(runnerscript);
       })();
-  </script>
+    </script>
   </body>
 </html>

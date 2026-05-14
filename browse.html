@@ -1,20 +1,26 @@
 <!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Notes</title>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Notes</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="/warning-hazard-sign-on-transparent-background-free-png.ico"
+    />
+    <link rel="stylesheet" href="styles.css" />
 
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="icon" type="image/x-icon" href="/warning-hazard-sign-on-transparent-background-free-png.ico" />
-  <link rel="stylesheet" href="styles.css" />
-
-  <script src="/scram/scramjet.all.js"></script>
-  <script src="/baremux/index.js"></script>
-  <script type="importmap">
+    <script src="/scram/scramjet.all.js"></script>
+    <script src="/baremux/index.js"></script>
+    <script type="importmap">
       {
         "imports": {
           "three": "/lib/three.module.js",
@@ -23,481 +29,566 @@
       }
     </script>
 
-  <style>
-    :root {
-      --bg-primary: #f7faff;
-      --bg-secondary: #e8eff8;
-      --text-primary: #0b1e3d;
-      --text-secondary: #163a6b;
-      --text-muted: #8fa4c2;
-      --accent: #3a8fe0;
-      --accent-hover: #5ba4e5;
-      --border: #c5d3e8;
-      --header-bg: rgba(15, 25, 45, 0.95);
-      --tab-bg: rgba(255, 255, 255, 0.05);
-      --tab-active: rgba(255, 255, 255, 0.1);
-    }
+    <style>
+      :root {
+        --bg-primary: #f7faff;
+        --bg-secondary: #e8eff8;
+        --text-primary: #0b1e3d;
+        --text-secondary: #163a6b;
+        --text-muted: #8fa4c2;
+        --accent: #3a8fe0;
+        --accent-hover: #5ba4e5;
+        --border: #c5d3e8;
+        --header-bg: rgba(15, 25, 45, 0.95);
+        --tab-bg: rgba(255, 255, 255, 0.05);
+        --tab-active: rgba(255, 255, 255, 0.1);
+      }
 
-    body {
-      margin: 0;
-      padding: 0;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      background: var(--bg-primary);
-      font-family: "Inter", sans-serif;
-      overflow: hidden;
-    }
+      body {
+        margin: 0;
+        padding: 0;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        background: var(--bg-primary);
+        font-family: "Inter", sans-serif;
+        overflow: hidden;
+      }
 
-    .browser-header {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 10px 20px;
-      background: rgba(15, 25, 45, 0.7);
-      backdrop-filter: blur(30px);
-      -webkit-backdrop-filter: blur(30px);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-      gap: 20px;
-      z-index: 100;
-      height: 52px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-    }
+      .browser-header {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 10px 20px;
+        background: rgba(15, 25, 45, 0.7);
+        backdrop-filter: blur(30px);
+        -webkit-backdrop-filter: blur(30px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        gap: 20px;
+        z-index: 100;
+        height: 52px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      }
 
-    .header-central-group {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      max-width: 1200px;
-      width: 100%;
-      justify-content: center;
-    }
+      .header-central-group {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        max-width: 1200px;
+        width: 100%;
+        justify-content: center;
+      }
 
-    .nav-controls {
-      display: flex;
-      gap: 8px;
-    }
+      .nav-controls {
+        display: flex;
+        gap: 8px;
+      }
 
-    .nav-btn {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      color: #fff;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      transition: all 0.3s ease;
-    }
+      .nav-btn {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #fff;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        transition: all 0.3s ease;
+      }
 
-    .nav-btn:hover {
-      background: rgba(255, 255, 255, 0.15);
-      transform: scale(1.1);
-    }
+      .nav-btn:hover {
+        background: rgba(255, 255, 255, 0.15);
+        transform: scale(1.1);
+      }
 
-    .tabs-container {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      overflow-x: auto;
-      scrollbar-width: none;
-    }
+      .tabs-container {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        overflow-x: auto;
+        scrollbar-width: none;
+      }
 
-    .tabs-container::-webkit-scrollbar {
-      display: none;
-    }
+      .tabs-container::-webkit-scrollbar {
+        display: none;
+      }
 
-    .browser-tab {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 18px;
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 100px;
-      color: rgba(255, 255, 255, 0.7);
-      font-size: 13px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      white-space: nowrap;
-    }
+      .browser-tab {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 18px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 100px;
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 13px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        white-space: nowrap;
+      }
 
-    .browser-tab:hover {
-      background: rgba(255, 255, 255, 0.15);
-      color: #fff;
-    }
+      .browser-tab:hover {
+        background: rgba(255, 255, 255, 0.15);
+        color: #fff;
+      }
 
-    .browser-tab.active {
-      background: rgba(58, 143, 224, 0.2);
-      border-color: rgba(58, 143, 224, 0.4);
-      color: #fff;
-      box-shadow: 0 4px 15px rgba(58, 143, 224, 0.2);
-    }
+      .browser-tab.active {
+        background: rgba(58, 143, 224, 0.2);
+        border-color: rgba(58, 143, 224, 0.4);
+        color: #fff;
+        box-shadow: 0 4px 15px rgba(58, 143, 224, 0.2);
+      }
 
-    .address-bar-container {
-      max-width: 500px;
-      width: 100%;
-    }
+      .address-bar-container {
+        max-width: 500px;
+        width: 100%;
+      }
 
-    .address-form {
-      display: flex;
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      border-radius: 100px;
-      padding: 6px 20px;
-      align-items: center;
-      transition: all 0.3s ease;
-    }
+      .address-form {
+        display: flex;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 100px;
+        padding: 6px 20px;
+        align-items: center;
+        transition: all 0.3s ease;
+      }
 
-    .address-form:focus-within {
-      background: rgba(255, 255, 255, 0.15);
-      border-color: var(--accent);
-      box-shadow: 0 0 20px rgba(58, 143, 224, 0.3);
-    }
+      .address-form:focus-within {
+        background: rgba(255, 255, 255, 0.15);
+        border-color: var(--accent);
+        box-shadow: 0 0 20px rgba(58, 143, 224, 0.3);
+      }
 
-    .address-input {
-      flex: 1;
-      border: none;
-      background: transparent;
-      outline: none;
-      font-size: 13px;
-      color: #fff;
-      font-family: "Inter", sans-serif;
-      text-align: center;
-    }
+      .address-input {
+        flex: 1;
+        border: none;
+        background: transparent;
+        outline: none;
+        font-size: 13px;
+        color: #fff;
+        font-family: "Inter", sans-serif;
+        text-align: center;
+      }
 
-    .new-tab-cta {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 32px;
-      height: 32px;
-      background: var(--accent);
-      color: #fff;
-      border: none;
-      border-radius: 50%;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      flex-shrink: 0;
-    }
+      .new-tab-cta {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        background: var(--accent);
+        color: #fff;
+        border: none;
+        border-radius: 50%;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        flex-shrink: 0;
+      }
 
-    .new-tab-cta:hover {
-      background: var(--accent-hover);
-      transform: translateY(-1px);
-      box-shadow: 0 5px 15px rgba(58, 143, 224, 0.4);
-    }
+      .new-tab-cta:hover {
+        background: var(--accent-hover);
+        transform: translateY(-1px);
+        box-shadow: 0 5px 15px rgba(58, 143, 224, 0.4);
+      }
 
-    .browser-content {
-      flex: 1;
-      position: relative;
-      background: #ffffff;
-      display: flex;
-    }
+      .browser-content {
+        flex: 1;
+        position: relative;
+        background: #ffffff;
+        display: flex;
+      }
 
-    .sj-frame {
-      width: 100%;
-      height: 100%;
-      border: none;
-      display: none;
-      background: #fff;
-      flex: 1;
-    }
+      .sj-frame {
+        width: 100%;
+        height: 100%;
+        border: none;
+        display: none;
+        background: #fff;
+        flex: 1;
+      }
 
-    .empty-state {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      background: transparent;
-      text-align: center;
-      overflow: hidden;
-    }
+      .empty-state {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: transparent;
+        text-align: center;
+        overflow: hidden;
+      }
 
-    .empty-video-bg {
-      position: absolute;
-      inset: -20px;
-      width: calc(100% + 40px);
-      height: calc(100% + 40px);
-      object-fit: cover;
-      filter: blur(4px);
-      -webkit-filter: blur(4px);
-      z-index: 0;
-    }
+      .empty-video-bg {
+        position: absolute;
+        inset: -20px;
+        width: calc(100% + 40px);
+        height: calc(100% + 40px);
+        object-fit: cover;
+        filter: blur(4px);
+        -webkit-filter: blur(4px);
+        z-index: 0;
+      }
 
-    .empty-bg-overlay {
-      position: absolute;
-      inset: 0;
-      background:
-        radial-gradient(ellipse 80% 70% at 50% 45%,
-          transparent 0%,
-          rgba(11, 30, 61, 0.4) 100%),
-        linear-gradient(to bottom,
-          rgba(11, 30, 61, 0.1) 0%,
-          transparent 25%,
-          transparent 75%,
-          rgba(11, 30, 61, 0.6) 100%);
-      z-index: 1;
-    }
+      .empty-bg-overlay {
+        position: absolute;
+        inset: 0;
+        background:
+          radial-gradient(
+            ellipse 80% 70% at 50% 45%,
+            transparent 0%,
+            rgba(11, 30, 61, 0.4) 100%
+          ),
+          linear-gradient(
+            to bottom,
+            rgba(11, 30, 61, 0.1) 0%,
+            transparent 25%,
+            transparent 75%,
+            rgba(11, 30, 61, 0.6) 100%
+          );
+        z-index: 1;
+      }
 
-    .empty-content {
-      position: relative;
-      z-index: 2;
-    }
+      .empty-content {
+        position: relative;
+        z-index: 2;
+      }
 
-    .empty-logo {
-      font-size: 48px;
-      font-weight: 800;
-      color: var(--text-primary);
-      margin-bottom: 16px;
-      letter-spacing: -1px;
-      text-shadow: 0 4px 24px rgba(10, 45, 110, 0.5);
-    }
+      .empty-logo {
+        font-size: 48px;
+        font-weight: 800;
+        color: var(--text-primary);
+        margin-bottom: 16px;
+        letter-spacing: -1px;
+        text-shadow: 0 4px 24px rgba(10, 45, 110, 0.5);
+      }
 
-    .empty-logo span {
-      color: var(--accent);
-    }
+      .empty-logo span {
+        color: var(--accent);
+      }
 
-    .empty-desc {
-      color: var(--clr-cumulus);
-      max-width: 400px;
-      line-height: 1.5;
-      text-shadow: 0 2px 12px rgba(10, 45, 110, 0.8);
-    }
+      .empty-desc {
+        color: var(--clr-cumulus);
+        max-width: 400px;
+        line-height: 1.5;
+        text-shadow: 0 2px 12px rgba(10, 45, 110, 0.8);
+      }
 
-    .loading-bar {
-      position: absolute;
-      bottom: -1px;
-      left: 0;
-      height: 2px;
-      background: var(--accent);
-      width: 0%;
-      transition: width 0.3s ease;
-      z-index: 11;
-      opacity: 0;
-    }
+      .loading-bar {
+        position: absolute;
+        bottom: -1px;
+        left: 0;
+        height: 2px;
+        background: var(--accent);
+        width: 0%;
+        transition: width 0.3s ease;
+        z-index: 11;
+        opacity: 0;
+      }
 
-    .tabs-bar {
-      display: flex;
-      background: rgba(247, 250, 255, 0.8);
-      border-bottom: 1px solid rgba(10, 45, 110, 0.1);
-      padding: 6px 12px 0 12px;
-      gap: 4px;
-      overflow-x: auto;
-    }
+      .tabs-bar {
+        display: flex;
+        background: rgba(247, 250, 255, 0.8);
+        border-bottom: 1px solid rgba(10, 45, 110, 0.1);
+        padding: 6px 12px 0 12px;
+        gap: 4px;
+        overflow-x: auto;
+      }
 
-    .browser-tab {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 14px;
-      background: rgba(255, 255, 255, 0.5);
-      border: 1px solid transparent;
-      border-bottom: none;
-      border-radius: 8px 8px 0 0;
-      cursor: pointer;
-      font-size: 13px;
-      color: var(--text-secondary);
-      max-width: 200px;
-      min-width: 120px;
-      position: relative;
-    }
+      .browser-tab {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 14px;
+        background: rgba(255, 255, 255, 0.5);
+        border: 1px solid transparent;
+        border-bottom: none;
+        border-radius: 8px 8px 0 0;
+        cursor: pointer;
+        font-size: 13px;
+        color: var(--text-secondary);
+        max-width: 200px;
+        min-width: 120px;
+        position: relative;
+      }
 
-    .browser-tab.active {
-      background: #ffffff;
-      border-color: rgba(10, 45, 110, 0.1);
-      color: var(--accent);
-      font-weight: 600;
-    }
+      .browser-tab.active {
+        background: #ffffff;
+        border-color: rgba(10, 45, 110, 0.1);
+        color: var(--accent);
+        font-weight: 600;
+      }
 
-    .tab-title {
-      flex: 1;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
+      .tab-title {
+        flex: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
 
-    .tab-close {
-      background: transparent;
-      border: none;
-      color: inherit;
-      width: 16px;
-      height: 16px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      font-size: 14px;
-      opacity: 0.5;
-      transition: all 0.2s ease;
-      margin-left: 4px;
-    }
+      .tab-close {
+        background: transparent;
+        border: none;
+        color: inherit;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 14px;
+        opacity: 0.5;
+        transition: all 0.2s ease;
+        margin-left: 4px;
+      }
 
-    .tab-close:hover {
-      background: rgba(255, 255, 255, 0.1);
-      opacity: 1;
-    }
+      .tab-close:hover {
+        background: rgba(255, 255, 255, 0.1);
+        opacity: 1;
+      }
 
-    .new-tab-btn {
-      background: transparent;
-      border: none;
-      width: 28px;
-      height: 28px;
-      border-radius: 4px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      color: var(--text-secondary);
-      margin-top: 4px;
-    }
+      .new-tab-btn {
+        background: transparent;
+        border: none;
+        width: 28px;
+        height: 28px;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        color: var(--text-secondary);
+        margin-top: 4px;
+      }
 
-    .new-tab-btn:hover {
-      background: rgba(10, 45, 110, 0.05);
-    }
+      .new-tab-btn:hover {
+        background: rgba(10, 45, 110, 0.05);
+      }
 
-    .ai-shortcuts {
-      display: flex;
-      gap: 16px;
-      margin-top: 32px;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
+      .ai-shortcuts {
+        display: flex;
+        gap: 16px;
+        margin-top: 32px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
 
-    .ai-shortcut {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 12px 24px;
-      background: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 100px;
-      color: #fff;
-      text-decoration: none;
-      font-weight: 600;
-      transition: all 0.3s ease;
-      cursor: pointer;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    }
+      .ai-shortcut {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 24px;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 100px;
+        color: #fff;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
 
-    .ai-shortcut:hover {
-      background: rgba(255, 255, 255, 0.2);
-      transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-    }
+      .ai-shortcut:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+      }
 
-    .ai-shortcut img {
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-    }
-  </style>
-</head>
+      .ai-shortcut img {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+      }
+    </style>
+  </head>
 
-<body>
-  <header class="browser-header">
-    <div class="header-central-group">
-      <div class="nav-controls">
-        <button class="nav-btn" id="btn-back" title="Back"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="15 18 9 12 15 6"></polyline>
-          </svg></button>
-        <button class="nav-btn" id="btn-forward" title="Forward"><svg width="16" height="16" viewBox="0 0 24 24"
-            fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="9 18 15 12 9 6"></polyline>
-          </svg></button>
-        <button class="nav-btn" id="btn-reload" title="Reload"><svg width="16" height="16" viewBox="0 0 24 24"
-            fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M23 4v6h-6"></path>
-            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
-          </svg></button>
-      </div>
-
-      <div class="address-bar-container">
-        <form id="sj-form" class="address-form">
-          <input type="hidden" id="sj-search-engine" value="https://duckduckgo.com/?q=%s" />
-          <input type="text" id="sj-address" class="address-input" placeholder="Search freely..." autocomplete="off" />
-        </form>
-      </div>
-
-      <div class="tabs-container" id="tabs-bar">
-        <!-- Dynamic tabs injected here -->
-      </div>
-
-      <button class="new-tab-cta" id="btn-new-tab" title="New Tab">
-        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-      </button>
-    </div>
-    <div class="loading-bar" id="loading-bar"></div>
-  </header>
-
-  <main class="browser-content">
-    <div class="empty-state" id="empty-state">
-      <div id="canvas-container" class="empty-video-bg"></div>
-      <div class="empty-bg-overlay"></div>
-      <div class="empty-content">
-        <div class="empty-logo">Welkin<span>.</span></div>
-        <div class="empty-desc">
-          Your gateway to freedom. Enter a URL or search query above to break
-          free from restrictions.
+  <body>
+    <header class="browser-header">
+      <div class="header-central-group">
+        <div class="nav-controls">
+          <button class="nav-btn" id="btn-back" title="Back">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+          </button>
+          <button class="nav-btn" id="btn-forward" title="Forward">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </button>
+          <button class="nav-btn" id="btn-reload" title="Reload">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M23 4v6h-6"></path>
+              <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+            </svg>
+          </button>
         </div>
 
-        <div class="ai-shortcuts">
-          <div class="ai-shortcut" onclick="window.loadUrlInProxy('https://gemini.google.com')">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-              stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3 4-3 9-3 9 1.34 9 3Z"></path>
-              <path d="M12 15v6"></path>
-              <path d="M12 3v6"></path>
-            </svg>
-            Gemini
-          </div>
-          <div class="ai-shortcut" onclick="window.loadUrlInProxy('https://chat.qwen.ai/')">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-              stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="10"></circle>
-              <path d="M12 16v-4"></path>
-              <path d="M12 8h.01"></path>
-            </svg>
-            Qwen
-          </div>
+        <div class="address-bar-container">
+          <form id="sj-form" class="address-form">
+            <input
+              type="hidden"
+              id="sj-search-engine"
+              value="https://duckduckgo.com/?q=%s"
+            />
+            <input
+              type="text"
+              id="sj-address"
+              class="address-input"
+              placeholder="Search freely..."
+              autocomplete="off"
+            />
+          </form>
         </div>
 
-        <p id="sj-error" style="
+        <div class="tabs-container" id="tabs-bar">
+          <!-- Dynamic tabs injected here -->
+        </div>
+
+        <button class="new-tab-cta" id="btn-new-tab" title="New Tab">
+          <svg
+            viewBox="0 0 24 24"
+            width="16"
+            height="16"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="3"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="loading-bar" id="loading-bar"></div>
+    </header>
+
+    <main class="browser-content">
+      <div class="empty-state" id="empty-state">
+        <div id="canvas-container" class="empty-video-bg"></div>
+        <div class="empty-bg-overlay"></div>
+        <div class="empty-content">
+          <div class="empty-logo">Welkin<span>.</span></div>
+          <div class="empty-desc">
+            Your gateway to freedom. Enter a URL or search query above to break
+            free from restrictions.
+          </div>
+
+          <div class="ai-shortcuts">
+            <div
+              class="ai-shortcut"
+              onclick="window.loadUrlInProxy('https://gemini.google.com')"
+            >
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path
+                  d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3 4-3 9-3 9 1.34 9 3Z"
+                ></path>
+                <path d="M12 15v6"></path>
+                <path d="M12 3v6"></path>
+              </svg>
+              Gemini
+            </div>
+            <div
+              class="ai-shortcut"
+              onclick="window.loadUrlInProxy('https://chat.qwen.ai/')"
+            >
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M12 16v-4"></path>
+                <path d="M12 8h.01"></path>
+              </svg>
+              Qwen
+            </div>
+          </div>
+
+          <p
+            id="sj-error"
+            style="
               color: #ff6b6b;
               margin-top: 20px;
               font-weight: 600;
               text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
-            "></p>
-        <pre id="sj-error-code" style="
+            "
+          ></p>
+          <pre
+            id="sj-error-code"
+            style="
               font-size: 12px;
               color: rgba(255, 255, 255, 0.7);
               white-space: pre-wrap;
-            "></pre>
+            "
+          ></pre>
+        </div>
       </div>
-    </div>
-    <!-- Scramjet Iframe appended via JS -->
-  </main>
+      <!-- Scramjet Iframe appended via JS -->
+    </main>
 
-  <script src="register-sw.js"></script>
-  <script src="search.js"></script>
-  <script type="module" src="3d-cloud.js"></script>
-  <script src="music.js"></script>
-  <script src="music_v2.js"></script>
-  <script src="youtube.js"></script>
+    <script src="register-sw.js"></script>
+    <script src="search.js"></script>
+    <script type="module" src="3d-cloud.js"></script>
+    <script src="music.js"></script>
+    <script src="music_v2.js"></script>
+    <script src="youtube.js"></script>
 
-  <script src="browse.js"></script>
-  <script src="sidebar.js"></script>
-  <script src="/ai.js"></script>
-</body>
-
+    <script src="browse.js"></script>
+    <script src="sidebar.js"></script>
+    <script src="/ai.js"></script>
+  </body>
 </html>

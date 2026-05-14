@@ -3,7 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="icon" type="image/x-icon" href="/warning-hazard-sign-on-transparent-background-free-png.ico" />
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="/warning-hazard-sign-on-transparent-background-free-png.ico"
+    />
     <title>Welkin Cinema - Watch Movies & TV Series</title>
     <meta
       name="description"
@@ -264,7 +268,9 @@
           <h2 id="player-title" class="movies-player-title"></h2>
           <div id="player-info" class="movies-player-info"></div>
           <div class="server-switcher">
-            <label for="server-select" class="visually-hidden">Select video server</label>
+            <label for="server-select" class="visually-hidden"
+              >Select video server</label
+            >
             <select id="server-select" class="server-select">
               <option value="vidsrc">VidSrc (Default)</option>
               <option value="vidsrcme">VidSrcMe</option>
@@ -273,8 +279,18 @@
               <option value="embed2">2Embed</option>
               <option value="superembed">SuperEmbed</option>
             </select>
-            <label class="proxy-label" style="margin-left: 10px; font-size: 14px; display: inline-flex; align-items: center; gap: 5px; cursor: pointer;">
-              <input type="checkbox" id="proxy-toggle"> Proxy
+            <label
+              class="proxy-label"
+              style="
+                margin-left: 10px;
+                font-size: 14px;
+                display: inline-flex;
+                align-items: center;
+                gap: 5px;
+                cursor: pointer;
+              "
+            >
+              <input type="checkbox" id="proxy-toggle" /> Proxy
             </label>
           </div>
           <div id="episode-selector" class="episode-selector" hidden>
@@ -293,7 +309,6 @@
         <div class="movies-player-frame" id="player-frame-wrap"></div>
       </div>
     </div>
-
 
     <script src="register-sw.js"></script>
     <script src="movies.js"></script>

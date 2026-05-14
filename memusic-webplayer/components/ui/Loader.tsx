@@ -1,5 +1,10 @@
-
-import React, { useState, useEffect, useRef, Dispatch, SetStateAction } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  Dispatch,
+  SetStateAction,
+} from "react";
 
 export const Loader: React.FC = () => {
   return (
@@ -20,16 +25,24 @@ interface AnimatedTabsProps<T extends string> {
   onTabClick: Dispatch<SetStateAction<T>>;
 }
 
-export const AnimatedTabs = <T extends string>({ tabs, activeTab, onTabClick }: AnimatedTabsProps<T>) => {
-  const [sliderStyle, setSliderStyle] = useState({ left: 0, width: 0, opacity: 0 });
+export const AnimatedTabs = <T extends string>({
+  tabs,
+  activeTab,
+  onTabClick,
+}: AnimatedTabsProps<T>) => {
+  const [sliderStyle, setSliderStyle] = useState({
+    left: 0,
+    width: 0,
+    opacity: 0,
+  });
   const [isReadyForTransition, setIsReadyForTransition] = useState(false);
   const tabsRef = useRef<(HTMLButtonElement | null)[]>([]);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const activeTabIndex = tabs.findIndex(tab => tab.id === activeTab);
+    const activeTabIndex = tabs.findIndex((tab) => tab.id === activeTab);
     const activeTabElement = tabsRef.current[activeTabIndex];
-    
+
     if (activeTabElement) {
       const { offsetLeft, offsetWidth } = activeTabElement;
       setSliderStyle({
@@ -40,30 +53,37 @@ export const AnimatedTabs = <T extends string>({ tabs, activeTab, onTabClick }: 
     }
 
     if (!isReadyForTransition && activeTabElement) {
-        const timer = setTimeout(() => setIsReadyForTransition(true), 50);
-        return () => clearTimeout(timer);
+      const timer = setTimeout(() => setIsReadyForTransition(true), 50);
+      return () => clearTimeout(timer);
     }
   }, [activeTab, tabs, isReadyForTransition]);
 
   return (
-    <div ref={containerRef} className="relative flex space-x-1 bg-white/5 p-1 rounded-full">
+    <div
+      ref={containerRef}
+      className="relative flex space-x-1 bg-white/5 p-1 rounded-full"
+    >
       <div
         aria-hidden="true"
         className="absolute h-[calc(100%-0.5rem)] top-1 bg-[#3A8FE0] rounded-full shadow-md"
         style={{
           ...sliderStyle,
           transition: isReadyForTransition
-            ? 'left 0.35s cubic-bezier(0.4, 0, 0.2, 1), width 0.35s cubic-bezier(0.4, 0, 0.2, 1)'
-            : 'none',
+            ? "left 0.35s cubic-bezier(0.4, 0, 0.2, 1), width 0.35s cubic-bezier(0.4, 0, 0.2, 1)"
+            : "none",
         }}
       />
       {tabs.map((tab, index) => (
         <button
           key={tab.id}
-          ref={el => { tabsRef.current[index] = el; }}
+          ref={(el) => {
+            tabsRef.current[index] = el;
+          }}
           onClick={() => onTabClick(tab.id)}
           className={`relative z-10 px-4 py-2 rounded-full text-sm font-medium transition-colors duration-300 focus:outline-none ${
-            activeTab === tab.id ? 'text-black' : 'text-gray-300 hover:text-white'
+            activeTab === tab.id
+              ? "text-black"
+              : "text-gray-300 hover:text-white"
           }`}
         >
           {tab.label}

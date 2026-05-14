@@ -1,9 +1,10 @@
-
 <html lang="en-us">
   <head>
-  <base href="https://cdn.jsdelivr.net/gh/Stinkalistic/UGS@main/MISC/postal/">
-    <meta charset="utf-8">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <base
+      href="https://cdn.jsdelivr.net/gh/Stinkalistic/UGS@main/MISC/postal/"
+    />
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>POSTAL: Play FREE on the web</title>
     <meta property="og:title" content="POSTAL: Play FREE on the web" />
     <meta property="og:type" content="website" />
@@ -13,31 +14,59 @@
     <meta property="og:image:type" content="image/jpeg" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="postal logo that says play free on the web" />
-    <meta property="og:description" content="Play the original POSTAL game by Running With Scissors for FREE on this website!" />
+    <meta
+      property="og:image:alt"
+      content="postal logo that says play free on the web"
+    />
+    <meta
+      property="og:description"
+      content="Play the original POSTAL game by Running With Scissors for FREE on this website!"
+    />
     <style>
-      html {background-color: black; color: red;}
-      body {margin:0; padding:0;}
-      .emscripten { padding-right: 0; margin-left: auto; margin-right: auto; display: block; }
-      div.emscripten { text-align: center; }
-      canvas.emscripten { border: 0px none; background-color: black; }
+      html {
+        background-color: black;
+        color: red;
+      }
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      .emscripten {
+        padding-right: 0;
+        margin-left: auto;
+        margin-right: auto;
+        display: block;
+      }
+      div.emscripten {
+        text-align: center;
+      }
+      canvas.emscripten {
+        border: 0px none;
+        background-color: black;
+      }
     </style>
   </head>
   <body>
-    <figure style="overflow:visible;" id="spinner"></figure>
+    <figure style="overflow: visible" id="spinner"></figure>
     <div class="emscripten" id="status">Downloading game files...</div>
     <div class="emscripten">
-      <progress value="0" max="100" id="progress" hidden=1></progress>  
+      <progress value="0" max="100" id="progress" hidden="1"></progress>
     </div>
     <div class="emscripten_border">
-      <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1 onclick="requestPointerLock()"></canvas>
+      <canvas
+        class="emscripten"
+        id="canvas"
+        oncontextmenu="event.preventDefault()"
+        tabindex="-1"
+        onclick="requestPointerLock()"
+      ></canvas>
     </div>
 
     <script>
-      const statusElement = document.getElementById('status');
-      const progressElement = document.getElementById('progress');
-      const spinnerElement = document.getElementById('spinner');
-      const canvasElement = document.getElementById('canvas');
+      const statusElement = document.getElementById("status");
+      const progressElement = document.getElementById("progress");
+      const spinnerElement = document.getElementById("spinner");
+      const canvasElement = document.getElementById("canvas");
 
       function mergeFiles(fileParts, cb) {
         return new Promise((resolve, reject) => {
@@ -50,7 +79,8 @@
             }
             fetch(fileParts[index])
               .then((response) => {
-                if (!response.ok) throw new Error("Failed to load " + fileParts[index]);
+                if (!response.ok)
+                  throw new Error("Failed to load " + fileParts[index]);
                 return response.arrayBuffer();
               })
               .then((data) => {
@@ -95,7 +125,7 @@
           if (left) {
             progressElement.value = 100 - left * 20;
           }
-        }
+        },
       };
 
       (async () => {

@@ -1,4 +1,1532 @@
-import{j as e,r as u,h as D,M as C,u as g,U as I,P as A,i as _}from"./index-Jbwo0tuu.js";const N=({label:t,enabled:r,onChange:n})=>e.jsxs("div",{className:"flex items-center justify-between w-full min-h-[2rem] select-none",children:[t&&e.jsx("span",{className:"font-bold text-sm text-white mr-4 flex-1 cursor-pointer",onClick:n,children:t}),e.jsx("button",{onClick:n,className:`${r?"bg-[#3A8FE0]":"bg-white/20"} relative inline-flex items-center h-7 rounded-full w-12 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#0B1E3D] focus:ring-[#3A8FE0] flex-shrink-0`,children:e.jsx("span",{className:`${r?"translate-x-6":"translate-x-1"} inline-block w-5 h-5 transform bg-white rounded-full transition-transform shadow-md`})})]}),L=t=>e.jsx("svg",{...t,xmlns:"http://www.w3.org/2000/svg",fill:"none",viewBox:"0 0 24 24",strokeWidth:1.5,stroke:"currentColor",children:e.jsx("path",{strokeLinecap:"round",strokeLinejoin:"round",d:"M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"})}),P=t=>e.jsx("svg",{...t,xmlns:"http://www.w3.org/2000/svg",fill:"none",viewBox:"0 0 24 24",strokeWidth:1.5,stroke:"currentColor",children:e.jsx("path",{strokeLinecap:"round",strokeLinejoin:"round",d:"M19.114 5.636a9 9 0 010 12.728M16.463 8.288a5.25 5.25 0 010 7.424M6.75 8.25l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.01 9.01 0 012.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75z"})}),M=t=>e.jsx("svg",{...t,xmlns:"http://www.w3.org/2000/svg",fill:"none",viewBox:"0 0 24 24",strokeWidth:1.5,stroke:"currentColor",children:e.jsx("path",{strokeLinecap:"round",strokeLinejoin:"round",d:"M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75"})}),F=t=>e.jsx("svg",{...t,xmlns:"http://www.w3.org/2000/svg",fill:"none",viewBox:"0 0 24 24",strokeWidth:1.5,stroke:"currentColor",children:e.jsx("path",{strokeLinecap:"round",strokeLinejoin:"round",d:"M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 0v3.75m-16.5-3.75v3.75m16.5 0v3.75C20.25 16.153 16.556 18 12 18s-8.25-1.847-8.25-4.125v-3.75m16.5 0c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125"})}),$=t=>e.jsx("svg",{...t,xmlns:"http://www.w3.org/2000/svg",fill:"none",viewBox:"0 0 24 24",strokeWidth:1.5,stroke:"currentColor",children:e.jsx("path",{strokeLinecap:"round",strokeLinejoin:"round",d:"M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z"})}),R=t=>e.jsx("svg",{...t,xmlns:"http://www.w3.org/2000/svg",fill:"none",viewBox:"0 0 24 24",strokeWidth:2,stroke:"currentColor",children:e.jsx("path",{strokeLinecap:"round",strokeLinejoin:"round",d:"M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"})}),T=t=>e.jsx("svg",{...t,xmlns:"http://www.w3.org/2000/svg",fill:"none",viewBox:"0 0 24 24",strokeWidth:2,stroke:"currentColor",children:e.jsx("path",{strokeLinecap:"round",strokeLinejoin:"round",d:"M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125"})}),W=t=>e.jsxs("svg",{...t,xmlns:"http://www.w3.org/2000/svg",fill:"none",viewBox:"0 0 24 24",strokeWidth:2,stroke:"currentColor",children:[e.jsx("path",{strokeLinecap:"round",strokeLinejoin:"round",d:"M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z"}),e.jsx("path",{strokeLinecap:"round",strokeLinejoin:"round",d:"M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zM18.75 10.5h.008v.008h-.008V10.5z"})]}),H=t=>e.jsx("svg",{...t,xmlns:"http://www.w3.org/2000/svg",fill:"none",viewBox:"0 0 24 24",strokeWidth:2,stroke:"currentColor",children:e.jsx("path",{strokeLinecap:"round",strokeLinejoin:"round",d:"M19.5 12c0-1.232-.046-2.453-.138-3.662a4.006 4.006 0 00-3.7-3.7 48.678 48.678 0 00-7.324 0 4.006 4.006 0 00-3.7 3.7c-.017.22-.032.441-.046.662M19.5 12l3-3m-3 3l-3-3m-12 3c0 1.232.046 2.453.138 3.662a4.006 4.006 0 003.7 3.7 48.656 48.656 0 007.324 0 4.006 4.006 0 003.7-3.7c.017-.22.032-.441.046-.662M4.5 12l3 3m-3-3l-3 3"})}),U=t=>e.jsx("svg",{...t,xmlns:"http://www.w3.org/2000/svg",fill:"none",viewBox:"0 0 24 24",strokeWidth:2,stroke:"currentColor",children:e.jsx("path",{strokeLinecap:"round",strokeLinejoin:"round",d:"M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"})}),y=t=>e.jsx("svg",{...t,xmlns:"http://www.w3.org/2000/svg",fill:"none",viewBox:"0 0 24 24",strokeWidth:2,stroke:"currentColor",children:e.jsx("path",{strokeLinecap:"round",strokeLinejoin:"round",d:"M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"})}),V=t=>e.jsx("svg",{...t,xmlns:"http://www.w3.org/2000/svg",viewBox:"0 0 24 24",fill:"currentColor",children:e.jsx("path",{d:"M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"})}),v=({title:t,description:r})=>e.jsxs("div",{className:"mb-8",children:[e.jsx("h2",{className:"text-3xl md:text-4xl font-black text-white tracking-tighter mb-2",children:t}),e.jsx("p",{className:"text-gray-400 font-medium",children:r})]}),k=({children:t,className:r=""})=>e.jsx("div",{className:`glass-panel border border-white/5 rounded-3xl p-6 md:p-8 ${r}`,children:t}),O=({value:t,min:r,max:n,onChange:i,label:d,disabled:s})=>{const l=u.useRef(null),c=o=>{if(s||!l.current)return;const a=l.current;a.setPointerCapture(o.pointerId);const x=p=>{const b=a.getBoundingClientRect(),w=b.height,j=b.bottom-p,S=Math.max(0,Math.min(1,j/w)),z=n-r,B=r+S*z;i(B)};x(o.clientY);const h=p=>x(p.clientY),f=p=>{a.releasePointerCapture(p.pointerId),a.removeEventListener("pointermove",h),a.removeEventListener("pointerup",f)};a.addEventListener("pointermove",h),a.addEventListener("pointerup",f)},m=(t-r)/(n-r)*100;return e.jsxs("div",{className:`flex flex-col items-center h-full group select-none ${s?"opacity-50 pointer-events-none grayscale":""}`,children:[e.jsxs("div",{ref:l,onPointerDown:c,className:"relative w-14 h-48 sm:h-56 cursor-pointer touch-none flex justify-center py-4 bg-[#0a0a0a] rounded-lg border border-white/10 shadow-[inset_0_2px_4px_rgba(0,0,0,0.5)]",children:[e.jsx("div",{className:"absolute w-1 h-[calc(100%-2rem)] top-4 bg-[#222] rounded-full shadow-[inset_0_1px_2px_rgba(0,0,0,1)]",children:e.jsx("div",{className:"absolute bottom-0 left-0 right-0 bg-[#3A8FE0] w-full rounded-b-full opacity-40",style:{height:`${m}%`}})}),e.jsx("div",{className:"absolute top-1/2 left-0 right-0 h-[1px] bg-white/20 pointer-events-none"}),e.jsxs("div",{className:"absolute left-1/2 -translate-x-1/2 w-10 h-6 bg-gradient-to-b from-[#444] to-[#222] rounded-sm shadow-[0_4px_6px_rgba(0,0,0,0.8),0_0_0_1px_rgba(255,255,255,0.1)] flex items-center justify-center z-10 pointer-events-none transition-transform duration-100 ease-out group-active:scale-105",style:{bottom:`calc(${m}% - 12px)`},children:[e.jsx("div",{className:"w-6 h-[1px] bg-white/30 mb-[2px]"}),e.jsx("div",{className:"w-6 h-[1px] bg-white/30"}),e.jsx("div",{className:"w-6 h-[1px] bg-white/30 mt-[2px]"}),e.jsx("div",{className:"absolute w-8 h-[2px] bg-[#3A8FE0] top-1/2 -translate-y-1/2 shadow-[0_0_4px_#3A8FE0]"})]})]}),e.jsx("span",{className:"mt-4 text-[10px] font-bold text-gray-500 uppercase tracking-wider group-hover:text-white transition-colors",children:d}),e.jsx("span",{className:"text-[10px] font-mono text-[#3A8FE0] mt-1",children:t>0?`+${t.toFixed(1)}`:t.toFixed(1)})]})},q=({currentAvatar:t,onSelect:r,onClose:n})=>{const{t:i}=g(),d=u.useRef(null),s=l=>{var m;const c=(m=l.target.files)==null?void 0:m[0];if(c){const o=new FileReader;o.onload=a=>{var x;(x=a.target)!=null&&x.result&&r(a.target.result)},o.readAsDataURL(c)}};return e.jsxs("div",{className:"space-y-6",children:[e.jsxs("div",{className:"grid grid-cols-4 sm:grid-cols-5 gap-4 max-h-[300px] overflow-y-auto custom-scrollbar p-1",children:[e.jsxs("button",{onClick:()=>{var l;return(l=d.current)==null?void 0:l.click()},className:"aspect-square rounded-2xl bg-white/5 border-2 border-dashed border-white/10 hover:border-[#3A8FE0] hover:bg-white/10 flex flex-col items-center justify-center transition-all group",title:i("settings.profile.upload"),children:[e.jsx(R,{className:"w-6 h-6 text-gray-500 group-hover:text-[#3A8FE0] transition-colors"}),e.jsx("input",{type:"file",ref:d,onChange:s,accept:"image/*",className:"hidden"})]}),_.map((l,c)=>e.jsx("button",{onClick:()=>r(l),className:`relative aspect-square rounded-2xl overflow-hidden border-2 transition-all duration-300 hover:scale-105 ${t===l?"border-[#3A8FE0] ring-2 ring-[#3A8FE0]/30":"border-transparent hover:border-white/30"}`,children:e.jsx("img",{src:l,alt:`Avatar ${c+1}`,className:"w-full h-full object-cover",loading:"lazy"})},c))]}),e.jsx("div",{className:"flex justify-end pt-2",children:e.jsx("button",{onClick:n,className:"px-6 py-2 rounded-full bg-white/5 hover:bg-white/10 text-white font-medium transition-colors text-sm",children:i("settings.profile.cancel")})})]})},Q=({initialName:t,initialImage:r,onSave:n,onCancel:i})=>{const[d,s]=u.useState(t),[l,c]=u.useState(r),[m,o]=u.useState(!1),{t:a}=g(),x=()=>{const h=_[Math.floor(Math.random()*_.length)];c(h)};return e.jsxs("div",{className:"space-y-8",children:[e.jsx("div",{className:"flex flex-col items-center space-y-6",children:e.jsxs("div",{className:"relative group",children:[e.jsx("div",{className:"w-32 h-32 rounded-full p-1 border-2 border-[#3A8FE0] shadow-[0_0_30px_rgba(58,143,224,0.3)] bg-[#0B1E3D] overflow-hidden",children:e.jsx("img",{src:l,alt:"Profile",className:"w-full h-full rounded-full object-cover"})}),e.jsx("button",{onClick:x,className:"absolute top-0 right-0 transform translate-x-1/4 -translate-y-1/4 p-2.5 bg-[#2a2a2a] rounded-full text-white hover:bg-[#3a3a3a] hover:text-[#3A8FE0] border border-white/10 transition-colors shadow-lg z-10",title:a("settings.profile.random"),children:e.jsx(H,{className:"w-4 h-4"})}),e.jsx("button",{onClick:()=>o(!0),className:"absolute bottom-0 right-0 transform translate-x-1/4 translate-y-1/4 p-2.5 bg-[#3A8FE0] rounded-full text-black hover:bg-[#6CB4F0] transition-colors shadow-lg z-10",title:a("settings.profile.chooseAvatar"),children:e.jsx(W,{className:"w-4 h-4"})})]})}),m?e.jsxs("div",{className:"bg-black/20 p-6 rounded-3xl border border-white/5 animate-in fade-in zoom-in-95",children:[e.jsx("h3",{className:"text-xs font-bold text-gray-400 uppercase tracking-widest mb-4",children:a("settings.profile.chooseAvatar")}),e.jsx(q,{currentAvatar:l,onSelect:h=>{c(h),o(!1)},onClose:()=>o(!1)})]}):e.jsxs("div",{className:"space-y-6",children:[e.jsxs("div",{children:[e.jsx("label",{className:"block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2",children:a("settings.profile.title")}),e.jsxs("div",{className:"relative",children:[e.jsx("input",{type:"text",value:d,onChange:h=>s(h.target.value),className:"w-full bg-white/5 border border-white/10 p-4 rounded-2xl focus:outline-none focus:border-[#3A8FE0] focus:ring-1 focus:ring-[#3A8FE0] transition-all text-white text-lg font-medium placeholder-gray-600 pl-12",placeholder:"Your Name"}),e.jsx(T,{className:"absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500"})]})]}),e.jsxs("div",{className:"flex gap-3",children:[e.jsx("button",{onClick:i,className:"flex-1 px-4 py-3.5 rounded-xl bg-white/5 hover:bg-white/10 text-white font-bold transition-colors",children:a("settings.profile.cancel")}),e.jsx("button",{onClick:()=>n(d,l),disabled:!d.trim(),className:"flex-1 px-4 py-3.5 rounded-xl bg-[#3A8FE0] text-white font-bold hover:bg-[#6CB4F0] disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-[#3A8FE0]/20",children:a("settings.profile.save")})]})]})]})},E=()=>{const{name:t,imageUrl:r,updateName:n,updateImage:i}=u.useContext(D),{showModal:d,hideModal:s}=u.useContext(C),{t:l}=g(),c=()=>{d({title:l("settings.profile.editProfile"),content:e.jsx(Q,{initialName:t,initialImage:r,onSave:(m,o)=>{n(m),i(o),s()},onCancel:s})})};return e.jsxs("div",{className:"space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500",children:[e.jsx(v,{title:l("settings.profile.title"),description:l("settings.profile.description")}),e.jsxs(k,{className:"flex flex-col sm:flex-row items-center gap-8 relative overflow-hidden group",children:[e.jsx("div",{className:"absolute inset-0 bg-gradient-to-r from-[#3A8FE0]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"}),e.jsx("div",{className:"relative",children:e.jsx("div",{className:"w-32 h-32 rounded-full p-1 border-2 border-[#3A8FE0] shadow-[0_0_40px_rgba(58,143,224,0.3)] bg-[#0B1E3D] overflow-hidden group-hover:scale-105 transition-transform duration-500",children:e.jsx("img",{src:r,alt:t,className:"w-full h-full rounded-full object-cover"})})}),e.jsxs("div",{className:"flex-1 text-center sm:text-left z-10",children:[e.jsx("h3",{className:"text-4xl font-black text-white mb-2",children:t}),e.jsx("p",{className:"text-gray-400 mb-6 max-w-md",children:"Music Lover • Audio Enthusiast"}),e.jsx("button",{onClick:c,className:"px-8 py-3 rounded-full bg-white/10 hover:bg-white/20 border border-white/10 text-white font-bold transition-all hover:scale-105 hover:shadow-lg backdrop-blur-md",children:l("settings.profile.editProfile")})]})]})]})},Y=()=>{const{selectedQuality:t,setSelectedQuality:r}=u.useContext(A),{language:n,setLanguage:i,t:d}=g();return e.jsxs("div",{className:"space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500",children:[e.jsx(v,{title:d("settings.quality.title"),description:"Manage your listening experience and app preferences."}),e.jsx(k,{children:e.jsxs("div",{className:"space-y-8",children:[e.jsxs("div",{children:[e.jsxs("h3",{className:"text-lg font-bold text-white mb-4 flex items-center gap-2",children:[e.jsx("span",{className:"w-1 h-6 bg-[#3A8FE0] rounded-full block"}),"Streaming Quality"]}),e.jsx("div",{className:"grid grid-cols-1 sm:grid-cols-2 gap-4",children:[{id:"160kbps",label:d("settings.quality.normal"),desc:d("settings.quality.normalDesc")},{id:"320kbps",label:d("settings.quality.high"),desc:d("settings.quality.highDesc")}].map(s=>e.jsxs("button",{onClick:()=>r(s.id),className:`relative p-4 rounded-2xl border-2 text-left transition-all duration-300 ${t===s.id?"border-[#3A8FE0] bg-[#3A8FE0]/10":"border-white/5 bg-white/5 hover:border-white/20"}`,children:[e.jsxs("div",{className:"flex justify-between items-start mb-2",children:[e.jsx("span",{className:`font-bold text-lg ${t===s.id?"text-[#3A8FE0]":"text-white"}`,children:s.label}),t===s.id&&e.jsx("div",{className:"w-3 h-3 bg-[#3A8FE0] rounded-full shadow-[0_0_10px_#3A8FE0]"})]}),e.jsx("p",{className:"text-sm text-gray-400",children:s.desc})]},s.id))})]}),e.jsx("div",{className:"h-px bg-white/5 w-full"}),e.jsxs("div",{children:[e.jsxs("h3",{className:"text-lg font-bold text-white mb-4 flex items-center gap-2",children:[e.jsx("span",{className:"w-1 h-6 bg-blue-500 rounded-full block"}),d("settings.language.title")]}),e.jsxs("div",{className:"flex p-1 bg-black/40 rounded-xl border border-white/5 relative max-w-sm",children:[e.jsx("div",{className:`absolute top-1 bottom-1 w-[calc(50%-4px)] bg-[#3A8FE0] rounded-lg transition-all duration-300 shadow-lg ${n==="pt"?"left-[calc(50%+2px)]":"left-1"}`}),["en","pt"].map(s=>e.jsx("button",{onClick:()=>i(s),className:`flex-1 py-3 rounded-lg text-sm font-bold relative z-10 transition-colors ${n===s?"text-black":"text-gray-500 hover:text-gray-300"}`,children:s==="en"?"English":"Português"},s))]})]})]})})]})},G=()=>{const{isEqEnabled:t,setIsEqEnabled:r,eqSettings:n,setEqGain:i,resetEq:d,is8DEnabled:s,setIs8DEnabled:l,isReverbEnabled:c,setIsReverbEnabled:m,reverbMix:o,setReverbMix:a}=u.useContext(A),{t:x}=g(),h={flat:[0,0,0,0,0],pop:[2,4,0,3,5],rock:[4,3,-2,4,6],jazz:[3,2,-3,3,4],voice:[-2,-1,4,3,1]},f=["60Hz","230Hz","910Hz","4kHz","14kHz"];return e.jsxs("div",{className:"space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500",children:[e.jsx(v,{title:"Sonic Lab",description:x("settings.effects.description")}),e.jsxs("div",{className:"glass-panel-heavy p-6 md:p-8 rounded-[32px] relative overflow-hidden border border-white/5 shadow-2xl bg-[#0B1E3D]",children:[e.jsx("div",{className:"absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/brushed-alum-dark.png')] opacity-20 pointer-events-none"}),e.jsx("div",{className:"absolute top-4 left-4 w-3 h-3 rounded-full bg-[#1a1a1a] shadow-[inset_0_1px_2px_rgba(255,255,255,0.1),0_1px_1px_rgba(0,0,0,0.8)] border border-[#333]"}),e.jsx("div",{className:"absolute top-4 right-4 w-3 h-3 rounded-full bg-[#1a1a1a] shadow-[inset_0_1px_2px_rgba(255,255,255,0.1),0_1px_1px_rgba(0,0,0,0.8)] border border-[#333]"}),e.jsx("div",{className:"absolute bottom-4 left-4 w-3 h-3 rounded-full bg-[#1a1a1a] shadow-[inset_0_1px_2px_rgba(255,255,255,0.1),0_1px_1px_rgba(0,0,0,0.8)] border border-[#333]"}),e.jsx("div",{className:"absolute bottom-4 right-4 w-3 h-3 rounded-full bg-[#1a1a1a] shadow-[inset_0_1px_2px_rgba(255,255,255,0.1),0_1px_1px_rgba(0,0,0,0.8)] border border-[#333]"}),e.jsxs("div",{className:"flex flex-wrap items-center justify-between gap-6 mb-10 relative z-10",children:[e.jsxs("div",{className:"flex items-center gap-4",children:[e.jsx("div",{className:"w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300 shadow-inner bg-[#1a1a1a] border border-white/5",children:e.jsx(M,{className:`w-6 h-6 transition-colors ${t?"text-[#3A8FE0]":"text-gray-600"}`})}),e.jsxs("div",{children:[e.jsx("h3",{className:"text-2xl font-black text-white tracking-tight",children:"Master EQ"}),e.jsxs("div",{className:"flex items-center gap-2",children:[e.jsx("div",{className:`w-2 h-2 rounded-full transition-all duration-300 ${t?"bg-[#3A8FE0] shadow-[0_0_8px_#3A8FE0]":"bg-[#333] shadow-none"}`}),e.jsx("p",{className:"text-[10px] font-bold text-gray-400 uppercase tracking-widest",children:"5-Band Parametric"})]})]})]}),e.jsxs("div",{className:"flex items-center gap-4 bg-black/40 p-1.5 rounded-full border border-white/5 backdrop-blur-sm shadow-inner",children:[e.jsx("span",{className:`text-[10px] font-bold px-3 py-1 rounded-full transition-colors ${t?"text-gray-500":"bg-white/10 text-white"}`,children:"BYPASS"}),e.jsx(N,{enabled:t,onChange:()=>r(!t)}),e.jsx("span",{className:`text-[10px] font-bold px-3 py-1 rounded-full transition-colors ${t?"text-[#3A8FE0]":"text-gray-500"}`,children:"ACTIVE"})]})]}),e.jsxs("div",{className:"relative z-10 transition-opacity duration-500",children:[e.jsxs("div",{className:"flex justify-between items-end h-72 px-2 md:px-8 pb-4 gap-2 md:gap-4 overflow-x-auto custom-scrollbar-hidden",children:[e.jsxs("div",{className:"absolute inset-x-8 top-0 bottom-16 flex flex-col justify-between pointer-events-none opacity-10",children:[e.jsx("div",{className:"w-full h-px bg-white"}),e.jsx("div",{className:"w-full h-px bg-white"}),e.jsx("div",{className:"w-full h-px bg-white"})]}),n.map((p,b)=>e.jsx(O,{value:p.gain,min:-12,max:12,onChange:w=>i(b,w),label:f[b],disabled:!t},b))]}),e.jsxs("div",{className:"flex flex-col md:flex-row justify-between items-center gap-4 pt-6 border-t border-white/5",children:[e.jsx("div",{className:"flex gap-2 overflow-x-auto max-w-full pb-2 md:pb-0 custom-scrollbar-hidden mask-linear-fade",children:Object.keys(h).map(p=>e.jsx("button",{onClick:()=>{h[p].forEach((w,j)=>i(j,w))},className:"px-4 py-2 rounded bg-[#1a1a1a] hover:bg-[#252525] border border-white/5 hover:border-white/10 text-[10px] font-bold text-gray-400 hover:text-white transition-all uppercase tracking-wider whitespace-nowrap active:scale-95 shadow-md",children:x(`settings.effects.preset_${p}`)},p))}),e.jsx("button",{onClick:d,className:"text-[10px] font-bold text-red-400 hover:text-red-300 uppercase tracking-widest px-4 py-2 hover:bg-red-500/10 rounded transition-colors",children:x("settings.effects.reset")})]})]})]}),e.jsxs("div",{className:"grid grid-cols-1 md:grid-cols-2 gap-6",children:[e.jsxs("div",{className:"glass-panel p-6 rounded-[24px] relative overflow-hidden group border border-white/5 bg-[#0B1E3D] shadow-2xl",children:[e.jsx("div",{className:"absolute top-3 left-3 w-2 h-2 rounded-full bg-[#222] shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]"}),e.jsx("div",{className:"absolute top-3 right-3 w-2 h-2 rounded-full bg-[#222] shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]"}),e.jsx("div",{className:"absolute bottom-3 left-3 w-2 h-2 rounded-full bg-[#222] shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]"}),e.jsx("div",{className:"absolute bottom-3 right-3 w-2 h-2 rounded-full bg-[#222] shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]"}),e.jsxs("div",{className:"flex items-center justify-between mb-6 relative z-10 px-2",children:[e.jsxs("div",{className:"flex items-center gap-3",children:[e.jsx("div",{className:`w-3 h-3 rounded-full ${s?"bg-[#00ff00] shadow-[0_0_8px_#00ff00]":"bg-[#330000]"} transition-colors duration-200`}),e.jsxs("div",{children:[e.jsx("span",{className:"font-bold text-lg text-white block tracking-tight",children:"Spatial 8D"}),e.jsx("span",{className:"text-[9px] text-gray-500 uppercase tracking-widest font-bold",children:"Binaural Panner"})]})]}),e.jsx(N,{enabled:s,onChange:()=>l(!s)})]}),e.jsxs("div",{className:"relative h-32 bg-black rounded-lg border border-white/10 flex items-center justify-center overflow-hidden shadow-[inset_0_2px_10px_rgba(0,0,0,0.8)] mx-2",children:[e.jsx("div",{className:"absolute inset-0 bg-[radial-gradient(circle,transparent_20%,#111_20%,#111_21%,transparent_21%,transparent_40%,#111_40%,#111_41%,transparent_41%,transparent_60%,#111_60%,#111_61%,transparent_61%)] opacity-30"}),e.jsx("div",{className:"absolute w-full h-[1px] bg-[#222]"}),e.jsx("div",{className:"absolute h-full w-[1px] bg-[#222]"}),e.jsx("div",{className:"absolute w-8 h-8 rounded-full bg-[#222] border border-white/20 z-10"}),e.jsx("div",{className:`absolute w-full h-full flex items-center justify-center transition-opacity duration-500 ${s?"opacity-100":"opacity-0"}`,children:e.jsx("div",{className:"w-[80px] h-[80px] animate-[spin_8s_linear_infinite]",children:e.jsx("div",{className:"absolute top-0 left-1/2 -translate-x-1/2 w-3 h-3 bg-purple-500 rounded-full shadow-[0_0_10px_#a855f7]"})})}),e.jsx("div",{className:"absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-transparent pointer-events-none rounded-lg"})]}),e.jsx("p",{className:"mt-4 px-2 text-xs text-gray-500 font-medium leading-relaxed font-mono",children:s?"STATUS: ORBITING // LFO: 0.2Hz":"STATUS: BYPASSED"})]}),e.jsxs("div",{className:"glass-panel p-6 rounded-[24px] relative overflow-hidden group border border-white/5 bg-[#0B1E3D] shadow-2xl",children:[e.jsx("div",{className:"absolute top-3 left-3 w-2 h-2 rounded-full bg-[#222] shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]"}),e.jsx("div",{className:"absolute top-3 right-3 w-2 h-2 rounded-full bg-[#222] shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]"}),e.jsx("div",{className:"absolute bottom-3 left-3 w-2 h-2 rounded-full bg-[#222] shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]"}),e.jsx("div",{className:"absolute bottom-3 right-3 w-2 h-2 rounded-full bg-[#222] shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]"}),e.jsxs("div",{className:"flex items-center justify-between mb-6 relative z-10 px-2",children:[e.jsxs("div",{className:"flex items-center gap-3",children:[e.jsx("div",{className:`w-3 h-3 rounded-full ${c?"bg-[#00ff00] shadow-[0_0_8px_#00ff00]":"bg-[#330000]"} transition-colors duration-200`}),e.jsxs("div",{children:[e.jsx("span",{className:"font-bold text-lg text-white block tracking-tight",children:"Verb Unit"}),e.jsx("span",{className:"text-[9px] text-gray-500 uppercase tracking-widest font-bold",children:"Plate Reverb"})]})]}),e.jsx(N,{enabled:c,onChange:()=>m(!c)})]}),e.jsxs("div",{className:"relative h-16 bg-[#0a0a0a] rounded-lg border border-white/10 mb-5 overflow-hidden shadow-[inset_0_2px_5px_rgba(0,0,0,1)] mx-2",children:[e.jsxs("svg",{className:"absolute bottom-0 left-0 w-full h-full p-2",viewBox:"0 0 100 40",preserveAspectRatio:"none",children:[e.jsx("path",{d:"M0,40 Q10,5 20,20 T40,30 T60,35 T100,38",fill:"none",stroke:c?"#3b82f6":"#222",strokeWidth:"2",className:"transition-colors duration-300"}),e.jsx("path",{d:"M0,40 Q10,5 20,20 T40,30 T60,35 T100,38 L100,40 L0,40 Z",fill:c?"rgba(59, 130, 246, 0.2)":"transparent",className:"transition-colors duration-300"})]}),e.jsx("div",{className:"absolute top-1 right-2 font-mono text-[9px] text-blue-500/80",children:c?`MIX: ${(o*100).toFixed(0)}%`:"OFF"})]}),e.jsxs("div",{className:`px-2 transition-all duration-300 ${c?"opacity-100":"opacity-40 pointer-events-none grayscale"}`,children:[e.jsxs("div",{className:"flex justify-between text-[9px] font-bold text-gray-500 uppercase mb-2 tracking-widest font-mono",children:[e.jsx("span",{children:"Dry"}),e.jsx("span",{children:"Wet"})]}),e.jsxs("div",{className:"relative h-8 w-full flex items-center group/slider",children:[e.jsx("input",{type:"range",min:"0",max:"1",step:"0.05",value:o,onChange:p=>a(parseFloat(p.target.value)),className:"absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20"}),e.jsx("div",{className:"w-full h-1.5 bg-[#0B1E3D] rounded-full border-b border-white/10 relative z-10 shadow-[inset_0_1px_2px_rgba(0,0,0,1)]"}),e.jsx("div",{className:"absolute h-6 w-10 bg-gradient-to-b from-[#333] to-[#111] rounded shadow-[0_2px_4px_rgba(0,0,0,0.8),inset_0_1px_0_rgba(255,255,255,0.1)] border border-black z-10 pointer-events-none flex items-center justify-center transition-transform duration-75 ease-out group-active/slider:scale-105",style:{left:`calc(${o*100}% - 20px)`},children:e.jsx("div",{className:"w-0.5 h-3 bg-blue-500 shadow-[0_0_4px_#3b82f6]"})})]})]})]})]})]})},K=()=>{const{importData:t,exportData:r}=u.useContext(I),{showModal:n,hideModal:i}=u.useContext(C),d=u.useRef(null),{t:s}=g(),l=()=>{const o=r(),a=new Blob([o],{type:"application/json"}),x=URL.createObjectURL(a),h=document.createElement("a");h.href=x,h.download=`welkin_music_backup_${new Date().toISOString().split("T")[0]}.json`,document.body.appendChild(h),h.click(),document.body.removeChild(h),URL.revokeObjectURL(x)},c=o=>{var h;const a=(h=o.target.files)==null?void 0:h[0];if(!a)return;const x=new FileReader;x.onload=f=>{var b;const p=(b=f.target)==null?void 0:b.result;n({title:s("settings.data.importTitle"),content:e.jsxs("div",{className:"space-y-4",children:[e.jsx("p",{className:"text-gray-300 text-sm leading-relaxed mb-4",children:s("settings.data.importSubtitle")}),e.jsxs("div",{className:"grid gap-3",children:[e.jsxs("button",{onClick:()=>m(p,"merge"),className:"flex items-center p-4 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-blue-500/50 transition-all text-left group",children:[e.jsx("div",{className:"p-3 rounded-xl bg-blue-500/20 text-blue-400 mr-4 group-hover:scale-110 transition-transform",children:e.jsx(y,{className:"w-6 h-6"})}),e.jsxs("div",{children:[e.jsx("h4",{className:"font-bold text-white text-sm mb-1",children:s("settings.data.merge")}),e.jsx("p",{className:"text-xs text-gray-400",children:s("settings.data.mergeDesc")})]})]}),e.jsxs("button",{onClick:()=>m(p,"replace"),className:"flex items-center p-4 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-red-500/50 transition-all text-left group",children:[e.jsx("div",{className:"p-3 rounded-xl bg-red-500/20 text-red-400 mr-4 group-hover:scale-110 transition-transform",children:e.jsx("svg",{xmlns:"http://www.w3.org/2000/svg",fill:"none",viewBox:"0 0 24 24",strokeWidth:1.5,stroke:"currentColor",className:"w-6 h-6",children:e.jsx("path",{strokeLinecap:"round",strokeLinejoin:"round",d:"M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"})})}),e.jsxs("div",{children:[e.jsx("h4",{className:"font-bold text-white text-sm mb-1",children:s("settings.data.replace")}),e.jsx("p",{className:"text-xs text-gray-400",children:s("settings.data.replaceDesc")})]})]})]}),e.jsx("button",{onClick:i,className:"w-full py-3 rounded-xl text-gray-400 hover:text-white hover:bg-white/5 transition-colors text-xs font-bold uppercase tracking-widest",children:s("settings.profile.cancel")})]})})},x.readAsText(a),o.target.value=""},m=(o,a)=>{const x=t(o,a);i(),n({title:x.success?s("settings.data.importSuccess"):s("settings.data.importFailure"),content:e.jsxs("div",{className:"text-center space-y-6 py-4",children:[e.jsx("div",{className:`w-16 h-16 mx-auto rounded-full flex items-center justify-center ${x.success?"bg-green-500/20 text-green-400":"bg-red-500/20 text-red-400"}`,children:x.success?e.jsx("svg",{xmlns:"http://www.w3.org/2000/svg",fill:"none",viewBox:"0 0 24 24",strokeWidth:2,stroke:"currentColor",className:"w-8 h-8",children:e.jsx("path",{strokeLinecap:"round",strokeLinejoin:"round",d:"M4.5 12.75l6 6 9-13.5"})}):e.jsx("svg",{xmlns:"http://www.w3.org/2000/svg",fill:"none",viewBox:"0 0 24 24",strokeWidth:2,stroke:"currentColor",className:"w-8 h-8",children:e.jsx("path",{strokeLinecap:"round",strokeLinejoin:"round",d:"M6 18L18 6M6 6l12 12"})})}),e.jsx("p",{className:"text-white font-medium",children:s(x.messageKey)}),e.jsx("button",{onClick:i,className:"px-8 py-3 rounded-full bg-white/10 hover:bg-white/20 font-bold transition-colors text-xs uppercase tracking-widest",children:"OK"})]})})};return e.jsxs("div",{className:"space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500",children:[e.jsx(v,{title:s("settings.data.title"),description:s("settings.data.description")}),e.jsxs("div",{className:"grid grid-cols-1 md:grid-cols-2 gap-6",children:[e.jsxs("button",{onClick:()=>{var o;return(o=d.current)==null?void 0:o.click()},className:"group flex flex-col items-center justify-center p-8 rounded-3xl bg-white/5 border border-white/5 hover:bg-white/10 hover:border-white/20 hover:scale-[1.02] transition-all duration-300",children:[e.jsx("div",{className:"w-16 h-16 rounded-full bg-[#3A8FE0]/10 text-[#3A8FE0] flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-[0_0_20px_rgba(58,143,224,0.2)]",children:e.jsx(y,{className:"w-8 h-8"})}),e.jsx("h3",{className:"text-xl font-bold text-white mb-2",children:s("settings.data.import")}),e.jsx("p",{className:"text-sm text-gray-400 text-center",children:"Restore from backup"}),e.jsx("input",{type:"file",ref:d,onChange:c,accept:".json",className:"hidden"})]}),e.jsxs("button",{onClick:l,className:"group flex flex-col items-center justify-center p-8 rounded-3xl bg-white/5 border border-white/5 hover:bg-white/10 hover:border-white/20 hover:scale-[1.02] transition-all duration-300",children:[e.jsx("div",{className:"w-16 h-16 rounded-full bg-blue-500/10 text-blue-400 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-[0_0_20px_rgba(59,130,246,0.2)]",children:e.jsx(U,{className:"w-8 h-8"})}),e.jsx("h3",{className:"text-xl font-bold text-white mb-2",children:s("settings.data.export")}),e.jsx("p",{className:"text-sm text-gray-400 text-center",children:"Save library to file"})]})]})]})},J=()=>{const{t}=g();return e.jsxs("div",{className:"space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500",children:[e.jsx(v,{title:t("settings.about.title"),description:"Project details."}),e.jsxs(k,{className:"relative overflow-hidden",children:[e.jsx("div",{className:"absolute top-0 right-0 w-64 h-64 bg-[#0A2D6E]/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none"}),e.jsxs("div",{className:"relative z-10 flex flex-col gap-8",children:[e.jsxs("div",{className:"flex items-center gap-5",children:[e.jsx("div",{className:"w-16 h-16 rounded-2xl bg-gradient-to-br from-[#0A2D6E] to-[#1E6CC7] flex items-center justify-center shadow-lg shadow-blue-900/20 transform rotate-3 border border-white/10",children:e.jsx("span",{className:"font-['Inter'] text-2xl font-extrabold text-white",children:"W"})}),e.jsxs("div",{children:[e.jsx("h3",{className:"text-3xl font-black text-white tracking-tighter",children:"Welkin.Music"}),e.jsxs("div",{className:"flex items-center gap-3 mt-1",children:[e.jsx("span",{className:"px-2 py-0.5 rounded-md bg-white/10 border border-white/10 text-xs font-bold text-[#0A2D6E] uppercase tracking-wider",children:"v1.2.0"}),e.jsx("span",{className:"w-1 h-1 rounded-full bg-gray-600"}),e.jsx("span",{className:"text-xs font-medium text-gray-400",children:"Web Player"})]})]})]}),e.jsx("p",{className:"text-gray-300 text-sm leading-relaxed max-w-2xl border-l-2 border-[#3A8FE0] pl-4",children:t("settings.about.p1")}),e.jsxs("div",{className:"grid grid-cols-1 sm:grid-cols-2 gap-4",children:[e.jsxs("div",{className:"p-4 rounded-2xl bg-black/20 border border-white/5 flex items-center gap-4",children:[e.jsx("div",{className:"w-10 h-10 rounded-full bg-white/5 flex items-center justify-center",children:e.jsx(L,{className:"w-5 h-5 text-gray-400"})}),e.jsxs("div",{children:[e.jsx("div",{className:"text-[10px] font-bold text-gray-500 uppercase tracking-widest",children:"Developer"}),e.jsx("div",{className:"text-white font-bold",children:"ewkekw"})]})]}),e.jsxs("div",{className:"p-4 rounded-2xl bg-black/20 border border-white/5 flex items-center gap-4",children:[e.jsx("div",{className:"w-10 h-10 rounded-full bg-white/5 flex items-center justify-center",children:e.jsx(F,{className:"w-5 h-5 text-gray-400"})}),e.jsxs("div",{children:[e.jsx("div",{className:"text-[10px] font-bold text-gray-500 uppercase tracking-widest",children:"Data Source"}),e.jsx("div",{className:"text-white font-bold",children:"JioSaavn API"})]})]})]}),e.jsx("div",{children:e.jsxs("a",{href:"#",target:"_blank",rel:"noreferrer",className:"inline-flex items-center gap-3 px-6 py-3.5 rounded-xl bg-white/5 hover:bg-white/10 text-white font-bold transition-all border border-white/10 hover:border-[#3A8FE0]/50 group",children:[e.jsx(V,{className:"w-5 h-5 text-gray-400 group-hover:text-white transition-colors"}),e.jsx("span",{children:"View Source Code"})]})})]})]})]})},X=({activeTab:t,onSelect:r})=>{const n=[{id:"profile",icon:e.jsx(L,{className:"w-5 h-5"}),label:"Profile"},{id:"audio",icon:e.jsx(P,{className:"w-5 h-5"}),label:"Audio"},{id:"effects",icon:e.jsx(M,{className:"w-5 h-5"}),label:"Sonic Lab"},{id:"data",icon:e.jsx(F,{className:"w-5 h-5"}),label:"Data"},{id:"about",icon:e.jsx($,{className:"w-5 h-5"}),label:"About"}];return e.jsx("nav",{className:"flex md:flex-col gap-2 overflow-x-auto md:overflow-visible p-1 md:p-0 custom-scrollbar-hidden",children:n.map(i=>e.jsxs("button",{onClick:()=>r(i.id),className:`
+import {
+  j as e,
+  r as u,
+  h as D,
+  M as C,
+  u as g,
+  U as I,
+  P as A,
+  i as _,
+} from "./index-Jbwo0tuu.js";
+const N = ({ label: t, enabled: r, onChange: n }) =>
+    e.jsxs("div", {
+      className:
+        "flex items-center justify-between w-full min-h-[2rem] select-none",
+      children: [
+        t &&
+          e.jsx("span", {
+            className:
+              "font-bold text-sm text-white mr-4 flex-1 cursor-pointer",
+            onClick: n,
+            children: t,
+          }),
+        e.jsx("button", {
+          onClick: n,
+          className: `${r ? "bg-[#3A8FE0]" : "bg-white/20"} relative inline-flex items-center h-7 rounded-full w-12 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#0B1E3D] focus:ring-[#3A8FE0] flex-shrink-0`,
+          children: e.jsx("span", {
+            className: `${r ? "translate-x-6" : "translate-x-1"} inline-block w-5 h-5 transform bg-white rounded-full transition-transform shadow-md`,
+          }),
+        }),
+      ],
+    }),
+  L = (t) =>
+    e.jsx("svg", {
+      ...t,
+      xmlns: "http://www.w3.org/2000/svg",
+      fill: "none",
+      viewBox: "0 0 24 24",
+      strokeWidth: 1.5,
+      stroke: "currentColor",
+      children: e.jsx("path", {
+        strokeLinecap: "round",
+        strokeLinejoin: "round",
+        d: "M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z",
+      }),
+    }),
+  P = (t) =>
+    e.jsx("svg", {
+      ...t,
+      xmlns: "http://www.w3.org/2000/svg",
+      fill: "none",
+      viewBox: "0 0 24 24",
+      strokeWidth: 1.5,
+      stroke: "currentColor",
+      children: e.jsx("path", {
+        strokeLinecap: "round",
+        strokeLinejoin: "round",
+        d: "M19.114 5.636a9 9 0 010 12.728M16.463 8.288a5.25 5.25 0 010 7.424M6.75 8.25l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.01 9.01 0 012.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75z",
+      }),
+    }),
+  M = (t) =>
+    e.jsx("svg", {
+      ...t,
+      xmlns: "http://www.w3.org/2000/svg",
+      fill: "none",
+      viewBox: "0 0 24 24",
+      strokeWidth: 1.5,
+      stroke: "currentColor",
+      children: e.jsx("path", {
+        strokeLinecap: "round",
+        strokeLinejoin: "round",
+        d: "M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75",
+      }),
+    }),
+  F = (t) =>
+    e.jsx("svg", {
+      ...t,
+      xmlns: "http://www.w3.org/2000/svg",
+      fill: "none",
+      viewBox: "0 0 24 24",
+      strokeWidth: 1.5,
+      stroke: "currentColor",
+      children: e.jsx("path", {
+        strokeLinecap: "round",
+        strokeLinejoin: "round",
+        d: "M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 0v3.75m-16.5-3.75v3.75m16.5 0v3.75C20.25 16.153 16.556 18 12 18s-8.25-1.847-8.25-4.125v-3.75m16.5 0c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125",
+      }),
+    }),
+  $ = (t) =>
+    e.jsx("svg", {
+      ...t,
+      xmlns: "http://www.w3.org/2000/svg",
+      fill: "none",
+      viewBox: "0 0 24 24",
+      strokeWidth: 1.5,
+      stroke: "currentColor",
+      children: e.jsx("path", {
+        strokeLinecap: "round",
+        strokeLinejoin: "round",
+        d: "M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z",
+      }),
+    }),
+  R = (t) =>
+    e.jsx("svg", {
+      ...t,
+      xmlns: "http://www.w3.org/2000/svg",
+      fill: "none",
+      viewBox: "0 0 24 24",
+      strokeWidth: 2,
+      stroke: "currentColor",
+      children: e.jsx("path", {
+        strokeLinecap: "round",
+        strokeLinejoin: "round",
+        d: "M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5",
+      }),
+    }),
+  T = (t) =>
+    e.jsx("svg", {
+      ...t,
+      xmlns: "http://www.w3.org/2000/svg",
+      fill: "none",
+      viewBox: "0 0 24 24",
+      strokeWidth: 2,
+      stroke: "currentColor",
+      children: e.jsx("path", {
+        strokeLinecap: "round",
+        strokeLinejoin: "round",
+        d: "M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125",
+      }),
+    }),
+  W = (t) =>
+    e.jsxs("svg", {
+      ...t,
+      xmlns: "http://www.w3.org/2000/svg",
+      fill: "none",
+      viewBox: "0 0 24 24",
+      strokeWidth: 2,
+      stroke: "currentColor",
+      children: [
+        e.jsx("path", {
+          strokeLinecap: "round",
+          strokeLinejoin: "round",
+          d: "M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z",
+        }),
+        e.jsx("path", {
+          strokeLinecap: "round",
+          strokeLinejoin: "round",
+          d: "M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zM18.75 10.5h.008v.008h-.008V10.5z",
+        }),
+      ],
+    }),
+  H = (t) =>
+    e.jsx("svg", {
+      ...t,
+      xmlns: "http://www.w3.org/2000/svg",
+      fill: "none",
+      viewBox: "0 0 24 24",
+      strokeWidth: 2,
+      stroke: "currentColor",
+      children: e.jsx("path", {
+        strokeLinecap: "round",
+        strokeLinejoin: "round",
+        d: "M19.5 12c0-1.232-.046-2.453-.138-3.662a4.006 4.006 0 00-3.7-3.7 48.678 48.678 0 00-7.324 0 4.006 4.006 0 00-3.7 3.7c-.017.22-.032.441-.046.662M19.5 12l3-3m-3 3l-3-3m-12 3c0 1.232.046 2.453.138 3.662a4.006 4.006 0 003.7 3.7 48.656 48.656 0 007.324 0 4.006 4.006 0 003.7-3.7c.017-.22.032-.441.046-.662M4.5 12l3 3m-3-3l-3 3",
+      }),
+    }),
+  U = (t) =>
+    e.jsx("svg", {
+      ...t,
+      xmlns: "http://www.w3.org/2000/svg",
+      fill: "none",
+      viewBox: "0 0 24 24",
+      strokeWidth: 2,
+      stroke: "currentColor",
+      children: e.jsx("path", {
+        strokeLinecap: "round",
+        strokeLinejoin: "round",
+        d: "M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3",
+      }),
+    }),
+  y = (t) =>
+    e.jsx("svg", {
+      ...t,
+      xmlns: "http://www.w3.org/2000/svg",
+      fill: "none",
+      viewBox: "0 0 24 24",
+      strokeWidth: 2,
+      stroke: "currentColor",
+      children: e.jsx("path", {
+        strokeLinecap: "round",
+        strokeLinejoin: "round",
+        d: "M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z",
+      }),
+    }),
+  V = (t) =>
+    e.jsx("svg", {
+      ...t,
+      xmlns: "http://www.w3.org/2000/svg",
+      viewBox: "0 0 24 24",
+      fill: "currentColor",
+      children: e.jsx("path", {
+        d: "M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z",
+      }),
+    }),
+  v = ({ title: t, description: r }) =>
+    e.jsxs("div", {
+      className: "mb-8",
+      children: [
+        e.jsx("h2", {
+          className:
+            "text-3xl md:text-4xl font-black text-white tracking-tighter mb-2",
+          children: t,
+        }),
+        e.jsx("p", { className: "text-gray-400 font-medium", children: r }),
+      ],
+    }),
+  k = ({ children: t, className: r = "" }) =>
+    e.jsx("div", {
+      className: `glass-panel border border-white/5 rounded-3xl p-6 md:p-8 ${r}`,
+      children: t,
+    }),
+  O = ({ value: t, min: r, max: n, onChange: i, label: d, disabled: s }) => {
+    const l = u.useRef(null),
+      c = (o) => {
+        if (s || !l.current) return;
+        const a = l.current;
+        a.setPointerCapture(o.pointerId);
+        const x = (p) => {
+          const b = a.getBoundingClientRect(),
+            w = b.height,
+            j = b.bottom - p,
+            S = Math.max(0, Math.min(1, j / w)),
+            z = n - r,
+            B = r + S * z;
+          i(B);
+        };
+        x(o.clientY);
+        const h = (p) => x(p.clientY),
+          f = (p) => {
+            (a.releasePointerCapture(p.pointerId),
+              a.removeEventListener("pointermove", h),
+              a.removeEventListener("pointerup", f));
+          };
+        (a.addEventListener("pointermove", h),
+          a.addEventListener("pointerup", f));
+      },
+      m = ((t - r) / (n - r)) * 100;
+    return e.jsxs("div", {
+      className: `flex flex-col items-center h-full group select-none ${s ? "opacity-50 pointer-events-none grayscale" : ""}`,
+      children: [
+        e.jsxs("div", {
+          ref: l,
+          onPointerDown: c,
+          className:
+            "relative w-14 h-48 sm:h-56 cursor-pointer touch-none flex justify-center py-4 bg-[#0a0a0a] rounded-lg border border-white/10 shadow-[inset_0_2px_4px_rgba(0,0,0,0.5)]",
+          children: [
+            e.jsx("div", {
+              className:
+                "absolute w-1 h-[calc(100%-2rem)] top-4 bg-[#222] rounded-full shadow-[inset_0_1px_2px_rgba(0,0,0,1)]",
+              children: e.jsx("div", {
+                className:
+                  "absolute bottom-0 left-0 right-0 bg-[#3A8FE0] w-full rounded-b-full opacity-40",
+                style: { height: `${m}%` },
+              }),
+            }),
+            e.jsx("div", {
+              className:
+                "absolute top-1/2 left-0 right-0 h-[1px] bg-white/20 pointer-events-none",
+            }),
+            e.jsxs("div", {
+              className:
+                "absolute left-1/2 -translate-x-1/2 w-10 h-6 bg-gradient-to-b from-[#444] to-[#222] rounded-sm shadow-[0_4px_6px_rgba(0,0,0,0.8),0_0_0_1px_rgba(255,255,255,0.1)] flex items-center justify-center z-10 pointer-events-none transition-transform duration-100 ease-out group-active:scale-105",
+              style: { bottom: `calc(${m}% - 12px)` },
+              children: [
+                e.jsx("div", { className: "w-6 h-[1px] bg-white/30 mb-[2px]" }),
+                e.jsx("div", { className: "w-6 h-[1px] bg-white/30" }),
+                e.jsx("div", { className: "w-6 h-[1px] bg-white/30 mt-[2px]" }),
+                e.jsx("div", {
+                  className:
+                    "absolute w-8 h-[2px] bg-[#3A8FE0] top-1/2 -translate-y-1/2 shadow-[0_0_4px_#3A8FE0]",
+                }),
+              ],
+            }),
+          ],
+        }),
+        e.jsx("span", {
+          className:
+            "mt-4 text-[10px] font-bold text-gray-500 uppercase tracking-wider group-hover:text-white transition-colors",
+          children: d,
+        }),
+        e.jsx("span", {
+          className: "text-[10px] font-mono text-[#3A8FE0] mt-1",
+          children: t > 0 ? `+${t.toFixed(1)}` : t.toFixed(1),
+        }),
+      ],
+    });
+  },
+  q = ({ currentAvatar: t, onSelect: r, onClose: n }) => {
+    const { t: i } = g(),
+      d = u.useRef(null),
+      s = (l) => {
+        var m;
+        const c = (m = l.target.files) == null ? void 0 : m[0];
+        if (c) {
+          const o = new FileReader();
+          ((o.onload = (a) => {
+            var x;
+            (x = a.target) != null && x.result && r(a.target.result);
+          }),
+            o.readAsDataURL(c));
+        }
+      };
+    return e.jsxs("div", {
+      className: "space-y-6",
+      children: [
+        e.jsxs("div", {
+          className:
+            "grid grid-cols-4 sm:grid-cols-5 gap-4 max-h-[300px] overflow-y-auto custom-scrollbar p-1",
+          children: [
+            e.jsxs("button", {
+              onClick: () => {
+                var l;
+                return (l = d.current) == null ? void 0 : l.click();
+              },
+              className:
+                "aspect-square rounded-2xl bg-white/5 border-2 border-dashed border-white/10 hover:border-[#3A8FE0] hover:bg-white/10 flex flex-col items-center justify-center transition-all group",
+              title: i("settings.profile.upload"),
+              children: [
+                e.jsx(R, {
+                  className:
+                    "w-6 h-6 text-gray-500 group-hover:text-[#3A8FE0] transition-colors",
+                }),
+                e.jsx("input", {
+                  type: "file",
+                  ref: d,
+                  onChange: s,
+                  accept: "image/*",
+                  className: "hidden",
+                }),
+              ],
+            }),
+            _.map((l, c) =>
+              e.jsx(
+                "button",
+                {
+                  onClick: () => r(l),
+                  className: `relative aspect-square rounded-2xl overflow-hidden border-2 transition-all duration-300 hover:scale-105 ${t === l ? "border-[#3A8FE0] ring-2 ring-[#3A8FE0]/30" : "border-transparent hover:border-white/30"}`,
+                  children: e.jsx("img", {
+                    src: l,
+                    alt: `Avatar ${c + 1}`,
+                    className: "w-full h-full object-cover",
+                    loading: "lazy",
+                  }),
+                },
+                c,
+              ),
+            ),
+          ],
+        }),
+        e.jsx("div", {
+          className: "flex justify-end pt-2",
+          children: e.jsx("button", {
+            onClick: n,
+            className:
+              "px-6 py-2 rounded-full bg-white/5 hover:bg-white/10 text-white font-medium transition-colors text-sm",
+            children: i("settings.profile.cancel"),
+          }),
+        }),
+      ],
+    });
+  },
+  Q = ({ initialName: t, initialImage: r, onSave: n, onCancel: i }) => {
+    const [d, s] = u.useState(t),
+      [l, c] = u.useState(r),
+      [m, o] = u.useState(!1),
+      { t: a } = g(),
+      x = () => {
+        const h = _[Math.floor(Math.random() * _.length)];
+        c(h);
+      };
+    return e.jsxs("div", {
+      className: "space-y-8",
+      children: [
+        e.jsx("div", {
+          className: "flex flex-col items-center space-y-6",
+          children: e.jsxs("div", {
+            className: "relative group",
+            children: [
+              e.jsx("div", {
+                className:
+                  "w-32 h-32 rounded-full p-1 border-2 border-[#3A8FE0] shadow-[0_0_30px_rgba(58,143,224,0.3)] bg-[#0B1E3D] overflow-hidden",
+                children: e.jsx("img", {
+                  src: l,
+                  alt: "Profile",
+                  className: "w-full h-full rounded-full object-cover",
+                }),
+              }),
+              e.jsx("button", {
+                onClick: x,
+                className:
+                  "absolute top-0 right-0 transform translate-x-1/4 -translate-y-1/4 p-2.5 bg-[#2a2a2a] rounded-full text-white hover:bg-[#3a3a3a] hover:text-[#3A8FE0] border border-white/10 transition-colors shadow-lg z-10",
+                title: a("settings.profile.random"),
+                children: e.jsx(H, { className: "w-4 h-4" }),
+              }),
+              e.jsx("button", {
+                onClick: () => o(!0),
+                className:
+                  "absolute bottom-0 right-0 transform translate-x-1/4 translate-y-1/4 p-2.5 bg-[#3A8FE0] rounded-full text-black hover:bg-[#6CB4F0] transition-colors shadow-lg z-10",
+                title: a("settings.profile.chooseAvatar"),
+                children: e.jsx(W, { className: "w-4 h-4" }),
+              }),
+            ],
+          }),
+        }),
+        m
+          ? e.jsxs("div", {
+              className:
+                "bg-black/20 p-6 rounded-3xl border border-white/5 animate-in fade-in zoom-in-95",
+              children: [
+                e.jsx("h3", {
+                  className:
+                    "text-xs font-bold text-gray-400 uppercase tracking-widest mb-4",
+                  children: a("settings.profile.chooseAvatar"),
+                }),
+                e.jsx(q, {
+                  currentAvatar: l,
+                  onSelect: (h) => {
+                    (c(h), o(!1));
+                  },
+                  onClose: () => o(!1),
+                }),
+              ],
+            })
+          : e.jsxs("div", {
+              className: "space-y-6",
+              children: [
+                e.jsxs("div", {
+                  children: [
+                    e.jsx("label", {
+                      className:
+                        "block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2",
+                      children: a("settings.profile.title"),
+                    }),
+                    e.jsxs("div", {
+                      className: "relative",
+                      children: [
+                        e.jsx("input", {
+                          type: "text",
+                          value: d,
+                          onChange: (h) => s(h.target.value),
+                          className:
+                            "w-full bg-white/5 border border-white/10 p-4 rounded-2xl focus:outline-none focus:border-[#3A8FE0] focus:ring-1 focus:ring-[#3A8FE0] transition-all text-white text-lg font-medium placeholder-gray-600 pl-12",
+                          placeholder: "Your Name",
+                        }),
+                        e.jsx(T, {
+                          className:
+                            "absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500",
+                        }),
+                      ],
+                    }),
+                  ],
+                }),
+                e.jsxs("div", {
+                  className: "flex gap-3",
+                  children: [
+                    e.jsx("button", {
+                      onClick: i,
+                      className:
+                        "flex-1 px-4 py-3.5 rounded-xl bg-white/5 hover:bg-white/10 text-white font-bold transition-colors",
+                      children: a("settings.profile.cancel"),
+                    }),
+                    e.jsx("button", {
+                      onClick: () => n(d, l),
+                      disabled: !d.trim(),
+                      className:
+                        "flex-1 px-4 py-3.5 rounded-xl bg-[#3A8FE0] text-white font-bold hover:bg-[#6CB4F0] disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-[#3A8FE0]/20",
+                      children: a("settings.profile.save"),
+                    }),
+                  ],
+                }),
+              ],
+            }),
+      ],
+    });
+  },
+  E = () => {
+    const {
+        name: t,
+        imageUrl: r,
+        updateName: n,
+        updateImage: i,
+      } = u.useContext(D),
+      { showModal: d, hideModal: s } = u.useContext(C),
+      { t: l } = g(),
+      c = () => {
+        d({
+          title: l("settings.profile.editProfile"),
+          content: e.jsx(Q, {
+            initialName: t,
+            initialImage: r,
+            onSave: (m, o) => {
+              (n(m), i(o), s());
+            },
+            onCancel: s,
+          }),
+        });
+      };
+    return e.jsxs("div", {
+      className:
+        "space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500",
+      children: [
+        e.jsx(v, {
+          title: l("settings.profile.title"),
+          description: l("settings.profile.description"),
+        }),
+        e.jsxs(k, {
+          className:
+            "flex flex-col sm:flex-row items-center gap-8 relative overflow-hidden group",
+          children: [
+            e.jsx("div", {
+              className:
+                "absolute inset-0 bg-gradient-to-r from-[#3A8FE0]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none",
+            }),
+            e.jsx("div", {
+              className: "relative",
+              children: e.jsx("div", {
+                className:
+                  "w-32 h-32 rounded-full p-1 border-2 border-[#3A8FE0] shadow-[0_0_40px_rgba(58,143,224,0.3)] bg-[#0B1E3D] overflow-hidden group-hover:scale-105 transition-transform duration-500",
+                children: e.jsx("img", {
+                  src: r,
+                  alt: t,
+                  className: "w-full h-full rounded-full object-cover",
+                }),
+              }),
+            }),
+            e.jsxs("div", {
+              className: "flex-1 text-center sm:text-left z-10",
+              children: [
+                e.jsx("h3", {
+                  className: "text-4xl font-black text-white mb-2",
+                  children: t,
+                }),
+                e.jsx("p", {
+                  className: "text-gray-400 mb-6 max-w-md",
+                  children: "Music Lover • Audio Enthusiast",
+                }),
+                e.jsx("button", {
+                  onClick: c,
+                  className:
+                    "px-8 py-3 rounded-full bg-white/10 hover:bg-white/20 border border-white/10 text-white font-bold transition-all hover:scale-105 hover:shadow-lg backdrop-blur-md",
+                  children: l("settings.profile.editProfile"),
+                }),
+              ],
+            }),
+          ],
+        }),
+      ],
+    });
+  },
+  Y = () => {
+    const { selectedQuality: t, setSelectedQuality: r } = u.useContext(A),
+      { language: n, setLanguage: i, t: d } = g();
+    return e.jsxs("div", {
+      className:
+        "space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500",
+      children: [
+        e.jsx(v, {
+          title: d("settings.quality.title"),
+          description: "Manage your listening experience and app preferences.",
+        }),
+        e.jsx(k, {
+          children: e.jsxs("div", {
+            className: "space-y-8",
+            children: [
+              e.jsxs("div", {
+                children: [
+                  e.jsxs("h3", {
+                    className:
+                      "text-lg font-bold text-white mb-4 flex items-center gap-2",
+                    children: [
+                      e.jsx("span", {
+                        className: "w-1 h-6 bg-[#3A8FE0] rounded-full block",
+                      }),
+                      "Streaming Quality",
+                    ],
+                  }),
+                  e.jsx("div", {
+                    className: "grid grid-cols-1 sm:grid-cols-2 gap-4",
+                    children: [
+                      {
+                        id: "160kbps",
+                        label: d("settings.quality.normal"),
+                        desc: d("settings.quality.normalDesc"),
+                      },
+                      {
+                        id: "320kbps",
+                        label: d("settings.quality.high"),
+                        desc: d("settings.quality.highDesc"),
+                      },
+                    ].map((s) =>
+                      e.jsxs(
+                        "button",
+                        {
+                          onClick: () => r(s.id),
+                          className: `relative p-4 rounded-2xl border-2 text-left transition-all duration-300 ${t === s.id ? "border-[#3A8FE0] bg-[#3A8FE0]/10" : "border-white/5 bg-white/5 hover:border-white/20"}`,
+                          children: [
+                            e.jsxs("div", {
+                              className:
+                                "flex justify-between items-start mb-2",
+                              children: [
+                                e.jsx("span", {
+                                  className: `font-bold text-lg ${t === s.id ? "text-[#3A8FE0]" : "text-white"}`,
+                                  children: s.label,
+                                }),
+                                t === s.id &&
+                                  e.jsx("div", {
+                                    className:
+                                      "w-3 h-3 bg-[#3A8FE0] rounded-full shadow-[0_0_10px_#3A8FE0]",
+                                  }),
+                              ],
+                            }),
+                            e.jsx("p", {
+                              className: "text-sm text-gray-400",
+                              children: s.desc,
+                            }),
+                          ],
+                        },
+                        s.id,
+                      ),
+                    ),
+                  }),
+                ],
+              }),
+              e.jsx("div", { className: "h-px bg-white/5 w-full" }),
+              e.jsxs("div", {
+                children: [
+                  e.jsxs("h3", {
+                    className:
+                      "text-lg font-bold text-white mb-4 flex items-center gap-2",
+                    children: [
+                      e.jsx("span", {
+                        className: "w-1 h-6 bg-blue-500 rounded-full block",
+                      }),
+                      d("settings.language.title"),
+                    ],
+                  }),
+                  e.jsxs("div", {
+                    className:
+                      "flex p-1 bg-black/40 rounded-xl border border-white/5 relative max-w-sm",
+                    children: [
+                      e.jsx("div", {
+                        className: `absolute top-1 bottom-1 w-[calc(50%-4px)] bg-[#3A8FE0] rounded-lg transition-all duration-300 shadow-lg ${n === "pt" ? "left-[calc(50%+2px)]" : "left-1"}`,
+                      }),
+                      ["en", "pt"].map((s) =>
+                        e.jsx(
+                          "button",
+                          {
+                            onClick: () => i(s),
+                            className: `flex-1 py-3 rounded-lg text-sm font-bold relative z-10 transition-colors ${n === s ? "text-black" : "text-gray-500 hover:text-gray-300"}`,
+                            children: s === "en" ? "English" : "Português",
+                          },
+                          s,
+                        ),
+                      ),
+                    ],
+                  }),
+                ],
+              }),
+            ],
+          }),
+        }),
+      ],
+    });
+  },
+  G = () => {
+    const {
+        isEqEnabled: t,
+        setIsEqEnabled: r,
+        eqSettings: n,
+        setEqGain: i,
+        resetEq: d,
+        is8DEnabled: s,
+        setIs8DEnabled: l,
+        isReverbEnabled: c,
+        setIsReverbEnabled: m,
+        reverbMix: o,
+        setReverbMix: a,
+      } = u.useContext(A),
+      { t: x } = g(),
+      h = {
+        flat: [0, 0, 0, 0, 0],
+        pop: [2, 4, 0, 3, 5],
+        rock: [4, 3, -2, 4, 6],
+        jazz: [3, 2, -3, 3, 4],
+        voice: [-2, -1, 4, 3, 1],
+      },
+      f = ["60Hz", "230Hz", "910Hz", "4kHz", "14kHz"];
+    return e.jsxs("div", {
+      className:
+        "space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500",
+      children: [
+        e.jsx(v, {
+          title: "Sonic Lab",
+          description: x("settings.effects.description"),
+        }),
+        e.jsxs("div", {
+          className:
+            "glass-panel-heavy p-6 md:p-8 rounded-[32px] relative overflow-hidden border border-white/5 shadow-2xl bg-[#0B1E3D]",
+          children: [
+            e.jsx("div", {
+              className:
+                "absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/brushed-alum-dark.png')] opacity-20 pointer-events-none",
+            }),
+            e.jsx("div", {
+              className:
+                "absolute top-4 left-4 w-3 h-3 rounded-full bg-[#1a1a1a] shadow-[inset_0_1px_2px_rgba(255,255,255,0.1),0_1px_1px_rgba(0,0,0,0.8)] border border-[#333]",
+            }),
+            e.jsx("div", {
+              className:
+                "absolute top-4 right-4 w-3 h-3 rounded-full bg-[#1a1a1a] shadow-[inset_0_1px_2px_rgba(255,255,255,0.1),0_1px_1px_rgba(0,0,0,0.8)] border border-[#333]",
+            }),
+            e.jsx("div", {
+              className:
+                "absolute bottom-4 left-4 w-3 h-3 rounded-full bg-[#1a1a1a] shadow-[inset_0_1px_2px_rgba(255,255,255,0.1),0_1px_1px_rgba(0,0,0,0.8)] border border-[#333]",
+            }),
+            e.jsx("div", {
+              className:
+                "absolute bottom-4 right-4 w-3 h-3 rounded-full bg-[#1a1a1a] shadow-[inset_0_1px_2px_rgba(255,255,255,0.1),0_1px_1px_rgba(0,0,0,0.8)] border border-[#333]",
+            }),
+            e.jsxs("div", {
+              className:
+                "flex flex-wrap items-center justify-between gap-6 mb-10 relative z-10",
+              children: [
+                e.jsxs("div", {
+                  className: "flex items-center gap-4",
+                  children: [
+                    e.jsx("div", {
+                      className:
+                        "w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300 shadow-inner bg-[#1a1a1a] border border-white/5",
+                      children: e.jsx(M, {
+                        className: `w-6 h-6 transition-colors ${t ? "text-[#3A8FE0]" : "text-gray-600"}`,
+                      }),
+                    }),
+                    e.jsxs("div", {
+                      children: [
+                        e.jsx("h3", {
+                          className:
+                            "text-2xl font-black text-white tracking-tight",
+                          children: "Master EQ",
+                        }),
+                        e.jsxs("div", {
+                          className: "flex items-center gap-2",
+                          children: [
+                            e.jsx("div", {
+                              className: `w-2 h-2 rounded-full transition-all duration-300 ${t ? "bg-[#3A8FE0] shadow-[0_0_8px_#3A8FE0]" : "bg-[#333] shadow-none"}`,
+                            }),
+                            e.jsx("p", {
+                              className:
+                                "text-[10px] font-bold text-gray-400 uppercase tracking-widest",
+                              children: "5-Band Parametric",
+                            }),
+                          ],
+                        }),
+                      ],
+                    }),
+                  ],
+                }),
+                e.jsxs("div", {
+                  className:
+                    "flex items-center gap-4 bg-black/40 p-1.5 rounded-full border border-white/5 backdrop-blur-sm shadow-inner",
+                  children: [
+                    e.jsx("span", {
+                      className: `text-[10px] font-bold px-3 py-1 rounded-full transition-colors ${t ? "text-gray-500" : "bg-white/10 text-white"}`,
+                      children: "BYPASS",
+                    }),
+                    e.jsx(N, { enabled: t, onChange: () => r(!t) }),
+                    e.jsx("span", {
+                      className: `text-[10px] font-bold px-3 py-1 rounded-full transition-colors ${t ? "text-[#3A8FE0]" : "text-gray-500"}`,
+                      children: "ACTIVE",
+                    }),
+                  ],
+                }),
+              ],
+            }),
+            e.jsxs("div", {
+              className: "relative z-10 transition-opacity duration-500",
+              children: [
+                e.jsxs("div", {
+                  className:
+                    "flex justify-between items-end h-72 px-2 md:px-8 pb-4 gap-2 md:gap-4 overflow-x-auto custom-scrollbar-hidden",
+                  children: [
+                    e.jsxs("div", {
+                      className:
+                        "absolute inset-x-8 top-0 bottom-16 flex flex-col justify-between pointer-events-none opacity-10",
+                      children: [
+                        e.jsx("div", { className: "w-full h-px bg-white" }),
+                        e.jsx("div", { className: "w-full h-px bg-white" }),
+                        e.jsx("div", { className: "w-full h-px bg-white" }),
+                      ],
+                    }),
+                    n.map((p, b) =>
+                      e.jsx(
+                        O,
+                        {
+                          value: p.gain,
+                          min: -12,
+                          max: 12,
+                          onChange: (w) => i(b, w),
+                          label: f[b],
+                          disabled: !t,
+                        },
+                        b,
+                      ),
+                    ),
+                  ],
+                }),
+                e.jsxs("div", {
+                  className:
+                    "flex flex-col md:flex-row justify-between items-center gap-4 pt-6 border-t border-white/5",
+                  children: [
+                    e.jsx("div", {
+                      className:
+                        "flex gap-2 overflow-x-auto max-w-full pb-2 md:pb-0 custom-scrollbar-hidden mask-linear-fade",
+                      children: Object.keys(h).map((p) =>
+                        e.jsx(
+                          "button",
+                          {
+                            onClick: () => {
+                              h[p].forEach((w, j) => i(j, w));
+                            },
+                            className:
+                              "px-4 py-2 rounded bg-[#1a1a1a] hover:bg-[#252525] border border-white/5 hover:border-white/10 text-[10px] font-bold text-gray-400 hover:text-white transition-all uppercase tracking-wider whitespace-nowrap active:scale-95 shadow-md",
+                            children: x(`settings.effects.preset_${p}`),
+                          },
+                          p,
+                        ),
+                      ),
+                    }),
+                    e.jsx("button", {
+                      onClick: d,
+                      className:
+                        "text-[10px] font-bold text-red-400 hover:text-red-300 uppercase tracking-widest px-4 py-2 hover:bg-red-500/10 rounded transition-colors",
+                      children: x("settings.effects.reset"),
+                    }),
+                  ],
+                }),
+              ],
+            }),
+          ],
+        }),
+        e.jsxs("div", {
+          className: "grid grid-cols-1 md:grid-cols-2 gap-6",
+          children: [
+            e.jsxs("div", {
+              className:
+                "glass-panel p-6 rounded-[24px] relative overflow-hidden group border border-white/5 bg-[#0B1E3D] shadow-2xl",
+              children: [
+                e.jsx("div", {
+                  className:
+                    "absolute top-3 left-3 w-2 h-2 rounded-full bg-[#222] shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]",
+                }),
+                e.jsx("div", {
+                  className:
+                    "absolute top-3 right-3 w-2 h-2 rounded-full bg-[#222] shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]",
+                }),
+                e.jsx("div", {
+                  className:
+                    "absolute bottom-3 left-3 w-2 h-2 rounded-full bg-[#222] shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]",
+                }),
+                e.jsx("div", {
+                  className:
+                    "absolute bottom-3 right-3 w-2 h-2 rounded-full bg-[#222] shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]",
+                }),
+                e.jsxs("div", {
+                  className:
+                    "flex items-center justify-between mb-6 relative z-10 px-2",
+                  children: [
+                    e.jsxs("div", {
+                      className: "flex items-center gap-3",
+                      children: [
+                        e.jsx("div", {
+                          className: `w-3 h-3 rounded-full ${s ? "bg-[#00ff00] shadow-[0_0_8px_#00ff00]" : "bg-[#330000]"} transition-colors duration-200`,
+                        }),
+                        e.jsxs("div", {
+                          children: [
+                            e.jsx("span", {
+                              className:
+                                "font-bold text-lg text-white block tracking-tight",
+                              children: "Spatial 8D",
+                            }),
+                            e.jsx("span", {
+                              className:
+                                "text-[9px] text-gray-500 uppercase tracking-widest font-bold",
+                              children: "Binaural Panner",
+                            }),
+                          ],
+                        }),
+                      ],
+                    }),
+                    e.jsx(N, { enabled: s, onChange: () => l(!s) }),
+                  ],
+                }),
+                e.jsxs("div", {
+                  className:
+                    "relative h-32 bg-black rounded-lg border border-white/10 flex items-center justify-center overflow-hidden shadow-[inset_0_2px_10px_rgba(0,0,0,0.8)] mx-2",
+                  children: [
+                    e.jsx("div", {
+                      className:
+                        "absolute inset-0 bg-[radial-gradient(circle,transparent_20%,#111_20%,#111_21%,transparent_21%,transparent_40%,#111_40%,#111_41%,transparent_41%,transparent_60%,#111_60%,#111_61%,transparent_61%)] opacity-30",
+                    }),
+                    e.jsx("div", {
+                      className: "absolute w-full h-[1px] bg-[#222]",
+                    }),
+                    e.jsx("div", {
+                      className: "absolute h-full w-[1px] bg-[#222]",
+                    }),
+                    e.jsx("div", {
+                      className:
+                        "absolute w-8 h-8 rounded-full bg-[#222] border border-white/20 z-10",
+                    }),
+                    e.jsx("div", {
+                      className: `absolute w-full h-full flex items-center justify-center transition-opacity duration-500 ${s ? "opacity-100" : "opacity-0"}`,
+                      children: e.jsx("div", {
+                        className:
+                          "w-[80px] h-[80px] animate-[spin_8s_linear_infinite]",
+                        children: e.jsx("div", {
+                          className:
+                            "absolute top-0 left-1/2 -translate-x-1/2 w-3 h-3 bg-purple-500 rounded-full shadow-[0_0_10px_#a855f7]",
+                        }),
+                      }),
+                    }),
+                    e.jsx("div", {
+                      className:
+                        "absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-transparent pointer-events-none rounded-lg",
+                    }),
+                  ],
+                }),
+                e.jsx("p", {
+                  className:
+                    "mt-4 px-2 text-xs text-gray-500 font-medium leading-relaxed font-mono",
+                  children: s
+                    ? "STATUS: ORBITING // LFO: 0.2Hz"
+                    : "STATUS: BYPASSED",
+                }),
+              ],
+            }),
+            e.jsxs("div", {
+              className:
+                "glass-panel p-6 rounded-[24px] relative overflow-hidden group border border-white/5 bg-[#0B1E3D] shadow-2xl",
+              children: [
+                e.jsx("div", {
+                  className:
+                    "absolute top-3 left-3 w-2 h-2 rounded-full bg-[#222] shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]",
+                }),
+                e.jsx("div", {
+                  className:
+                    "absolute top-3 right-3 w-2 h-2 rounded-full bg-[#222] shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]",
+                }),
+                e.jsx("div", {
+                  className:
+                    "absolute bottom-3 left-3 w-2 h-2 rounded-full bg-[#222] shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]",
+                }),
+                e.jsx("div", {
+                  className:
+                    "absolute bottom-3 right-3 w-2 h-2 rounded-full bg-[#222] shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]",
+                }),
+                e.jsxs("div", {
+                  className:
+                    "flex items-center justify-between mb-6 relative z-10 px-2",
+                  children: [
+                    e.jsxs("div", {
+                      className: "flex items-center gap-3",
+                      children: [
+                        e.jsx("div", {
+                          className: `w-3 h-3 rounded-full ${c ? "bg-[#00ff00] shadow-[0_0_8px_#00ff00]" : "bg-[#330000]"} transition-colors duration-200`,
+                        }),
+                        e.jsxs("div", {
+                          children: [
+                            e.jsx("span", {
+                              className:
+                                "font-bold text-lg text-white block tracking-tight",
+                              children: "Verb Unit",
+                            }),
+                            e.jsx("span", {
+                              className:
+                                "text-[9px] text-gray-500 uppercase tracking-widest font-bold",
+                              children: "Plate Reverb",
+                            }),
+                          ],
+                        }),
+                      ],
+                    }),
+                    e.jsx(N, { enabled: c, onChange: () => m(!c) }),
+                  ],
+                }),
+                e.jsxs("div", {
+                  className:
+                    "relative h-16 bg-[#0a0a0a] rounded-lg border border-white/10 mb-5 overflow-hidden shadow-[inset_0_2px_5px_rgba(0,0,0,1)] mx-2",
+                  children: [
+                    e.jsxs("svg", {
+                      className: "absolute bottom-0 left-0 w-full h-full p-2",
+                      viewBox: "0 0 100 40",
+                      preserveAspectRatio: "none",
+                      children: [
+                        e.jsx("path", {
+                          d: "M0,40 Q10,5 20,20 T40,30 T60,35 T100,38",
+                          fill: "none",
+                          stroke: c ? "#3b82f6" : "#222",
+                          strokeWidth: "2",
+                          className: "transition-colors duration-300",
+                        }),
+                        e.jsx("path", {
+                          d: "M0,40 Q10,5 20,20 T40,30 T60,35 T100,38 L100,40 L0,40 Z",
+                          fill: c ? "rgba(59, 130, 246, 0.2)" : "transparent",
+                          className: "transition-colors duration-300",
+                        }),
+                      ],
+                    }),
+                    e.jsx("div", {
+                      className:
+                        "absolute top-1 right-2 font-mono text-[9px] text-blue-500/80",
+                      children: c ? `MIX: ${(o * 100).toFixed(0)}%` : "OFF",
+                    }),
+                  ],
+                }),
+                e.jsxs("div", {
+                  className: `px-2 transition-all duration-300 ${c ? "opacity-100" : "opacity-40 pointer-events-none grayscale"}`,
+                  children: [
+                    e.jsxs("div", {
+                      className:
+                        "flex justify-between text-[9px] font-bold text-gray-500 uppercase mb-2 tracking-widest font-mono",
+                      children: [
+                        e.jsx("span", { children: "Dry" }),
+                        e.jsx("span", { children: "Wet" }),
+                      ],
+                    }),
+                    e.jsxs("div", {
+                      className:
+                        "relative h-8 w-full flex items-center group/slider",
+                      children: [
+                        e.jsx("input", {
+                          type: "range",
+                          min: "0",
+                          max: "1",
+                          step: "0.05",
+                          value: o,
+                          onChange: (p) => a(parseFloat(p.target.value)),
+                          className:
+                            "absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20",
+                        }),
+                        e.jsx("div", {
+                          className:
+                            "w-full h-1.5 bg-[#0B1E3D] rounded-full border-b border-white/10 relative z-10 shadow-[inset_0_1px_2px_rgba(0,0,0,1)]",
+                        }),
+                        e.jsx("div", {
+                          className:
+                            "absolute h-6 w-10 bg-gradient-to-b from-[#333] to-[#111] rounded shadow-[0_2px_4px_rgba(0,0,0,0.8),inset_0_1px_0_rgba(255,255,255,0.1)] border border-black z-10 pointer-events-none flex items-center justify-center transition-transform duration-75 ease-out group-active/slider:scale-105",
+                          style: { left: `calc(${o * 100}% - 20px)` },
+                          children: e.jsx("div", {
+                            className:
+                              "w-0.5 h-3 bg-blue-500 shadow-[0_0_4px_#3b82f6]",
+                          }),
+                        }),
+                      ],
+                    }),
+                  ],
+                }),
+              ],
+            }),
+          ],
+        }),
+      ],
+    });
+  },
+  K = () => {
+    const { importData: t, exportData: r } = u.useContext(I),
+      { showModal: n, hideModal: i } = u.useContext(C),
+      d = u.useRef(null),
+      { t: s } = g(),
+      l = () => {
+        const o = r(),
+          a = new Blob([o], { type: "application/json" }),
+          x = URL.createObjectURL(a),
+          h = document.createElement("a");
+        ((h.href = x),
+          (h.download = `welkin_music_backup_${new Date().toISOString().split("T")[0]}.json`),
+          document.body.appendChild(h),
+          h.click(),
+          document.body.removeChild(h),
+          URL.revokeObjectURL(x));
+      },
+      c = (o) => {
+        var h;
+        const a = (h = o.target.files) == null ? void 0 : h[0];
+        if (!a) return;
+        const x = new FileReader();
+        ((x.onload = (f) => {
+          var b;
+          const p = (b = f.target) == null ? void 0 : b.result;
+          n({
+            title: s("settings.data.importTitle"),
+            content: e.jsxs("div", {
+              className: "space-y-4",
+              children: [
+                e.jsx("p", {
+                  className: "text-gray-300 text-sm leading-relaxed mb-4",
+                  children: s("settings.data.importSubtitle"),
+                }),
+                e.jsxs("div", {
+                  className: "grid gap-3",
+                  children: [
+                    e.jsxs("button", {
+                      onClick: () => m(p, "merge"),
+                      className:
+                        "flex items-center p-4 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-blue-500/50 transition-all text-left group",
+                      children: [
+                        e.jsx("div", {
+                          className:
+                            "p-3 rounded-xl bg-blue-500/20 text-blue-400 mr-4 group-hover:scale-110 transition-transform",
+                          children: e.jsx(y, { className: "w-6 h-6" }),
+                        }),
+                        e.jsxs("div", {
+                          children: [
+                            e.jsx("h4", {
+                              className: "font-bold text-white text-sm mb-1",
+                              children: s("settings.data.merge"),
+                            }),
+                            e.jsx("p", {
+                              className: "text-xs text-gray-400",
+                              children: s("settings.data.mergeDesc"),
+                            }),
+                          ],
+                        }),
+                      ],
+                    }),
+                    e.jsxs("button", {
+                      onClick: () => m(p, "replace"),
+                      className:
+                        "flex items-center p-4 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-red-500/50 transition-all text-left group",
+                      children: [
+                        e.jsx("div", {
+                          className:
+                            "p-3 rounded-xl bg-red-500/20 text-red-400 mr-4 group-hover:scale-110 transition-transform",
+                          children: e.jsx("svg", {
+                            xmlns: "http://www.w3.org/2000/svg",
+                            fill: "none",
+                            viewBox: "0 0 24 24",
+                            strokeWidth: 1.5,
+                            stroke: "currentColor",
+                            className: "w-6 h-6",
+                            children: e.jsx("path", {
+                              strokeLinecap: "round",
+                              strokeLinejoin: "round",
+                              d: "M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99",
+                            }),
+                          }),
+                        }),
+                        e.jsxs("div", {
+                          children: [
+                            e.jsx("h4", {
+                              className: "font-bold text-white text-sm mb-1",
+                              children: s("settings.data.replace"),
+                            }),
+                            e.jsx("p", {
+                              className: "text-xs text-gray-400",
+                              children: s("settings.data.replaceDesc"),
+                            }),
+                          ],
+                        }),
+                      ],
+                    }),
+                  ],
+                }),
+                e.jsx("button", {
+                  onClick: i,
+                  className:
+                    "w-full py-3 rounded-xl text-gray-400 hover:text-white hover:bg-white/5 transition-colors text-xs font-bold uppercase tracking-widest",
+                  children: s("settings.profile.cancel"),
+                }),
+              ],
+            }),
+          });
+        }),
+          x.readAsText(a),
+          (o.target.value = ""));
+      },
+      m = (o, a) => {
+        const x = t(o, a);
+        (i(),
+          n({
+            title: x.success
+              ? s("settings.data.importSuccess")
+              : s("settings.data.importFailure"),
+            content: e.jsxs("div", {
+              className: "text-center space-y-6 py-4",
+              children: [
+                e.jsx("div", {
+                  className: `w-16 h-16 mx-auto rounded-full flex items-center justify-center ${x.success ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"}`,
+                  children: x.success
+                    ? e.jsx("svg", {
+                        xmlns: "http://www.w3.org/2000/svg",
+                        fill: "none",
+                        viewBox: "0 0 24 24",
+                        strokeWidth: 2,
+                        stroke: "currentColor",
+                        className: "w-8 h-8",
+                        children: e.jsx("path", {
+                          strokeLinecap: "round",
+                          strokeLinejoin: "round",
+                          d: "M4.5 12.75l6 6 9-13.5",
+                        }),
+                      })
+                    : e.jsx("svg", {
+                        xmlns: "http://www.w3.org/2000/svg",
+                        fill: "none",
+                        viewBox: "0 0 24 24",
+                        strokeWidth: 2,
+                        stroke: "currentColor",
+                        className: "w-8 h-8",
+                        children: e.jsx("path", {
+                          strokeLinecap: "round",
+                          strokeLinejoin: "round",
+                          d: "M6 18L18 6M6 6l12 12",
+                        }),
+                      }),
+                }),
+                e.jsx("p", {
+                  className: "text-white font-medium",
+                  children: s(x.messageKey),
+                }),
+                e.jsx("button", {
+                  onClick: i,
+                  className:
+                    "px-8 py-3 rounded-full bg-white/10 hover:bg-white/20 font-bold transition-colors text-xs uppercase tracking-widest",
+                  children: "OK",
+                }),
+              ],
+            }),
+          }));
+      };
+    return e.jsxs("div", {
+      className:
+        "space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500",
+      children: [
+        e.jsx(v, {
+          title: s("settings.data.title"),
+          description: s("settings.data.description"),
+        }),
+        e.jsxs("div", {
+          className: "grid grid-cols-1 md:grid-cols-2 gap-6",
+          children: [
+            e.jsxs("button", {
+              onClick: () => {
+                var o;
+                return (o = d.current) == null ? void 0 : o.click();
+              },
+              className:
+                "group flex flex-col items-center justify-center p-8 rounded-3xl bg-white/5 border border-white/5 hover:bg-white/10 hover:border-white/20 hover:scale-[1.02] transition-all duration-300",
+              children: [
+                e.jsx("div", {
+                  className:
+                    "w-16 h-16 rounded-full bg-[#3A8FE0]/10 text-[#3A8FE0] flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-[0_0_20px_rgba(58,143,224,0.2)]",
+                  children: e.jsx(y, { className: "w-8 h-8" }),
+                }),
+                e.jsx("h3", {
+                  className: "text-xl font-bold text-white mb-2",
+                  children: s("settings.data.import"),
+                }),
+                e.jsx("p", {
+                  className: "text-sm text-gray-400 text-center",
+                  children: "Restore from backup",
+                }),
+                e.jsx("input", {
+                  type: "file",
+                  ref: d,
+                  onChange: c,
+                  accept: ".json",
+                  className: "hidden",
+                }),
+              ],
+            }),
+            e.jsxs("button", {
+              onClick: l,
+              className:
+                "group flex flex-col items-center justify-center p-8 rounded-3xl bg-white/5 border border-white/5 hover:bg-white/10 hover:border-white/20 hover:scale-[1.02] transition-all duration-300",
+              children: [
+                e.jsx("div", {
+                  className:
+                    "w-16 h-16 rounded-full bg-blue-500/10 text-blue-400 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-[0_0_20px_rgba(59,130,246,0.2)]",
+                  children: e.jsx(U, { className: "w-8 h-8" }),
+                }),
+                e.jsx("h3", {
+                  className: "text-xl font-bold text-white mb-2",
+                  children: s("settings.data.export"),
+                }),
+                e.jsx("p", {
+                  className: "text-sm text-gray-400 text-center",
+                  children: "Save library to file",
+                }),
+              ],
+            }),
+          ],
+        }),
+      ],
+    });
+  },
+  J = () => {
+    const { t } = g();
+    return e.jsxs("div", {
+      className:
+        "space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500",
+      children: [
+        e.jsx(v, {
+          title: t("settings.about.title"),
+          description: "Project details.",
+        }),
+        e.jsxs(k, {
+          className: "relative overflow-hidden",
+          children: [
+            e.jsx("div", {
+              className:
+                "absolute top-0 right-0 w-64 h-64 bg-[#0A2D6E]/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none",
+            }),
+            e.jsxs("div", {
+              className: "relative z-10 flex flex-col gap-8",
+              children: [
+                e.jsxs("div", {
+                  className: "flex items-center gap-5",
+                  children: [
+                    e.jsx("div", {
+                      className:
+                        "w-16 h-16 rounded-2xl bg-gradient-to-br from-[#0A2D6E] to-[#1E6CC7] flex items-center justify-center shadow-lg shadow-blue-900/20 transform rotate-3 border border-white/10",
+                      children: e.jsx("span", {
+                        className:
+                          "font-['Inter'] text-2xl font-extrabold text-white",
+                        children: "W",
+                      }),
+                    }),
+                    e.jsxs("div", {
+                      children: [
+                        e.jsx("h3", {
+                          className:
+                            "text-3xl font-black text-white tracking-tighter",
+                          children: "Welkin.Music",
+                        }),
+                        e.jsxs("div", {
+                          className: "flex items-center gap-3 mt-1",
+                          children: [
+                            e.jsx("span", {
+                              className:
+                                "px-2 py-0.5 rounded-md bg-white/10 border border-white/10 text-xs font-bold text-[#0A2D6E] uppercase tracking-wider",
+                              children: "v1.2.0",
+                            }),
+                            e.jsx("span", {
+                              className: "w-1 h-1 rounded-full bg-gray-600",
+                            }),
+                            e.jsx("span", {
+                              className: "text-xs font-medium text-gray-400",
+                              children: "Web Player",
+                            }),
+                          ],
+                        }),
+                      ],
+                    }),
+                  ],
+                }),
+                e.jsx("p", {
+                  className:
+                    "text-gray-300 text-sm leading-relaxed max-w-2xl border-l-2 border-[#3A8FE0] pl-4",
+                  children: t("settings.about.p1"),
+                }),
+                e.jsxs("div", {
+                  className: "grid grid-cols-1 sm:grid-cols-2 gap-4",
+                  children: [
+                    e.jsxs("div", {
+                      className:
+                        "p-4 rounded-2xl bg-black/20 border border-white/5 flex items-center gap-4",
+                      children: [
+                        e.jsx("div", {
+                          className:
+                            "w-10 h-10 rounded-full bg-white/5 flex items-center justify-center",
+                          children: e.jsx(L, {
+                            className: "w-5 h-5 text-gray-400",
+                          }),
+                        }),
+                        e.jsxs("div", {
+                          children: [
+                            e.jsx("div", {
+                              className:
+                                "text-[10px] font-bold text-gray-500 uppercase tracking-widest",
+                              children: "Developer",
+                            }),
+                            e.jsx("div", {
+                              className: "text-white font-bold",
+                              children: "ewkekw",
+                            }),
+                          ],
+                        }),
+                      ],
+                    }),
+                    e.jsxs("div", {
+                      className:
+                        "p-4 rounded-2xl bg-black/20 border border-white/5 flex items-center gap-4",
+                      children: [
+                        e.jsx("div", {
+                          className:
+                            "w-10 h-10 rounded-full bg-white/5 flex items-center justify-center",
+                          children: e.jsx(F, {
+                            className: "w-5 h-5 text-gray-400",
+                          }),
+                        }),
+                        e.jsxs("div", {
+                          children: [
+                            e.jsx("div", {
+                              className:
+                                "text-[10px] font-bold text-gray-500 uppercase tracking-widest",
+                              children: "Data Source",
+                            }),
+                            e.jsx("div", {
+                              className: "text-white font-bold",
+                              children: "JioSaavn API",
+                            }),
+                          ],
+                        }),
+                      ],
+                    }),
+                  ],
+                }),
+                e.jsx("div", {
+                  children: e.jsxs("a", {
+                    href: "#",
+                    target: "_blank",
+                    rel: "noreferrer",
+                    className:
+                      "inline-flex items-center gap-3 px-6 py-3.5 rounded-xl bg-white/5 hover:bg-white/10 text-white font-bold transition-all border border-white/10 hover:border-[#3A8FE0]/50 group",
+                    children: [
+                      e.jsx(V, {
+                        className:
+                          "w-5 h-5 text-gray-400 group-hover:text-white transition-colors",
+                      }),
+                      e.jsx("span", { children: "View Source Code" }),
+                    ],
+                  }),
+                }),
+              ],
+            }),
+          ],
+        }),
+      ],
+    });
+  },
+  X = ({ activeTab: t, onSelect: r }) => {
+    const n = [
+      {
+        id: "profile",
+        icon: e.jsx(L, { className: "w-5 h-5" }),
+        label: "Profile",
+      },
+      { id: "audio", icon: e.jsx(P, { className: "w-5 h-5" }), label: "Audio" },
+      {
+        id: "effects",
+        icon: e.jsx(M, { className: "w-5 h-5" }),
+        label: "Sonic Lab",
+      },
+      { id: "data", icon: e.jsx(F, { className: "w-5 h-5" }), label: "Data" },
+      { id: "about", icon: e.jsx($, { className: "w-5 h-5" }), label: "About" },
+    ];
+    return e.jsx("nav", {
+      className:
+        "flex md:flex-col gap-2 overflow-x-auto md:overflow-visible p-1 md:p-0 custom-scrollbar-hidden",
+      children: n.map((i) =>
+        e.jsxs(
+          "button",
+          {
+            onClick: () => r(i.id),
+            className: `
                         flex items-center gap-3 px-6 py-3 rounded-xl font-bold text-sm transition-all duration-300 whitespace-nowrap
-                        ${t===i.id?"bg-[#3A8FE0] text-white shadow-[0_0_20px_rgba(58,143,224,0.3)] scale-[1.02]":"bg-transparent text-gray-400 hover:text-white hover:bg-white/5"}
-                    `,children:[i.icon,e.jsx("span",{children:i.label})]},i.id))})},ee=()=>{const[t,r]=u.useState("profile"),n=()=>{switch(t){case"profile":return e.jsx(E,{});case"audio":return e.jsx(Y,{});case"effects":return e.jsx(G,{});case"data":return e.jsx(K,{});case"about":return e.jsx(J,{});default:return e.jsx(E,{})}};return e.jsxs("div",{className:"h-full flex flex-col md:flex-row overflow-hidden bg-[#0B1E3D]",children:[e.jsx("div",{className:"w-full md:w-64 bg-[#0B1E3D]/50 backdrop-blur-xl border-b md:border-b-0 md:border-r border-white/5 z-20 flex-shrink-0",children:e.jsxs("div",{className:"p-4 md:p-8 h-full flex flex-col",children:[e.jsx("h1",{className:"text-2xl font-black text-white tracking-tight mb-6 hidden md:block",children:"Settings"}),e.jsx(X,{activeTab:t,onSelect:r})]})}),e.jsx("main",{className:"flex-1 overflow-y-auto custom-scrollbar relative",children:e.jsx("div",{className:"max-w-4xl mx-auto p-6 md:p-12 pb-32",children:n()})})]})};export{ee as default};
+                        ${t === i.id ? "bg-[#3A8FE0] text-white shadow-[0_0_20px_rgba(58,143,224,0.3)] scale-[1.02]" : "bg-transparent text-gray-400 hover:text-white hover:bg-white/5"}
+                    `,
+            children: [i.icon, e.jsx("span", { children: i.label })],
+          },
+          i.id,
+        ),
+      ),
+    });
+  },
+  ee = () => {
+    const [t, r] = u.useState("profile"),
+      n = () => {
+        switch (t) {
+          case "profile":
+            return e.jsx(E, {});
+          case "audio":
+            return e.jsx(Y, {});
+          case "effects":
+            return e.jsx(G, {});
+          case "data":
+            return e.jsx(K, {});
+          case "about":
+            return e.jsx(J, {});
+          default:
+            return e.jsx(E, {});
+        }
+      };
+    return e.jsxs("div", {
+      className:
+        "h-full flex flex-col md:flex-row overflow-hidden bg-[#0B1E3D]",
+      children: [
+        e.jsx("div", {
+          className:
+            "w-full md:w-64 bg-[#0B1E3D]/50 backdrop-blur-xl border-b md:border-b-0 md:border-r border-white/5 z-20 flex-shrink-0",
+          children: e.jsxs("div", {
+            className: "p-4 md:p-8 h-full flex flex-col",
+            children: [
+              e.jsx("h1", {
+                className:
+                  "text-2xl font-black text-white tracking-tight mb-6 hidden md:block",
+                children: "Settings",
+              }),
+              e.jsx(X, { activeTab: t, onSelect: r }),
+            ],
+          }),
+        }),
+        e.jsx("main", {
+          className: "flex-1 overflow-y-auto custom-scrollbar relative",
+          children: e.jsx("div", {
+            className: "max-w-4xl mx-auto p-6 md:p-12 pb-32",
+            children: n(),
+          }),
+        }),
+      ],
+    });
+  };
+export { ee as default };

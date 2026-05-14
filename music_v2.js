@@ -3,10 +3,10 @@
  * Glassmorphic Drawer, Rotating Art, Discovery Focused
  */
 
-(function() {
-    // --- Styles ---
-    const style = document.createElement('style');
-    style.textContent = `
+(function () {
+  // --- Styles ---
+  const style = document.createElement("style");
+  style.textContent = `
         .music-v2-drawer {
             position: fixed;
             top: 0;
@@ -256,10 +256,10 @@
             opacity: 0.5;
         }
     `;
-    document.head.appendChild(style);
+  document.head.appendChild(style);
 
-    // --- HTML ---
-    const drawerHTML = `
+  // --- HTML ---
+  const drawerHTML = `
         <div id="music-v2-drawer" class="music-v2-drawer">
             <div class="music-v2-header">
                 <div class="music-v2-title">Discovery</div>
@@ -302,162 +302,170 @@
             </div>
         </div>
     `;
-    document.body.insertAdjacentHTML('beforeend', drawerHTML);
+  document.body.insertAdjacentHTML("beforeend", drawerHTML);
 
-    // --- State & Logic ---
-    const API_BASE = "https://jiosaavn-api-privatecvc2.vercel.app";
-    let currentAudio = new Audio();
-    let isPlaying = false;
-    let currentQueue = [];
-    let currentIndex = -1;
+  // --- State & Logic ---
+  const API_BASE = "https://jiosaavn-api-privatecvc2.vercel.app";
+  let currentAudio = new Audio();
+  let isPlaying = false;
+  let currentQueue = [];
+  let currentIndex = -1;
 
-    const drawer = document.getElementById('music-v2-drawer');
-    const closeBtn = document.getElementById('v2-close-btn');
-    const searchInput = document.getElementById('v2-search-input');
-    const resultsContainer = document.getElementById('v2-results');
-    const playBtn = document.getElementById('v2-play');
-    const playIcon = document.getElementById('v2-play-icon');
-    const trackName = document.getElementById('v2-track-name');
-    const artistName = document.getElementById('v2-artist-name');
-    const artImg = document.getElementById('v2-art');
-    const progressFill = document.getElementById('v2-progress-fill');
-    const progressContainer = document.getElementById('v2-progress-container');
-    const nextBtn = document.getElementById('v2-next');
-    const prevBtn = document.getElementById('v2-prev');
+  const drawer = document.getElementById("music-v2-drawer");
+  const closeBtn = document.getElementById("v2-close-btn");
+  const searchInput = document.getElementById("v2-search-input");
+  const resultsContainer = document.getElementById("v2-results");
+  const playBtn = document.getElementById("v2-play");
+  const playIcon = document.getElementById("v2-play-icon");
+  const trackName = document.getElementById("v2-track-name");
+  const artistName = document.getElementById("v2-artist-name");
+  const artImg = document.getElementById("v2-art");
+  const progressFill = document.getElementById("v2-progress-fill");
+  const progressContainer = document.getElementById("v2-progress-container");
+  const nextBtn = document.getElementById("v2-next");
+  const prevBtn = document.getElementById("v2-prev");
 
-    window.toggleDiscovery = () => {
-        drawer.classList.add('open');
-    };
+  window.toggleDiscovery = () => {
+    drawer.classList.add("open");
+  };
 
-    closeBtn.onclick = () => {
-        drawer.classList.remove('open');
-    };
+  closeBtn.onclick = () => {
+    drawer.classList.remove("open");
+  };
 
-    // Proxy helper
-    const proxy = (url) => `/proxy?url=${encodeURIComponent(url)}`;
+  // Proxy helper
+  const proxy = (url) => `/proxy?url=${encodeURIComponent(url)}`;
 
-    async function search(query) {
-        if (!query) return;
-        resultsContainer.innerHTML = '<div style="text-align:center; opacity:0.5; padding:20px;">Searching...</div>';
-        try {
-            const res = await fetch(proxy(`${API_BASE}/search/songs?query=${encodeURIComponent(query)}`));
-            const data = await res.json();
-            currentQueue = data.data.results || [];
-            renderResults(currentQueue);
-        } catch (e) { 
-            console.error(e); 
-            resultsContainer.innerHTML = '<div style="text-align:center; color:#ff4d4d; padding:20px;">Search failed</div>';
-        }
+  async function search(query) {
+    if (!query) return;
+    resultsContainer.innerHTML =
+      '<div style="text-align:center; opacity:0.5; padding:20px;">Searching...</div>';
+    try {
+      const res = await fetch(
+        proxy(`${API_BASE}/search/songs?query=${encodeURIComponent(query)}`),
+      );
+      const data = await res.json();
+      currentQueue = data.data.results || [];
+      renderResults(currentQueue);
+    } catch (e) {
+      console.error(e);
+      resultsContainer.innerHTML =
+        '<div style="text-align:center; color:#ff4d4d; padding:20px;">Search failed</div>';
     }
+  }
 
-    function renderResults(songs) {
-        if (songs.length === 0) {
-            resultsContainer.innerHTML = '<div style="text-align:center; opacity:0.5; padding:20px;">No results found</div>';
-            return;
-        }
-        resultsContainer.innerHTML = songs.map((song, index) => `
+  function renderResults(songs) {
+    if (songs.length === 0) {
+      resultsContainer.innerHTML =
+        '<div style="text-align:center; opacity:0.5; padding:20px;">No results found</div>';
+      return;
+    }
+    resultsContainer.innerHTML = songs
+      .map(
+        (song, index) => `
             <div class="v2-result-item" onclick="playSongAtIndex(${index})">
-                <img src="${song.image[1]?.link || 'assets/thumbnails.png'}" class="v2-res-img">
+                <img src="${song.image[1]?.link || "assets/thumbnails.png"}" class="v2-res-img">
                 <div class="v2-res-info">
                     <div class="v2-res-name">${song.name.replace(/&quot;/g, '"')}</div>
                     <div class="v2-res-artist">${song.primaryArtists}</div>
                 </div>
             </div>
-        `).join('');
+        `,
+      )
+      .join("");
+  }
+
+  window.playSongAtIndex = async (index) => {
+    if (index < 0 || index >= currentQueue.length) return;
+    currentIndex = index;
+    const song = currentQueue[index];
+    await playSong(song.id);
+  };
+
+  window.playSong = async (id) => {
+    try {
+      // Set loading state
+      trackName.innerText = "Loading...";
+
+      const res = await fetch(proxy(`${API_BASE}/songs?id=${id}`));
+      const data = await res.json();
+      const song = data.data[0];
+
+      // Get highest quality link available
+      const downloadLinks = song.downloadUrl;
+      const bestLink = downloadLinks[downloadLinks.length - 1].link;
+
+      currentAudio.src = bestLink;
+      currentAudio.play().catch((e) => console.error("Playback failed:", e));
+
+      trackName.innerText = song.name.replace(/&quot;/g, '"');
+      artistName.innerText = song.primaryArtists;
+      artImg.src = song.image[2]?.link || "assets/thumbnails.png";
+
+      isPlaying = true;
+      updatePlayUI();
+    } catch (e) {
+      console.error(e);
+      trackName.innerText = "Error playing track";
     }
+  };
 
-    window.playSongAtIndex = async (index) => {
-        if (index < 0 || index >= currentQueue.length) return;
-        currentIndex = index;
-        const song = currentQueue[index];
-        await playSong(song.id);
-    };
-
-    window.playSong = async (id) => {
-        try {
-            // Set loading state
-            trackName.innerText = "Loading...";
-            
-            const res = await fetch(proxy(`${API_BASE}/songs?id=${id}`));
-            const data = await res.json();
-            const song = data.data[0];
-
-            // Get highest quality link available
-            const downloadLinks = song.downloadUrl;
-            const bestLink = downloadLinks[downloadLinks.length - 1].link;
-
-            currentAudio.src = bestLink;
-            currentAudio.play().catch(e => console.error("Playback failed:", e));
-            
-            trackName.innerText = song.name.replace(/&quot;/g, '"');
-            artistName.innerText = song.primaryArtists;
-            artImg.src = song.image[2]?.link || 'assets/thumbnails.png';
-            
-            isPlaying = true;
-            updatePlayUI();
-        } catch (e) { 
-            console.error(e); 
-            trackName.innerText = "Error playing track";
-        }
-    };
-
-    function updatePlayUI() {
-        if (isPlaying) {
-            playIcon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"></path>';
-            artImg.classList.add('playing');
-        } else {
-            playIcon.innerHTML = '<path d="M8 5v14l11-7z"></path>';
-            artImg.classList.remove('playing');
-        }
+  function updatePlayUI() {
+    if (isPlaying) {
+      playIcon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"></path>';
+      artImg.classList.add("playing");
+    } else {
+      playIcon.innerHTML = '<path d="M8 5v14l11-7z"></path>';
+      artImg.classList.remove("playing");
     }
+  }
 
-    playBtn.onclick = () => {
-        if (!currentAudio.src) return;
-        if (isPlaying) {
-            currentAudio.pause();
-        } else {
-            currentAudio.play();
-        }
-        isPlaying = !isPlaying;
-        updatePlayUI();
-    };
+  playBtn.onclick = () => {
+    if (!currentAudio.src) return;
+    if (isPlaying) {
+      currentAudio.pause();
+    } else {
+      currentAudio.play();
+    }
+    isPlaying = !isPlaying;
+    updatePlayUI();
+  };
 
-    nextBtn.onclick = () => {
-        if (currentIndex < currentQueue.length - 1) {
-            playSongAtIndex(currentIndex + 1);
-        }
-    };
+  nextBtn.onclick = () => {
+    if (currentIndex < currentQueue.length - 1) {
+      playSongAtIndex(currentIndex + 1);
+    }
+  };
 
-    prevBtn.onclick = () => {
-        if (currentIndex > 0) {
-            playSongAtIndex(currentIndex - 1);
-        }
-    };
+  prevBtn.onclick = () => {
+    if (currentIndex > 0) {
+      playSongAtIndex(currentIndex - 1);
+    }
+  };
 
-    progressContainer.onclick = (e) => {
-        if (!currentAudio.duration) return;
-        const rect = progressContainer.getBoundingClientRect();
-        const pos = (e.clientX - rect.left) / rect.width;
-        currentAudio.currentTime = pos * currentAudio.duration;
-    };
+  progressContainer.onclick = (e) => {
+    if (!currentAudio.duration) return;
+    const rect = progressContainer.getBoundingClientRect();
+    const pos = (e.clientX - rect.left) / rect.width;
+    currentAudio.currentTime = pos * currentAudio.duration;
+  };
 
-    currentAudio.ontimeupdate = () => {
-        if (isNaN(currentAudio.duration)) return;
-        const pct = (currentAudio.currentTime / currentAudio.duration) * 100;
-        progressFill.style.width = `${pct}%`;
-    };
+  currentAudio.ontimeupdate = () => {
+    if (isNaN(currentAudio.duration)) return;
+    const pct = (currentAudio.currentTime / currentAudio.duration) * 100;
+    progressFill.style.width = `${pct}%`;
+  };
 
-    currentAudio.onended = () => {
-        if (currentIndex < currentQueue.length - 1) {
-            playSongAtIndex(currentIndex + 1);
-        } else {
-            isPlaying = false;
-            updatePlayUI();
-        }
-    };
+  currentAudio.onended = () => {
+    if (currentIndex < currentQueue.length - 1) {
+      playSongAtIndex(currentIndex + 1);
+    } else {
+      isPlaying = false;
+      updatePlayUI();
+    }
+  };
 
-    searchInput.onkeydown = (e) => {
-        if (e.key === 'Enter') search(searchInput.value);
-    };
-
+  searchInput.onkeydown = (e) => {
+    if (e.key === "Enter") search(searchInput.value);
+  };
 })();

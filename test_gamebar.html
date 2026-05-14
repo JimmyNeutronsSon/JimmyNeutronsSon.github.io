@@ -1,269 +1,310 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Welkin GameBar Test</title>
     <style>
-        body {
-            font-family: 'Inter', system-ui, sans-serif;
-            background: #0a0a0f;
-            color: #fff;
-            margin: 0;
-            padding: 40px;
-            min-height: 100vh;
-        }
+      body {
+        font-family: "Inter", system-ui, sans-serif;
+        background: #0a0a0f;
+        color: #fff;
+        margin: 0;
+        padding: 40px;
+        min-height: 100vh;
+      }
 
-        .test-container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
+      .test-container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
 
-        h1 {
-            color: #3b82f6;
-            font-size: 32px;
-            margin-bottom: 10px;
-        }
+      h1 {
+        color: #3b82f6;
+        font-size: 32px;
+        margin-bottom: 10px;
+      }
 
-        .subtitle {
-            color: #888;
-            margin-bottom: 40px;
-        }
+      .subtitle {
+        color: #888;
+        margin-bottom: 40px;
+      }
 
-        .test-section {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            padding: 25px;
-            margin-bottom: 20px;
-        }
+      .test-section {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 15px;
+        padding: 25px;
+        margin-bottom: 20px;
+      }
 
-        .test-section h2 {
-            color: #fff;
-            font-size: 18px;
-            margin: 0 0 15px 0;
-        }
+      .test-section h2 {
+        color: #fff;
+        font-size: 18px;
+        margin: 0 0 15px 0;
+      }
 
-        .btn {
-            background: #3b82f6;
-            color: #fff;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 600;
-            transition: all 0.2s;
-            margin-right: 10px;
-            margin-bottom: 10px;
-        }
+      .btn {
+        background: #3b82f6;
+        color: #fff;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 600;
+        transition: all 0.2s;
+        margin-right: 10px;
+        margin-bottom: 10px;
+      }
 
-        .btn:hover {
-            background: #2563eb;
-            transform: translateY(-2px);
-        }
+      .btn:hover {
+        background: #2563eb;
+        transform: translateY(-2px);
+      }
 
-        .btn:active {
-            transform: translateY(0);
-        }
+      .btn:active {
+        transform: translateY(0);
+      }
 
-        .btn.secondary {
-            background: rgba(255, 255, 255, 0.1);
-        }
+      .btn.secondary {
+        background: rgba(255, 255, 255, 0.1);
+      }
 
-        .btn.secondary:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
+      .btn.secondary:hover {
+        background: rgba(255, 255, 255, 0.2);
+      }
 
-        .status {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            margin-left: 10px;
-        }
+      .status {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        margin-left: 10px;
+      }
 
-        .status.ready {
-            background: rgba(46, 204, 113, 0.2);
-            color: #2ecc71;
-        }
+      .status.ready {
+        background: rgba(46, 204, 113, 0.2);
+        color: #2ecc71;
+      }
 
-        .status.loading {
-            background: rgba(241, 196, 15, 0.2);
-            color: #f1c40f;
-        }
+      .status.loading {
+        background: rgba(241, 196, 15, 0.2);
+        color: #f1c40f;
+      }
 
-        .status.error {
-            background: rgba(231, 76, 60, 0.2);
-            color: #e74c3c;
-        }
+      .status.error {
+        background: rgba(231, 76, 60, 0.2);
+        color: #e74c3c;
+      }
 
-        .instructions {
-            background: rgba(59, 130, 246, 0.1);
-            border: 1px solid rgba(59, 130, 246, 0.3);
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 30px;
-        }
+      .instructions {
+        background: rgba(59, 130, 246, 0.1);
+        border: 1px solid rgba(59, 130, 246, 0.3);
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 30px;
+      }
 
-        .instructions h3 {
-            color: #3b82f6;
-            margin: 0 0 10px 0;
-            font-size: 16px;
-        }
+      .instructions h3 {
+        color: #3b82f6;
+        margin: 0 0 10px 0;
+        font-size: 16px;
+      }
 
-        .instructions p {
-            color: #aaa;
-            margin: 5px 0;
-            font-size: 14px;
-            line-height: 1.6;
-        }
+      .instructions p {
+        color: #aaa;
+        margin: 5px 0;
+        font-size: 14px;
+        line-height: 1.6;
+      }
 
-        .instructions code {
-            background: rgba(0, 0, 0, 0.3);
-            padding: 2px 6px;
-            border-radius: 4px;
-            color: #3b82f6;
-        }
+      .instructions code {
+        background: rgba(0, 0, 0, 0.3);
+        padding: 2px 6px;
+        border-radius: 4px;
+        color: #3b82f6;
+      }
 
-        .log {
-            background: rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 8px;
-            padding: 15px;
-            font-family: 'Courier New', monospace;
-            font-size: 12px;
-            color: #888;
-            max-height: 200px;
-            overflow-y: auto;
-            margin-top: 15px;
-        }
+      .log {
+        background: rgba(0, 0, 0, 0.5);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 8px;
+        padding: 15px;
+        font-family: "Courier New", monospace;
+        font-size: 12px;
+        color: #888;
+        max-height: 200px;
+        overflow-y: auto;
+        margin-top: 15px;
+      }
 
-        .log-entry {
-            padding: 4px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
+      .log-entry {
+        padding: 4px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      }
 
-        .log-entry.error {
-            color: #e74c3c;
-        }
+      .log-entry.error {
+        color: #e74c3c;
+      }
 
-        .log-entry.success {
-            color: #2ecc71;
-        }
+      .log-entry.success {
+        color: #2ecc71;
+      }
 
-        .log-entry.warn {
-            color: #f1c40f;
-        }
+      .log-entry.warn {
+        color: #f1c40f;
+      }
     </style>
-  <link rel="icon" type="image/x-icon" href="/warning-hazard-sign-on-transparent-background-free-png.ico" />
-</head>
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="/warning-hazard-sign-on-transparent-background-free-png.ico"
+    />
+  </head>
 
-<body>
+  <body>
     <div class="test-container">
-        <h1>Welkin GameBar Test Suite</h1>
-        <p class="subtitle">Testing the refactored game loading pipeline with iframe srcdoc and sandbox</p>
+      <h1>Welkin GameBar Test Suite</h1>
+      <p class="subtitle">
+        Testing the refactored game loading pipeline with iframe srcdoc and
+        sandbox
+      </p>
 
-        <div class="instructions">
-            <h3>ℹ Test Instructions</h3>
-            <p>• Click <strong>Load Welkin GameBar</strong> to initialize the bookmarklet</p>
-            <p>• Click <strong>Launch Test Game</strong> to test the refactored loader</p>
-            <p>• The game should load with scripts executing properly via <code>srcdoc</code></p>
-            <p>• Check the console for detailed logs and any errors</p>
-        </div>
+      <div class="instructions">
+        <h3>ℹ Test Instructions</h3>
+        <p>
+          • Click <strong>Load Welkin GameBar</strong> to initialize the
+          bookmarklet
+        </p>
+        <p>
+          • Click <strong>Launch Test Game</strong> to test the refactored
+          loader
+        </p>
+        <p>
+          • The game should load with scripts executing properly via
+          <code>srcdoc</code>
+        </p>
+        <p>• Check the console for detailed logs and any errors</p>
+      </div>
 
-        <div class="test-section">
-            <h2>Test Controls</h2>
-            <button class="btn" onclick="loadGameBar()">Load Welkin GameBar</button>
-            <button class="btn secondary" onclick="launchTestGame()">Launch Test Game</button>
-            <button class="btn secondary" onclick="launchExternalGame()">Launch External Game (CDN)</button>
-            <span id="status" class="status">Ready</span>
-        </div>
+      <div class="test-section">
+        <h2>Test Controls</h2>
+        <button class="btn" onclick="loadGameBar()">Load Welkin GameBar</button>
+        <button class="btn secondary" onclick="launchTestGame()">
+          Launch Test Game
+        </button>
+        <button class="btn secondary" onclick="launchExternalGame()">
+          Launch External Game (CDN)
+        </button>
+        <span id="status" class="status">Ready</span>
+      </div>
 
-        <div class="test-section">
-            <h2>Test Results</h2>
-            <div id="results"></div>
-            <div class="log" id="log"></div>
-        </div>
+      <div class="test-section">
+        <h2>Test Results</h2>
+        <div id="results"></div>
+        <div class="log" id="log"></div>
+      </div>
 
-        <div class="test-section">
-            <h2>What's Being Tested</h2>
-            <p>✓ <strong>srcdoc usage</strong>: HTML loaded via iframe.srcdoc instead of blob URLs</p>
-            <p>✓ <strong>Sandbox configuration</strong>: allow-scripts allow-same-origin allow-popups allow-modals</p>
-            <p>✓ <strong>URL rewriting</strong>: All relative URLs rewritten through proxy</p>
-            <p>✓ <strong>Script execution</strong>: JavaScript in loaded HTML should execute</p>
-            <p>✓ <strong>Style application</strong>: CSS should apply correctly</p>
-            <p>✓ <strong>Error recovery</strong>: Retry logic with exponential backoff</p>
-            <p>✓ <strong>Cleanup</strong>: Proper resource cleanup on window close</p>
-        </div>
+      <div class="test-section">
+        <h2>What's Being Tested</h2>
+        <p>
+          ✓ <strong>srcdoc usage</strong>: HTML loaded via iframe.srcdoc instead
+          of blob URLs
+        </p>
+        <p>
+          ✓ <strong>Sandbox configuration</strong>: allow-scripts
+          allow-same-origin allow-popups allow-modals
+        </p>
+        <p>
+          ✓ <strong>URL rewriting</strong>: All relative URLs rewritten through
+          proxy
+        </p>
+        <p>
+          ✓ <strong>Script execution</strong>: JavaScript in loaded HTML should
+          execute
+        </p>
+        <p>✓ <strong>Style application</strong>: CSS should apply correctly</p>
+        <p>
+          ✓ <strong>Error recovery</strong>: Retry logic with exponential
+          backoff
+        </p>
+        <p>
+          ✓ <strong>Cleanup</strong>: Proper resource cleanup on window close
+        </p>
+      </div>
     </div>
 
     <script>
-        let gameBarLoaded = false;
+      let gameBarLoaded = false;
 
-        function log(message, type = 'info') {
-            const logEl = document.getElementById('log');
-            const entry = document.createElement('div');
-            entry.className = `log-entry ${type}`;
-            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
-            logEl.appendChild(entry);
-            logEl.scrollTop = logEl.scrollHeight;
-            console[type === 'error' ? 'error' : type === 'warn' ? 'warn' : 'log'](message);
+      function log(message, type = "info") {
+        const logEl = document.getElementById("log");
+        const entry = document.createElement("div");
+        entry.className = `log-entry ${type}`;
+        entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+        logEl.appendChild(entry);
+        logEl.scrollTop = logEl.scrollHeight;
+        console[type === "error" ? "error" : type === "warn" ? "warn" : "log"](
+          message,
+        );
+      }
+
+      function setStatus(text, type) {
+        const statusEl = document.getElementById("status");
+        statusEl.textContent = text;
+        statusEl.className = `status ${type || ""}`;
+      }
+
+      function addResult(message, type = "info") {
+        const resultsEl = document.getElementById("results");
+        const div = document.createElement("div");
+        div.className = `log-entry ${type}`;
+        div.innerHTML = message;
+        resultsEl.appendChild(div);
+      }
+
+      function loadGameBar() {
+        if (gameBarLoaded) {
+          log("GameBar already loaded", "warn");
+          return;
         }
 
-        function setStatus(text, type) {
-            const statusEl = document.getElementById('status');
-            statusEl.textContent = text;
-            statusEl.className = `status ${type || ''}`;
+        log("Loading Welkin GameBar...");
+        setStatus("Loading...", "loading");
+
+        // Create script element to load welkin-gamebar.js
+        const script = document.createElement("script");
+        script.src = "welkin-gamebar.js?t=" + Date.now();
+        script.onload = () => {
+          log("GameBar script loaded successfully", "success");
+          gameBarLoaded = true;
+          setStatus("Ready", "ready");
+          addResult("✓ GameBar loaded successfully", "success");
+        };
+        script.onerror = (err) => {
+          log("Failed to load GameBar: " + err, "error");
+          setStatus("Error", "error");
+          addResult("✗ Failed to load GameBar", "error");
+        };
+        document.body.appendChild(script);
+      }
+
+      function launchTestGame() {
+        if (!gameBarLoaded && typeof window.launchWgGame !== "function") {
+          log(
+            'GameBar not loaded. Click "Load Welkin GameBar" first.',
+            "error",
+          );
+          return;
         }
 
-        function addResult(message, type = 'info') {
-            const resultsEl = document.getElementById('results');
-            const div = document.createElement('div');
-            div.className = `log-entry ${type}`;
-            div.innerHTML = message;
-            resultsEl.appendChild(div);
-        }
+        log("Launching test game...");
+        setStatus("Launching...", "loading");
 
-        function loadGameBar() {
-            if (gameBarLoaded) {
-                log('GameBar already loaded', 'warn');
-                return;
-            }
-
-            log('Loading Welkin GameBar...');
-            setStatus('Loading...', 'loading');
-
-            // Create script element to load welkin-gamebar.js
-            const script = document.createElement('script');
-            script.src = 'welkin-gamebar.js?t=' + Date.now();
-            script.onload = () => {
-                log('GameBar script loaded successfully', 'success');
-                gameBarLoaded = true;
-                setStatus('Ready', 'ready');
-                addResult('✓ GameBar loaded successfully', 'success');
-            };
-            script.onerror = (err) => {
-                log('Failed to load GameBar: ' + err, 'error');
-                setStatus('Error', 'error');
-                addResult('✗ Failed to load GameBar', 'error');
-            };
-            document.body.appendChild(script);
-        }
-
-        function launchTestGame() {
-            if (!gameBarLoaded && typeof window.launchWgGame !== 'function') {
-                log('GameBar not loaded. Click "Load Welkin GameBar" first.', 'error');
-                return;
-            }
-
-            log('Launching test game...');
-            setStatus('Launching...', 'loading');
-
-            // Create a simple test game HTML
-            const testGameHtml = `
+        // Create a simple test game HTML
+        const testGameHtml = `
 <!DOCTYPE html>
 <html>
 <head>
@@ -311,64 +352,67 @@
 </html>
             `.trim();
 
-            // Create a blob URL for the test game
-            const blob = new Blob([testGameHtml], { type: 'text/html' });
-            const blobUrl = URL.createObjectURL(blob);
+        // Create a blob URL for the test game
+        const blob = new Blob([testGameHtml], { type: "text/html" });
+        const blobUrl = URL.createObjectURL(blob);
 
-            // Launch the game
-            try {
-                window.launchWgGame(blobUrl, 'Test Game');
-                log('Game launch initiated', 'success');
-                addResult('✓ Game launch initiated', 'success');
+        // Launch the game
+        try {
+          window.launchWgGame(blobUrl, "Test Game");
+          log("Game launch initiated", "success");
+          addResult("✓ Game launch initiated", "success");
 
-                // Check after delay if game loaded
-                setTimeout(() => {
-                    const iframe = document.querySelector('#wg-game-test-game-frame');
-                    if (iframe) {
-                        log('Game iframe found in DOM', 'success');
-                        addResult('✓ Game iframe created', 'success');
-                    }
-                }, 1000);
-            } catch (err) {
-                log('Error launching game: ' + err, 'error');
-                addResult('✗ Error: ' + err, 'error');
+          // Check after delay if game loaded
+          setTimeout(() => {
+            const iframe = document.querySelector("#wg-game-test-game-frame");
+            if (iframe) {
+              log("Game iframe found in DOM", "success");
+              addResult("✓ Game iframe created", "success");
             }
+          }, 1000);
+        } catch (err) {
+          log("Error launching game: " + err, "error");
+          addResult("✗ Error: " + err, "error");
+        }
+      }
+
+      function launchExternalGame() {
+        if (!gameBarLoaded && typeof window.launchWgGame !== "function") {
+          log(
+            'GameBar not loaded. Click "Load Welkin GameBar" first.',
+            "error",
+          );
+          return;
         }
 
-        function launchExternalGame() {
-            if (!gameBarLoaded && typeof window.launchWgGame !== 'function') {
-                log('GameBar not loaded. Click "Load Welkin GameBar" first.', 'error');
-                return;
-            }
+        log("Launching external game from CDN...");
+        setStatus("Launching...", "loading");
 
-            log('Launching external game from CDN...');
-            setStatus('Launching...', 'loading');
+        // Use a simple game from the vault
+        const gameUrl =
+          "https://cdn.jsdelivr.net/gh/WanoCapy/ChickenKingsVault@main/gamefiles/2048game.html";
 
-            // Use a simple game from the vault
-            const gameUrl = 'https://cdn.jsdelivr.net/gh/WanoCapy/ChickenKingsVault@main/gamefiles/2048game.html';
-
-            try {
-                window.launchWgGame(gameUrl, '2048 Game (CDN)');
-                log('External game launch initiated', 'success');
-                addResult('✓ External game launch initiated', 'success');
-                addResult('  URL: ' + gameUrl, 'info');
-            } catch (err) {
-                log('Error launching external game: ' + err, 'error');
-                addResult('✗ Error: ' + err, 'error');
-            }
+        try {
+          window.launchWgGame(gameUrl, "2048 Game (CDN)");
+          log("External game launch initiated", "success");
+          addResult("✓ External game launch initiated", "success");
+          addResult("  URL: " + gameUrl, "info");
+        } catch (err) {
+          log("Error launching external game: " + err, "error");
+          addResult("✗ Error: " + err, "error");
         }
+      }
 
-        // Monitor for gamebar readiness
-        const checkInterval = setInterval(() => {
-            if (typeof window.launchWgGame === 'function' && !gameBarLoaded) {
-                gameBarLoaded = true;
-                log('GameBar auto-detected as loaded', 'success');
-                setStatus('Ready', 'ready');
-                addResult('✓ GameBar auto-detected', 'success');
-                clearInterval(checkInterval);
-            }
-        }, 500);
+      // Monitor for gamebar readiness
+      const checkInterval = setInterval(() => {
+        if (typeof window.launchWgGame === "function" && !gameBarLoaded) {
+          gameBarLoaded = true;
+          log("GameBar auto-detected as loaded", "success");
+          setStatus("Ready", "ready");
+          addResult("✓ GameBar auto-detected", "success");
+          clearInterval(checkInterval);
+        }
+      }, 500);
     </script>
-</body>
-
+  </body>
 </html>

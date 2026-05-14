@@ -1,31 +1,33 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-
-<head>
+  <head>
     <title>Clear IndexedDB</title>
-  <link rel="icon" type="image/x-icon" href="/warning-hazard-sign-on-transparent-background-free-png.ico" />
-</head>
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="/warning-hazard-sign-on-transparent-background-free-png.ico"
+    />
+  </head>
 
-<body>
+  <body>
     <h1>IndexedDB Cleanup</h1>
     <button onclick="clearAll()">Clear All IndexedDB</button>
     <pre id="output"></pre>
     <script>
-        async function clearAll() {
-            const output = document.getElementById('output');
-            output.textContent = 'Clearing IndexedDB databases...\n';
-            try {
-                const databases = await indexedDB.databases();
-                for (const db of databases) {
-                    output.textContent += `Deleting: ${db.name}\n`;
-                    await indexedDB.deleteDatabase(db.name);
-                }
-                output.textContent += `\nComplete! Cleared ${databases.length} databases.`;
-            } catch (e) {
-                output.textContent += `Error: ${e}\n`;
-            }
+      async function clearAll() {
+        const output = document.getElementById("output");
+        output.textContent = "Clearing IndexedDB databases...\n";
+        try {
+          const databases = await indexedDB.databases();
+          for (const db of databases) {
+            output.textContent += `Deleting: ${db.name}\n`;
+            await indexedDB.deleteDatabase(db.name);
+          }
+          output.textContent += `\nComplete! Cleared ${databases.length} databases.`;
+        } catch (e) {
+          output.textContent += `Error: ${e}\n`;
         }
+      }
     </script>
-</body>
-
+  </body>
 </html>

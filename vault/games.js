@@ -1,4 +1,4 @@
-const games =`
+const games = `
 <a class="game-link" href="gamefiles/hollowknight.html">
     <img src="gameimages/hollowknight.png" alt="Hollow Knight Cover">
     <div>Hollow Knight</div>

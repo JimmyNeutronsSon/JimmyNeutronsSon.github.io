@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
-import { FullArtist } from '../types';
-import { getArtistDetails } from '../services/jioSaavnApi';
+import { useState, useEffect } from "react";
+import { FullArtist } from "../types";
+import { getArtistDetails } from "../services/jioSaavnApi";
 
 export const useArtist = (artistId: string) => {
   const [artist, setArtist] = useState<FullArtist | null>(null);
@@ -17,21 +17,21 @@ export const useArtist = (artistId: string) => {
         if (response.success) {
           setArtist(response.data);
         } else {
-          setError('Failed to fetch artist details.');
+          setError("Failed to fetch artist details.");
         }
       } catch (err) {
         console.error("Failed to fetch artist details:", err);
-        setError('An error occurred while fetching artist details.');
+        setError("An error occurred while fetching artist details.");
       } finally {
         setLoading(false);
       }
     };
 
     if (artistId) {
-        fetchArtist();
+      fetchArtist();
     } else {
-        setLoading(false);
-        setArtist(null);
+      setLoading(false);
+      setArtist(null);
     }
   }, [artistId]);
 

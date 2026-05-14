@@ -1,5 +1,5 @@
-import React, { useContext, useEffect, useRef } from 'react';
-import { PlayerContext } from '../../context/PlayerContext';
+import React, { useContext, useEffect, useRef } from "react";
+import { PlayerContext } from "../../context/PlayerContext";
 
 const Logo: React.FC = () => {
   const { analyser, isPlaying } = useContext(PlayerContext);
@@ -11,7 +11,7 @@ const Logo: React.FC = () => {
     const canvas = canvasRef.current;
     if (!canvas || !analyser) return;
 
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
     const bufferLength = analyser.frequencyBinCount;
@@ -24,25 +24,41 @@ const Logo: React.FC = () => {
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      const bass = dataArray.slice(0, Math.floor(bufferLength * 0.05)).reduce((a, b) => a + b, 0) / (Math.floor(bufferLength * 0.05));
-      const mids = dataArray.slice(Math.floor(bufferLength * 0.2), Math.floor(bufferLength * 0.5)).reduce((a, b) => a + b, 0) / (Math.floor(bufferLength * 0.3));
-      const treble = dataArray.slice(Math.floor(bufferLength * 0.5), bufferLength).reduce((a, b) => a + b, 0) / (bufferLength - Math.floor(bufferLength * 0.5));
-      
+      const bass =
+        dataArray
+          .slice(0, Math.floor(bufferLength * 0.05))
+          .reduce((a, b) => a + b, 0) / Math.floor(bufferLength * 0.05);
+      const mids =
+        dataArray
+          .slice(Math.floor(bufferLength * 0.2), Math.floor(bufferLength * 0.5))
+          .reduce((a, b) => a + b, 0) / Math.floor(bufferLength * 0.3);
+      const treble =
+        dataArray
+          .slice(Math.floor(bufferLength * 0.5), bufferLength)
+          .reduce((a, b) => a + b, 0) /
+        (bufferLength - Math.floor(bufferLength * 0.5));
+
       const centerX = canvas.width / 2;
       const centerY = canvas.height / 2;
-      
-      const baseRadius = (canvas.width / 6) + (bass / 255) * (canvas.width / 8);
+
+      const baseRadius = canvas.width / 6 + (bass / 255) * (canvas.width / 8);
 
       ctx.beginPath();
       const points = 128;
       for (let i = 0; i <= points; i++) {
         const angle = (i / points) * Math.PI * 2;
-        
-        const midOffset = Math.sin(angle * 8 + Date.now() * 0.005) * (mids / 255) * (canvas.width / 20);
-        
-        const trebleIndex = Math.floor((i / points) * (bufferLength * 0.5)) + Math.floor(bufferLength * 0.5);
-        const spike = (dataArray[trebleIndex] / 255) * (canvas.width / 6) * (treble / 255);
-        
+
+        const midOffset =
+          Math.sin(angle * 8 + Date.now() * 0.005) *
+          (mids / 255) *
+          (canvas.width / 20);
+
+        const trebleIndex =
+          Math.floor((i / points) * (bufferLength * 0.5)) +
+          Math.floor(bufferLength * 0.5);
+        const spike =
+          (dataArray[trebleIndex] / 255) * (canvas.width / 6) * (treble / 255);
+
         const radius = baseRadius + midOffset + spike;
 
         const x = centerX + Math.cos(angle) * radius;
@@ -55,18 +71,18 @@ const Logo: React.FC = () => {
         }
       }
       ctx.closePath();
-      ctx.fillStyle = '#3A8FE0';
+      ctx.fillStyle = "#3A8FE0";
       ctx.fill();
     };
 
     if (isPlaying) {
-        animate();
+      animate();
     } else {
-        if (animationFrameId.current) {
-            cancelAnimationFrame(animationFrameId.current);
-            animationFrameId.current = null;
-        }
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      if (animationFrameId.current) {
+        cancelAnimationFrame(animationFrameId.current);
+        animationFrameId.current = null;
+      }
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
     }
 
     return () => {
@@ -75,12 +91,12 @@ const Logo: React.FC = () => {
       }
     };
   }, [analyser, isPlaying]);
-  
-   useEffect(() => {
-    const meElement = staticLogoRef.current?.querySelector('.welkin-logo-part');
+
+  useEffect(() => {
+    const meElement = staticLogoRef.current?.querySelector(".welkin-logo-part");
     if (!meElement) return;
 
-    const resizeObserver = new ResizeObserver(entries => {
+    const resizeObserver = new ResizeObserver((entries) => {
       if (!entries || entries.length === 0) return;
       const { width, height } = entries[0].contentRect;
       if (canvasRef.current) {
@@ -90,25 +106,37 @@ const Logo: React.FC = () => {
     });
 
     resizeObserver.observe(meElement);
-    
+
     return () => resizeObserver.disconnect();
   }, []);
 
   return (
     <div className="relative text-center cursor-default select-none h-20 flex items-center justify-center">
-      <div ref={staticLogoRef} className="flex items-baseline gap-0" style={{ fontFamily: '"Inter", "Outfit", sans-serif', fontSize: '28px', lineHeight: '1' }}>
-         <div className="relative welkin-logo-part">
-            <span className={`font-extrabold text-white tracking-tight transition-all duration-700 ease-in-out ${isPlaying ? 'opacity-0 blur-lg scale-125' : 'opacity-100 blur-0 scale-100'}`}>
-                Welkin
-            </span>
-            <canvas 
-                ref={canvasRef}
-                className={`absolute top-0 left-0 w-full h-full transition-all duration-700 ease-in-out ${isPlaying ? 'opacity-100 scale-100' : 'opacity-0 scale-0'}`}
-            />
-         </div>
-         <span className={`text-[#3A8FE0] font-bold transition-all duration-700 ease-in-out ${isPlaying ? 'opacity-80' : 'opacity-100'}`}>
-            .Music
-         </span>
+      <div
+        ref={staticLogoRef}
+        className="flex items-baseline gap-0"
+        style={{
+          fontFamily: '"Inter", "Outfit", sans-serif',
+          fontSize: "28px",
+          lineHeight: "1",
+        }}
+      >
+        <div className="relative welkin-logo-part">
+          <span
+            className={`font-extrabold text-white tracking-tight transition-all duration-700 ease-in-out ${isPlaying ? "opacity-0 blur-lg scale-125" : "opacity-100 blur-0 scale-100"}`}
+          >
+            Welkin
+          </span>
+          <canvas
+            ref={canvasRef}
+            className={`absolute top-0 left-0 w-full h-full transition-all duration-700 ease-in-out ${isPlaying ? "opacity-100 scale-100" : "opacity-0 scale-0"}`}
+          />
+        </div>
+        <span
+          className={`text-[#3A8FE0] font-bold transition-all duration-700 ease-in-out ${isPlaying ? "opacity-80" : "opacity-100"}`}
+        >
+          .Music
+        </span>
       </div>
     </div>
   );

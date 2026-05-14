@@ -176,10 +176,45 @@
   <section class="hero" id="hero">
     <div class="hero-bg" id="canvas-container"></div>
     <div class="hero-content">
-      <div class="hero-badge" id="hero-badge">
+      <div class="hero-badge" id="hero-badge" style="position: relative">
         <span class="badge-dot"></span>
         <span id="online-counter">Currently Online: 🐻</span>
+        <div id="online-tooltip" style="
+              position: absolute;
+              top: 140%;
+              left: 50%;
+              transform: translateX(-50%) translateY(10px);
+              background: rgba(10, 45, 110, 0.35);
+              backdrop-filter: blur(16px);
+              -webkit-backdrop-filter: blur(16px);
+              border: 1px solid rgba(108, 180, 240, 0.25);
+              padding: 12px 20px;
+              border-radius: 14px;
+              font-size: 14px;
+              font-weight: 500;
+              color: #fff;
+              pointer-events: none;
+              opacity: 0;
+              transition:
+                opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+              white-space: nowrap;
+              z-index: 100;
+              box-shadow: 
+                0 10px 40px -10px rgba(0, 0, 0, 0.5),
+                inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+              text-align: center;
+              letter-spacing: 0.3px;
+            ">
+          Loading...
+        </div>
       </div>
+      <style>
+        #hero-badge:hover #online-tooltip {
+          opacity: 1 !important;
+          transform: translateX(-50%) translateY(0) !important;
+        }
+      </style>
       <h1 class="hero-heading" id="hero-heading">Welkin.</h1>
       <p class="hero-sub landing-phrases" id="hero-sub" style="transition: opacity 0.5s ease; min-height: 2em">
         Kanye the GOAT
@@ -228,88 +263,41 @@
   <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
   <script>
     (function () {
-      // Show update popup on every server restart by comparing server ID
-      const savedServerId = localStorage.getItem("lastServerId");
+      const CURRENT_VERSION = "00b23f1";
+      const lastSeen = localStorage.getItem("updateVersion");
 
-      function showPopup() {
-        const popup = document.createElement("div");
-        popup.className = "update-popup";
-        popup.innerHTML = `
-          <div class="update-card">
-            <h2 class="update-title">Site Updated!</h2>
-            <p class="update-desc">
-              Voice chat now has videos(little glitchy)!<br>
-              You can also now have DMs and add friends!<br>
-              ❗ALL ACCOUNTS HAVE BEEN WIPED, i am currently working on a fix❗<br>
-              Unfortunatley, the online counter is still broken.<br>Sorry for the inconvenince.
-            </p>
-            <button class="update-btn" id="update-close">Got it!</button>
-          </div>
-        `;
+      if (lastSeen === CURRENT_VERSION) return;
 
-        document.body.appendChild(popup);
+      const popup = document.createElement("div");
+      popup.className = "update-popup";
+      popup.innerHTML = `
+        <div class="update-card">
+          <h2 class="update-title">New Features and Fixes!</h2>
+          <p class="update-desc">
+            Fixed the <strong>online counter</strong> and <strong>video issues</strong>.<br>
+            There is now a screenshare in VC and <strong>notifications for new messages</strong>!<br>
+            (You can turn this off with the button on bottom left).<br>
+            There is also now group chats (buggy), and a fullscreen button for videos and screenshares.<br>
+            ❗<strong>ALL ACCOUNTS HAVE BEEN DELETED(hopefully for the last time)</strong>❗<br>
+            Many things are still being updated so expect bugs and glitches!
+          </p>
+          <button class="update-btn" id="update-close">Got it!</button>
+        </div>
+      `;
 
-        function dismiss() {
-          popup.classList.add("hiding");
-          setTimeout(() => popup.remove(), 400);
-        }
+      document.body.appendChild(popup);
 
-        document
-          .getElementById("update-close")
-          .addEventListener("click", dismiss);
-        popup.addEventListener("click", function (e) {
-          if (e.target === popup) dismiss();
-        });
+      function dismiss() {
+        popup.classList.add("hiding");
+        setTimeout(() => popup.remove(), 400);
+        localStorage.setItem("updateVersion", CURRENT_VERSION);
       }
 
-      // Skip if local dev (no server)
-      const isLocalDev =
-        (window.location.hostname === "localhost" ||
-          window.location.hostname === "127.0.0.1") &&
-        window.location.port !== "8080";
-      if (isLocalDev) return;
-
-      const socket = io(window.location.origin, { path: "/socket.io/" });
-
-      socket.on("server:id", function (serverId) {
-        if (savedServerId && savedServerId !== serverId) {
-          showPopup();
-        } else if (!savedServerId) {
-          // First visit - also show
-          showPopup();
-        }
-        localStorage.setItem("lastServerId", serverId);
-      });
-    })();
-  </script>
-  <script>
-    (function () {
-      const counter = document.getElementById("online-counter");
-
-      // On local static dev servers (e.g. live-server, vite, etc.) the Fastify
-      // backend isn't running, so skip the socket entirely and show a static label.
-      const isLocalDev =
-        (window.location.hostname === "localhost" ||
-          window.location.hostname === "127.0.0.1") &&
-        window.location.port !== "8080"; // change if your Fastify port differs
-
-      if (isLocalDev) {
-        counter.textContent = "Currently Online: 1";
-        return;
-      }
-
-      const socket = io(window.location.origin, { path: "/socket.io/" });
-
-      socket.on("online-count", function (count) {
-        counter.textContent = "Currently Online: " + count / 2;
-      });
-
-      socket.on("connect", function () {
-        // no lobby:ping needed — server sends online-count on connect
-      });
-
-      socket.on("disconnect", function () {
-        counter.textContent = "Currently Online: —";
+      document
+        .getElementById("update-close")
+        .addEventListener("click", dismiss);
+      popup.addEventListener("click", function (e) {
+        if (e.target === popup) dismiss();
       });
     })();
   </script>

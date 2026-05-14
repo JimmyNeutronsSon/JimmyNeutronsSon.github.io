@@ -1,1 +1,369 @@
-import{u as $,r as i,j as e}from"./index-Jbwo0tuu.js";const b=s=>e.jsx("svg",{...s,xmlns:"http://www.w3.org/2000/svg",viewBox:"0 0 24 24",fill:"currentColor",children:e.jsx("path",{d:"M5 3l14 9-14 9V3z"})}),N=s=>e.jsxs("svg",{...s,xmlns:"http://www.w3.org/2000/svg",viewBox:"0 0 24 24",fill:"currentColor",children:[e.jsx("rect",{x:"6",y:"4",width:"4",height:"16",rx:"2"}),e.jsx("rect",{x:"14",y:"4",width:"4",height:"16",rx:"2"})]}),k=s=>e.jsx("svg",{...s,xmlns:"http://www.w3.org/2000/svg",viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:2.5,strokeLinecap:"round",strokeLinejoin:"round",children:e.jsx("path",{d:"M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"})}),D=s=>e.jsxs("svg",{...s,xmlns:"http://www.w3.org/2000/svg",viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:2.5,strokeLinecap:"round",strokeLinejoin:"round",children:[e.jsx("circle",{cx:"12",cy:"12",r:"1"}),e.jsx("circle",{cx:"19",cy:"12",r:"1"}),e.jsx("circle",{cx:"5",cy:"12",r:"1"})]}),F=s=>e.jsxs("svg",{...s,xmlns:"http://www.w3.org/2000/svg",viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:2,strokeLinecap:"round",strokeLinejoin:"round",children:[e.jsx("path",{d:"M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"}),e.jsx("circle",{cx:"12",cy:"13",r:"4"})]}),S=s=>e.jsx("svg",{...s,xmlns:"http://www.w3.org/2000/svg",viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:2,strokeLinecap:"round",strokeLinejoin:"round",children:e.jsx("path",{d:"M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"})}),A=s=>e.jsx("svg",{...s,xmlns:"http://www.w3.org/2000/svg",viewBox:"0 0 24 24",fill:"currentColor",className:"text-blue-400",children:e.jsx("path",{d:"M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"})}),R=({title:s,type:y,subtitle:c,description:d,imageUrl:l,isVerified:C,meta:x,isPlaying:h,isCurrentContext:m,onPlay:u,onToggleFavorite:p,isFavorite:o,children:B,isEditable:r,onEditTitle:a,onImageUpload:w,onMoreOptions:g})=>{const{t:v}=$(),f=i.useRef(null),L=i.useRef(null),[_,z]=i.useState(!1);i.useEffect(()=>{const t=()=>{const j=document.querySelector("main");j&&z(j.scrollTop>350)},n=document.querySelector("main");return n==null||n.addEventListener("scroll",t),()=>n==null?void 0:n.removeEventListener("scroll",t)},[]);const I=t=>{t.target.files&&t.target.files[0]&&w&&w(t.target.files[0])};return e.jsxs("div",{ref:L,className:"relative w-full",children:[e.jsxs("div",{className:`fixed top-0 left-0 right-0 z-40 md:pl-64 h-20 bg-[#0B1E3D]/90 backdrop-blur-2xl border-b border-white/5 flex items-center justify-between px-6 transition-all duration-500 transform ${_?"translate-y-0 opacity-100":"-translate-y-full opacity-0"}`,children:[e.jsxs("div",{className:"flex items-center gap-4 overflow-hidden",children:[e.jsx("button",{onClick:u,className:"w-12 h-12 bg-[#3A8FE0] rounded-full flex items-center justify-center text-black shadow-[0_0_20px_rgba(58,143,224,0.4)] hover:scale-105 hover:bg-[#6CB4F0] active:scale-95 transition-all duration-300 flex-shrink-0",children:m&&h?e.jsx(N,{className:"w-6 h-6"}):e.jsx(b,{className:"w-6 h-6 ml-0.5"})}),e.jsx("span",{className:"font-bold text-xl text-white truncate tracking-tight",children:s})]}),e.jsx("div",{className:"flex items-center gap-2",children:e.jsx("button",{onClick:p,className:`p-2.5 rounded-full bg-white/5 hover:bg-white/10 transition-all active:scale-95 ${o?"text-[#3A8FE0]":"text-gray-400"}`,children:e.jsx(k,{className:`w-5 h-5 ${o?"fill-current":""}`})})})]}),e.jsxs("div",{className:"relative w-full overflow-hidden group",children:[e.jsxs("div",{className:"absolute inset-0 z-0 h-[85vh] select-none pointer-events-none overflow-hidden",children:[e.jsx("div",{className:"absolute inset-0 bg-cover bg-center opacity-50 blur-[100px] scale-110 transition-all duration-[2s]",style:{backgroundImage:l?`url(${l})`:void 0,backgroundColor:"#0B1E3D"}}),e.jsx("div",{className:"absolute inset-0 bg-gradient-to-b from-black/10 via-[#0B1E3D]/40 to-[#0B1E3D]"}),e.jsx("div",{className:"absolute inset-0 bg-gradient-to-t from-[#0B1E3D] via-[#0B1E3D]/80 to-transparent"}),e.jsx("div",{className:"absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-transparent via-[#0B1E3D]/20 to-[#0B1E3D]"})]}),e.jsxs("div",{className:"relative z-10 px-6 md:px-12 pt-24 pb-12 flex flex-col md:flex-row items-end gap-10 min-h-[55vh]",children:[e.jsxs("div",{className:`relative group/image flex-shrink-0 rounded-lg ${r?"cursor-pointer":""}`,onClick:()=>{var t;return r&&((t=f.current)==null?void 0:t.click())},children:[e.jsx("div",{className:"absolute inset-4 blur-2xl opacity-60 rounded-full",style:{backgroundImage:l?`url(${l})`:void 0,backgroundSize:"cover"}}),e.jsxs("div",{className:"w-52 h-52 md:w-72 md:h-72 relative overflow-hidden rounded-2xl bg-white/5 border border-white/10 shadow-2xl ring-1 ring-white/5 z-10 transform transition-transform duration-500 group-hover/image:scale-[1.02]",children:[l?e.jsx("img",{src:l,alt:s,className:"w-full h-full object-cover shadow-inner animate-image-appear"}):e.jsx("div",{className:"w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-800 to-black",children:e.jsx("span",{className:"text-5xl",children:"🎵"})}),r&&e.jsxs("div",{className:"absolute inset-0 bg-black/60 flex flex-col items-center justify-center opacity-0 group-hover/image:opacity-100 transition-opacity duration-300 backdrop-blur-[2px]",children:[e.jsx(F,{className:"w-12 h-12 text-white mb-3"}),e.jsx("span",{className:"text-xs font-bold uppercase tracking-widest text-white",children:"Change Image"})]}),e.jsx("input",{type:"file",ref:f,onChange:I,accept:"image/*",className:"hidden"})]})]}),e.jsxs("div",{className:"flex-1 min-w-0 flex flex-col gap-4 pb-2",children:[e.jsx("div",{className:"flex items-center gap-3",children:e.jsxs("span",{className:"inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 border border-white/5 backdrop-blur-md text-[10px] md:text-xs font-bold uppercase tracking-[0.2em] text-white shadow-sm",children:[C&&e.jsx(A,{className:"w-3.5 h-3.5 text-blue-400 -ml-0.5"}),y]})}),e.jsx("div",{className:"group/title relative",children:e.jsxs("h1",{className:`text-5xl md:text-7xl lg:text-8xl font-black text-white tracking-tighter leading-[0.9] drop-shadow-2xl mix-blend-overlay opacity-90 ${r?"cursor-pointer hover:underline decoration-[#3A8FE0] decoration-4 underline-offset-8":""}`,onClick:()=>r&&(a==null?void 0:a()),children:[s,r&&e.jsx(S,{className:"w-8 h-8 inline-block ml-4 text-gray-500 opacity-0 group-hover/title:opacity-100 transition-opacity"})]})}),d&&e.jsx("p",{className:`text-lg text-gray-300 font-medium max-w-3xl line-clamp-2 mt-2 drop-shadow-md leading-relaxed ${r?"cursor-pointer hover:text-white transition-colors":""}`,onClick:()=>r&&(a==null?void 0:a()),children:d}),e.jsxs("div",{className:"flex flex-wrap items-center gap-4 text-sm font-semibold text-gray-300 mt-4 tracking-wide",children:[c&&e.jsx("span",{className:"text-white border-r border-white/20 pr-4",children:c}),x&&e.jsx("span",{children:x})]})]})]}),e.jsx("div",{className:"relative z-10 px-6 md:px-12 pb-6",children:e.jsxs("div",{className:"inline-flex items-center p-2 pr-6 rounded-[2rem] bg-white/5 border border-white/5 backdrop-blur-xl shadow-xl hover:bg-white/10 transition-colors duration-300 gap-4",children:[e.jsxs("button",{onClick:u,className:"relative w-16 h-16 bg-[#3A8FE0] text-white rounded-full flex items-center justify-center shadow-[0_0_30px_rgba(58,143,224,0.5)] hover:scale-105 hover:bg-[#6CB4F0] active:scale-95 transition-all duration-300 group",children:[e.jsx("div",{className:"absolute inset-0 rounded-full border border-white/20"}),m&&h?e.jsx(N,{className:"w-8 h-8"}):e.jsx(b,{className:"w-8 h-8 ml-1"})]}),e.jsx("div",{className:"h-8 w-px bg-white/10 mx-2"}),e.jsxs("div",{className:"flex items-center gap-2",children:[e.jsx("button",{onClick:p,className:"p-3 rounded-full hover:bg-white/10 transition-all active:scale-90 group/fav",title:v(o?"albumView.removeFromFav":"albumView.addToFav"),children:e.jsx(k,{className:`w-7 h-7 transition-all duration-300 ${o?"fill-[#3A8FE0] text-[#3A8FE0] drop-shadow-[0_0_10px_rgba(58,143,224,0.5)]":"text-gray-300 group-hover/fav:text-white"}`})}),g&&e.jsx("button",{onClick:g,className:"p-3 rounded-full hover:bg-white/10 transition-all active:scale-90 text-gray-300 hover:text-white",children:e.jsx(D,{className:"w-7 h-7"})}),B]})]})})]})]})};export{R as C};
+import { u as $, r as i, j as e } from "./index-Jbwo0tuu.js";
+const b = (s) =>
+    e.jsx("svg", {
+      ...s,
+      xmlns: "http://www.w3.org/2000/svg",
+      viewBox: "0 0 24 24",
+      fill: "currentColor",
+      children: e.jsx("path", { d: "M5 3l14 9-14 9V3z" }),
+    }),
+  N = (s) =>
+    e.jsxs("svg", {
+      ...s,
+      xmlns: "http://www.w3.org/2000/svg",
+      viewBox: "0 0 24 24",
+      fill: "currentColor",
+      children: [
+        e.jsx("rect", { x: "6", y: "4", width: "4", height: "16", rx: "2" }),
+        e.jsx("rect", { x: "14", y: "4", width: "4", height: "16", rx: "2" }),
+      ],
+    }),
+  k = (s) =>
+    e.jsx("svg", {
+      ...s,
+      xmlns: "http://www.w3.org/2000/svg",
+      viewBox: "0 0 24 24",
+      fill: "none",
+      stroke: "currentColor",
+      strokeWidth: 2.5,
+      strokeLinecap: "round",
+      strokeLinejoin: "round",
+      children: e.jsx("path", {
+        d: "M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z",
+      }),
+    }),
+  D = (s) =>
+    e.jsxs("svg", {
+      ...s,
+      xmlns: "http://www.w3.org/2000/svg",
+      viewBox: "0 0 24 24",
+      fill: "none",
+      stroke: "currentColor",
+      strokeWidth: 2.5,
+      strokeLinecap: "round",
+      strokeLinejoin: "round",
+      children: [
+        e.jsx("circle", { cx: "12", cy: "12", r: "1" }),
+        e.jsx("circle", { cx: "19", cy: "12", r: "1" }),
+        e.jsx("circle", { cx: "5", cy: "12", r: "1" }),
+      ],
+    }),
+  F = (s) =>
+    e.jsxs("svg", {
+      ...s,
+      xmlns: "http://www.w3.org/2000/svg",
+      viewBox: "0 0 24 24",
+      fill: "none",
+      stroke: "currentColor",
+      strokeWidth: 2,
+      strokeLinecap: "round",
+      strokeLinejoin: "round",
+      children: [
+        e.jsx("path", {
+          d: "M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z",
+        }),
+        e.jsx("circle", { cx: "12", cy: "13", r: "4" }),
+      ],
+    }),
+  S = (s) =>
+    e.jsx("svg", {
+      ...s,
+      xmlns: "http://www.w3.org/2000/svg",
+      viewBox: "0 0 24 24",
+      fill: "none",
+      stroke: "currentColor",
+      strokeWidth: 2,
+      strokeLinecap: "round",
+      strokeLinejoin: "round",
+      children: e.jsx("path", {
+        d: "M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z",
+      }),
+    }),
+  A = (s) =>
+    e.jsx("svg", {
+      ...s,
+      xmlns: "http://www.w3.org/2000/svg",
+      viewBox: "0 0 24 24",
+      fill: "currentColor",
+      className: "text-blue-400",
+      children: e.jsx("path", {
+        d: "M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z",
+      }),
+    }),
+  R = ({
+    title: s,
+    type: y,
+    subtitle: c,
+    description: d,
+    imageUrl: l,
+    isVerified: C,
+    meta: x,
+    isPlaying: h,
+    isCurrentContext: m,
+    onPlay: u,
+    onToggleFavorite: p,
+    isFavorite: o,
+    children: B,
+    isEditable: r,
+    onEditTitle: a,
+    onImageUpload: w,
+    onMoreOptions: g,
+  }) => {
+    const { t: v } = $(),
+      f = i.useRef(null),
+      L = i.useRef(null),
+      [_, z] = i.useState(!1);
+    i.useEffect(() => {
+      const t = () => {
+          const j = document.querySelector("main");
+          j && z(j.scrollTop > 350);
+        },
+        n = document.querySelector("main");
+      return (
+        n == null || n.addEventListener("scroll", t),
+        () => (n == null ? void 0 : n.removeEventListener("scroll", t))
+      );
+    }, []);
+    const I = (t) => {
+      t.target.files && t.target.files[0] && w && w(t.target.files[0]);
+    };
+    return e.jsxs("div", {
+      ref: L,
+      className: "relative w-full",
+      children: [
+        e.jsxs("div", {
+          className: `fixed top-0 left-0 right-0 z-40 md:pl-64 h-20 bg-[#0B1E3D]/90 backdrop-blur-2xl border-b border-white/5 flex items-center justify-between px-6 transition-all duration-500 transform ${_ ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"}`,
+          children: [
+            e.jsxs("div", {
+              className: "flex items-center gap-4 overflow-hidden",
+              children: [
+                e.jsx("button", {
+                  onClick: u,
+                  className:
+                    "w-12 h-12 bg-[#3A8FE0] rounded-full flex items-center justify-center text-black shadow-[0_0_20px_rgba(58,143,224,0.4)] hover:scale-105 hover:bg-[#6CB4F0] active:scale-95 transition-all duration-300 flex-shrink-0",
+                  children:
+                    m && h
+                      ? e.jsx(N, { className: "w-6 h-6" })
+                      : e.jsx(b, { className: "w-6 h-6 ml-0.5" }),
+                }),
+                e.jsx("span", {
+                  className:
+                    "font-bold text-xl text-white truncate tracking-tight",
+                  children: s,
+                }),
+              ],
+            }),
+            e.jsx("div", {
+              className: "flex items-center gap-2",
+              children: e.jsx("button", {
+                onClick: p,
+                className: `p-2.5 rounded-full bg-white/5 hover:bg-white/10 transition-all active:scale-95 ${o ? "text-[#3A8FE0]" : "text-gray-400"}`,
+                children: e.jsx(k, {
+                  className: `w-5 h-5 ${o ? "fill-current" : ""}`,
+                }),
+              }),
+            }),
+          ],
+        }),
+        e.jsxs("div", {
+          className: "relative w-full overflow-hidden group",
+          children: [
+            e.jsxs("div", {
+              className:
+                "absolute inset-0 z-0 h-[85vh] select-none pointer-events-none overflow-hidden",
+              children: [
+                e.jsx("div", {
+                  className:
+                    "absolute inset-0 bg-cover bg-center opacity-50 blur-[100px] scale-110 transition-all duration-[2s]",
+                  style: {
+                    backgroundImage: l ? `url(${l})` : void 0,
+                    backgroundColor: "#0B1E3D",
+                  },
+                }),
+                e.jsx("div", {
+                  className:
+                    "absolute inset-0 bg-gradient-to-b from-black/10 via-[#0B1E3D]/40 to-[#0B1E3D]",
+                }),
+                e.jsx("div", {
+                  className:
+                    "absolute inset-0 bg-gradient-to-t from-[#0B1E3D] via-[#0B1E3D]/80 to-transparent",
+                }),
+                e.jsx("div", {
+                  className:
+                    "absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-transparent via-[#0B1E3D]/20 to-[#0B1E3D]",
+                }),
+              ],
+            }),
+            e.jsxs("div", {
+              className:
+                "relative z-10 px-6 md:px-12 pt-24 pb-12 flex flex-col md:flex-row items-end gap-10 min-h-[55vh]",
+              children: [
+                e.jsxs("div", {
+                  className: `relative group/image flex-shrink-0 rounded-lg ${r ? "cursor-pointer" : ""}`,
+                  onClick: () => {
+                    var t;
+                    return r && ((t = f.current) == null ? void 0 : t.click());
+                  },
+                  children: [
+                    e.jsx("div", {
+                      className:
+                        "absolute inset-4 blur-2xl opacity-60 rounded-full",
+                      style: {
+                        backgroundImage: l ? `url(${l})` : void 0,
+                        backgroundSize: "cover",
+                      },
+                    }),
+                    e.jsxs("div", {
+                      className:
+                        "w-52 h-52 md:w-72 md:h-72 relative overflow-hidden rounded-2xl bg-white/5 border border-white/10 shadow-2xl ring-1 ring-white/5 z-10 transform transition-transform duration-500 group-hover/image:scale-[1.02]",
+                      children: [
+                        l
+                          ? e.jsx("img", {
+                              src: l,
+                              alt: s,
+                              className:
+                                "w-full h-full object-cover shadow-inner animate-image-appear",
+                            })
+                          : e.jsx("div", {
+                              className:
+                                "w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-800 to-black",
+                              children: e.jsx("span", {
+                                className: "text-5xl",
+                                children: "🎵",
+                              }),
+                            }),
+                        r &&
+                          e.jsxs("div", {
+                            className:
+                              "absolute inset-0 bg-black/60 flex flex-col items-center justify-center opacity-0 group-hover/image:opacity-100 transition-opacity duration-300 backdrop-blur-[2px]",
+                            children: [
+                              e.jsx(F, {
+                                className: "w-12 h-12 text-white mb-3",
+                              }),
+                              e.jsx("span", {
+                                className:
+                                  "text-xs font-bold uppercase tracking-widest text-white",
+                                children: "Change Image",
+                              }),
+                            ],
+                          }),
+                        e.jsx("input", {
+                          type: "file",
+                          ref: f,
+                          onChange: I,
+                          accept: "image/*",
+                          className: "hidden",
+                        }),
+                      ],
+                    }),
+                  ],
+                }),
+                e.jsxs("div", {
+                  className: "flex-1 min-w-0 flex flex-col gap-4 pb-2",
+                  children: [
+                    e.jsx("div", {
+                      className: "flex items-center gap-3",
+                      children: e.jsxs("span", {
+                        className:
+                          "inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 border border-white/5 backdrop-blur-md text-[10px] md:text-xs font-bold uppercase tracking-[0.2em] text-white shadow-sm",
+                        children: [
+                          C &&
+                            e.jsx(A, {
+                              className: "w-3.5 h-3.5 text-blue-400 -ml-0.5",
+                            }),
+                          y,
+                        ],
+                      }),
+                    }),
+                    e.jsx("div", {
+                      className: "group/title relative",
+                      children: e.jsxs("h1", {
+                        className: `text-5xl md:text-7xl lg:text-8xl font-black text-white tracking-tighter leading-[0.9] drop-shadow-2xl mix-blend-overlay opacity-90 ${r ? "cursor-pointer hover:underline decoration-[#3A8FE0] decoration-4 underline-offset-8" : ""}`,
+                        onClick: () => r && (a == null ? void 0 : a()),
+                        children: [
+                          s,
+                          r &&
+                            e.jsx(S, {
+                              className:
+                                "w-8 h-8 inline-block ml-4 text-gray-500 opacity-0 group-hover/title:opacity-100 transition-opacity",
+                            }),
+                        ],
+                      }),
+                    }),
+                    d &&
+                      e.jsx("p", {
+                        className: `text-lg text-gray-300 font-medium max-w-3xl line-clamp-2 mt-2 drop-shadow-md leading-relaxed ${r ? "cursor-pointer hover:text-white transition-colors" : ""}`,
+                        onClick: () => r && (a == null ? void 0 : a()),
+                        children: d,
+                      }),
+                    e.jsxs("div", {
+                      className:
+                        "flex flex-wrap items-center gap-4 text-sm font-semibold text-gray-300 mt-4 tracking-wide",
+                      children: [
+                        c &&
+                          e.jsx("span", {
+                            className:
+                              "text-white border-r border-white/20 pr-4",
+                            children: c,
+                          }),
+                        x && e.jsx("span", { children: x }),
+                      ],
+                    }),
+                  ],
+                }),
+              ],
+            }),
+            e.jsx("div", {
+              className: "relative z-10 px-6 md:px-12 pb-6",
+              children: e.jsxs("div", {
+                className:
+                  "inline-flex items-center p-2 pr-6 rounded-[2rem] bg-white/5 border border-white/5 backdrop-blur-xl shadow-xl hover:bg-white/10 transition-colors duration-300 gap-4",
+                children: [
+                  e.jsxs("button", {
+                    onClick: u,
+                    className:
+                      "relative w-16 h-16 bg-[#3A8FE0] text-white rounded-full flex items-center justify-center shadow-[0_0_30px_rgba(58,143,224,0.5)] hover:scale-105 hover:bg-[#6CB4F0] active:scale-95 transition-all duration-300 group",
+                    children: [
+                      e.jsx("div", {
+                        className:
+                          "absolute inset-0 rounded-full border border-white/20",
+                      }),
+                      m && h
+                        ? e.jsx(N, { className: "w-8 h-8" })
+                        : e.jsx(b, { className: "w-8 h-8 ml-1" }),
+                    ],
+                  }),
+                  e.jsx("div", { className: "h-8 w-px bg-white/10 mx-2" }),
+                  e.jsxs("div", {
+                    className: "flex items-center gap-2",
+                    children: [
+                      e.jsx("button", {
+                        onClick: p,
+                        className:
+                          "p-3 rounded-full hover:bg-white/10 transition-all active:scale-90 group/fav",
+                        title: v(
+                          o ? "albumView.removeFromFav" : "albumView.addToFav",
+                        ),
+                        children: e.jsx(k, {
+                          className: `w-7 h-7 transition-all duration-300 ${o ? "fill-[#3A8FE0] text-[#3A8FE0] drop-shadow-[0_0_10px_rgba(58,143,224,0.5)]" : "text-gray-300 group-hover/fav:text-white"}`,
+                        }),
+                      }),
+                      g &&
+                        e.jsx("button", {
+                          onClick: g,
+                          className:
+                            "p-3 rounded-full hover:bg-white/10 transition-all active:scale-90 text-gray-300 hover:text-white",
+                          children: e.jsx(D, { className: "w-7 h-7" }),
+                        }),
+                      B,
+                    ],
+                  }),
+                ],
+              }),
+            }),
+          ],
+        }),
+      ],
+    });
+  };
+export { R as C };

@@ -1,10 +1,16 @@
-
-import React, { useState, useRef, useEffect, useCallback, useContext } from 'react';
-import { Song } from '../types';
-import { PlayerContext } from '../context/PlayerContext';
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  useCallback,
+  useContext,
+} from "react";
+import { Song } from "../types";
+import { PlayerContext } from "../context/PlayerContext";
 
 export const usePreviewPlayer = () => {
-  const { isPlaying: isMainPlayerPlaying, togglePlay: toggleMainPlay } = useContext(PlayerContext);
+  const { isPlaying: isMainPlayerPlaying, togglePlay: toggleMainPlay } =
+    useContext(PlayerContext);
   const [previewingSongId, setPreviewingSongId] = useState<string | null>(null);
   const [isPreviewPlaying, setIsPreviewPlaying] = useState(false);
   const [previewProgress, setPreviewProgress] = useState(0);
@@ -17,7 +23,7 @@ export const usePreviewPlayer = () => {
         audio.pause();
       }
       audio.currentTime = 0;
-      audio.src = '';
+      audio.src = "";
     }
     setIsPreviewPlaying(false);
     setPreviewingSongId(null);
@@ -43,22 +49,22 @@ export const usePreviewPlayer = () => {
     };
     const onLoadedData = () => setPreviewProgress(0);
 
-    audio.addEventListener('play', onPlay);
-    audio.addEventListener('pause', onPause);
-    audio.addEventListener('ended', onEnded);
-    audio.addEventListener('timeupdate', onTimeUpdate);
-    audio.addEventListener('loadeddata', onLoadedData);
-    
+    audio.addEventListener("play", onPlay);
+    audio.addEventListener("pause", onPause);
+    audio.addEventListener("ended", onEnded);
+    audio.addEventListener("timeupdate", onTimeUpdate);
+    audio.addEventListener("loadeddata", onLoadedData);
+
     // Cleanup function
     return () => {
-      audio.removeEventListener('play', onPlay);
-      audio.removeEventListener('pause', onPause);
-      audio.removeEventListener('ended', onEnded);
-      audio.removeEventListener('timeupdate', onTimeUpdate);
-      audio.removeEventListener('loadeddata', onLoadedData);
+      audio.removeEventListener("play", onPlay);
+      audio.removeEventListener("pause", onPause);
+      audio.removeEventListener("ended", onEnded);
+      audio.removeEventListener("timeupdate", onTimeUpdate);
+      audio.removeEventListener("loadeddata", onLoadedData);
       if (audio && !audio.paused) {
         audio.pause();
-        audio.src = '';
+        audio.src = "";
       }
     };
   }, [resetPreviewState]);
@@ -69,42 +75,47 @@ export const usePreviewPlayer = () => {
     }
   }, [isMainPlayerPlaying, isPreviewPlaying, resetPreviewState]);
 
-  const handlePreview = useCallback((e: React.MouseEvent, song: Song) => {
-    e.stopPropagation();
-    const audio = previewAudioRef.current;
-    if (!audio) return;
+  const handlePreview = useCallback(
+    (e: React.MouseEvent, song: Song) => {
+      e.stopPropagation();
+      const audio = previewAudioRef.current;
+      if (!audio) return;
 
-    const isCurrentlyPreviewingThisSong = previewingSongId === song.id;
+      const isCurrentlyPreviewingThisSong = previewingSongId === song.id;
 
-    if (isCurrentlyPreviewingThisSong) {
-      if (audio.paused) {
+      if (isCurrentlyPreviewingThisSong) {
+        if (audio.paused) {
+          if (isMainPlayerPlaying) toggleMainPlay();
+          audio.play().catch(console.error);
+        } else {
+          audio.pause();
+        }
+      } else {
         if (isMainPlayerPlaying) toggleMainPlay();
-        audio.play().catch(console.error);
-      } else {
-        audio.pause();
+
+        const previewUrl =
+          song.downloadUrl.find((q) => q.quality === "96kbps")?.url ||
+          song.downloadUrl[0]?.url;
+        if (previewUrl) {
+          setPreviewingSongId(song.id);
+          setIsPreviewPlaying(true);
+          setPreviewProgress(0);
+          audio.src = previewUrl.replace(/^http:/, "https:");
+          audio.load();
+          audio.play().catch((err) => {
+            console.error("Preview play failed:", err);
+            if (err.name !== "AbortError") {
+              resetPreviewState();
+            }
+          });
+        } else {
+          console.warn("No preview URL for song:", song.name);
+          resetPreviewState();
+        }
       }
-    } else {
-      if (isMainPlayerPlaying) toggleMainPlay();
-      
-      const previewUrl = song.downloadUrl.find(q => q.quality === '96kbps')?.url || song.downloadUrl[0]?.url;
-      if (previewUrl) {
-        setPreviewingSongId(song.id);
-        setIsPreviewPlaying(true);
-        setPreviewProgress(0);
-        audio.src = previewUrl.replace(/^http:/, 'https:');
-        audio.load();
-        audio.play().catch(err => {
-          console.error("Preview play failed:", err);
-          if (err.name !== 'AbortError') {
-            resetPreviewState();
-          }
-        });
-      } else {
-        console.warn('No preview URL for song:', song.name);
-        resetPreviewState();
-      }
-    }
-  }, [isMainPlayerPlaying, toggleMainPlay, previewingSongId, resetPreviewState]);
+    },
+    [isMainPlayerPlaying, toggleMainPlay, previewingSongId, resetPreviewState],
+  );
 
   return {
     previewingSongId,

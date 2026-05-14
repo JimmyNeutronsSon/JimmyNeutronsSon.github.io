@@ -1,4 +1,3 @@
-
 {
   "compilerOptions": {
     "target": "ES2020",
@@ -18,16 +17,16 @@
     "noFallthroughCasesInSwitch": true
   },
   "include": [
-    "*.ts", 
-    "*.tsx", 
-    "components/**/*.ts", 
-    "components/**/*.tsx", 
-    "context/**/*.ts", 
-    "context/**/*.tsx", 
-    "hooks/**/*.ts", 
-    "hooks/**/*.tsx", 
-    "services/**/*.ts", 
-    "types.ts", 
+    "*.ts",
+    "*.tsx",
+    "components/**/*.ts",
+    "components/**/*.tsx",
+    "context/**/*.ts",
+    "context/**/*.tsx",
+    "hooks/**/*.ts",
+    "hooks/**/*.tsx",
+    "services/**/*.ts",
+    "types.ts",
     "utils/**/*.ts"
   ],
   "exclude": ["node_modules", "src"]

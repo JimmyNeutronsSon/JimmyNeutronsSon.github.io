@@ -1,41 +1,47 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en-us">
   <head>
-    <base href="https://rawcdn.githack.com/genizy/web-port/f80c14f1508260870d9b10f5acbf73fc4b77764e/speed-stars/index.html">
-    <meta charset="utf-8">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <base
+      href="https://rawcdn.githack.com/genizy/web-port/f80c14f1508260870d9b10f5acbf73fc4b77764e/speed-stars/index.html"
+    />
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>Unity WebGL Player | Speed Stars</title>
-    <link rel="icon" type="image/x-icon" href="/warning-hazard-sign-on-transparent-background-free-png.ico" />
-    <link rel="stylesheet" href="TemplateData/style.css">
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="/warning-hazard-sign-on-transparent-background-free-png.ico"
+    />
+    <link rel="stylesheet" href="TemplateData/style.css" />
     <style>
       html,
       body {
-          margin: 0;
-          padding: 0;
-          overflow: hidden;
-          height: 100%;
-          width: 100%;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        height: 100%;
+        width: 100%;
       }
 
       #unity-container {
-          width: 100%;
-          height: 100%;
-          position: fixed;
-          top: 0;
-          left: 0;
+        width: 100%;
+        height: 100%;
+        position: fixed;
+        top: 0;
+        left: 0;
       }
-  </style>
+    </style>
   </head>
   <body>
     <div id="unity-container" class="unity-desktop">
-      <canvas id="unity-canvas" width=960 height=600></canvas>
+      <canvas id="unity-canvas" width="960" height="600"></canvas>
       <div id="unity-loading-bar">
         <div id="unity-logo"></div>
         <div id="unity-progress-bar-empty">
           <div id="unity-progress-bar-full"></div>
         </div>
       </div>
-      <div id="unity-warning"> </div>
+      <div id="unity-warning"></div>
     </div>
     <script>
       var container = document.querySelector("#unity-container");
@@ -49,9 +55,7 @@
       // Modify or remove this function to customize the visually presented
       // way that non-critical warnings and error messages are presented to the
       // user.
-      function unityShowBanner(msg, type) {
-
-      }
+      function unityShowBanner(msg, type) {}
 
       var buildUrl = "Build";
       var loaderUrl = buildUrl + "/webgl.loader.js";
@@ -76,20 +80,21 @@
       if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
         // Mobile device style: fill the whole browser client area with the game canvas:
 
-        var meta = document.createElement('meta');
-        meta.name = 'viewport';
-        meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
-        document.getElementsByTagName('head')[0].appendChild(meta);
+        var meta = document.createElement("meta");
+        meta.name = "viewport";
+        meta.content =
+          "width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes";
+        document.getElementsByTagName("head")[0].appendChild(meta);
         container.className = "unity-mobile";
 
         // To lower canvas resolution on mobile devices to gain some
         // performance, uncomment the following line:
         // config.devicePixelRatio = 1;
 
-        canvas.style.width = window.innerWidth + 'px';
-        canvas.style.height = window.innerHeight + 'px';
+        canvas.style.width = window.innerWidth + "px";
+        canvas.style.height = window.innerHeight + "px";
 
-        unityShowBanner('WebGL builds are not supported on mobile devices.');
+        unityShowBanner("WebGL builds are not supported on mobile devices.");
       } else {
         function resizeCanvas() {
           canvas.width = window.innerWidth;
@@ -98,7 +103,7 @@
           canvas.style.height = window.innerHeight + "px";
         }
         resizeCanvas();
-        window.addEventListener('resize', resizeCanvas);
+        window.addEventListener("resize", resizeCanvas);
       }
 
       loadingBar.style.display = "block";
@@ -108,11 +113,13 @@
       script.onload = () => {
         createUnityInstance(canvas, config, (progress) => {
           progressBarFull.style.width = 100 * progress + "%";
-        }).then((unityInstance) => {
-          loadingBar.style.display = "none";
-        }).catch((message) => {
-          alert(message);
-        });
+        })
+          .then((unityInstance) => {
+            loadingBar.style.display = "none";
+          })
+          .catch((message) => {
+            alert(message);
+          });
       };
       document.body.appendChild(script);
     </script>

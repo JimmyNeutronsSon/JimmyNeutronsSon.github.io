@@ -23,11 +23,14 @@
 
 body {
   font-family: "Inter", sans-serif;
-  background: linear-gradient(180deg,
+  background: linear-gradient(
+      180deg,
       #0a2d6e 0%,
       #1e6cc7 42%,
       #6cb4f0 75%,
-      #d6e5f5 100%) fixed;
+      #d6e5f5 100%
+    )
+    fixed;
   background-attachment: fixed;
   color: var(--vlt-text-primary);
   min-height: 100vh;
@@ -74,9 +77,11 @@ body {
 .vlt-logo {
   width: 34px;
   height: 34px;
-  background: linear-gradient(135deg,
-      var(--vlt-bright-blue),
-      var(--vlt-soft-blue));
+  background: linear-gradient(
+    135deg,
+    var(--vlt-bright-blue),
+    var(--vlt-soft-blue)
+  );
   border-radius: 9px;
   display: flex;
   align-items: center;
@@ -538,9 +543,11 @@ body {
 }
 
 .vlt-hero-art {
-  background: linear-gradient(135deg,
-      rgba(30, 108, 199, 0.26),
-      rgba(58, 143, 224, 0.1));
+  background: linear-gradient(
+    135deg,
+    rgba(30, 108, 199, 0.26),
+    rgba(58, 143, 224, 0.1)
+  );
   display: flex;
   align-items: center;
   justify-content: center;
@@ -551,9 +558,11 @@ body {
 .vlt-hero-art-bg {
   position: absolute;
   inset: 0;
-  background: radial-gradient(ellipse at 60% 40%,
-      rgba(58, 143, 224, 0.3),
-      transparent 70%);
+  background: radial-gradient(
+    ellipse at 60% 40%,
+    rgba(58, 143, 224, 0.3),
+    transparent 70%
+  );
 }
 
 .vlt-hero-art-emoji {
@@ -723,9 +732,11 @@ body {
 .vlt-game-art-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg,
-      transparent 40%,
-      rgba(11, 30, 61, 0.65) 100%);
+  background: linear-gradient(
+    180deg,
+    transparent 40%,
+    rgba(11, 30, 61, 0.65) 100%
+  );
 }
 
 .vlt-game-card-body {

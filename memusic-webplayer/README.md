@@ -9,18 +9,18 @@
 - **Local-First Storage:** All your data (playlists, favorites, history) is saved in your browser's local storage.
 - **Comprehensive Search:** Quickly find songs, albums, artists, and public playlists.
 - **Personal Library:**
-    - Create and manage custom playlists.
-    - Save your favorite songs and albums.
-    - View your listening history.
+  - Create and manage custom playlists.
+  - Save your favorite songs and albums.
+  - View your listening history.
 - **Immersive Views:** Dedicated pages for albums, artists, and playlists with rich details.
 - **Advanced Player:**
-    - High-quality audio streaming with quality selection.
-    - Standard controls: play/pause, next/previous, seek, and volume.
-    - Player modes: shuffle and repeat (off, all, one).
+  - High-quality audio streaming with quality selection.
+  - Standard controls: play/pause, next/previous, seek, and volume.
+  - Player modes: shuffle and repeat (off, all, one).
 - **Queue Management:**
-    - View and manage the upcoming song queue.
-    - Drag-and-drop to reorder songs.
-    - Add songs to play next or at the end of the queue.
+  - View and manage the upcoming song queue.
+  - Drag-and-drop to reorder songs.
+  - Add songs to play next or at the end of the queue.
 - **Single-File Downloads:** Download entire albums or playlists as a single `.zip` file for convenience.
 - **Music Discovery:** Get song recommendations based on your listening history.
 

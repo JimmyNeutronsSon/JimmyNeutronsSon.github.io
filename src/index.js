@@ -13,6 +13,7 @@ import { Server as SocketIOServer } from "socket.io";
 import { scramjetPath } from "@mercuryworkshop/scramjet/path";
 import { libcurlPath } from "@mercuryworkshop/libcurl-transport";
 import { baremuxPath } from "@mercuryworkshop/bare-mux/node";
+import ngrok from "@ngrok/ngrok";
 
 const publicPath = fileURLToPath(new URL("../", import.meta.url));
 
@@ -374,30 +375,158 @@ const startPort = Number.isFinite(envPort) && envPort > 0 ? envPort : 8080;
 // ── Socket.io — auth + chat + voice ─────────────────────────────────────────
 let io;
 
+// ════════════════════════════════════════════════════════════════════════════
+//  DATA LAYER — Supabase (production) with JSON-file fallback (local dev)
+//
+//  Supabase setup — create these three tables in your project:
+//
+//  Table: chat_messages
+//    id        bigint generated always as identity primary key
+//    data      jsonb not null          ← the full message object
+//    inserted_at timestamptz default now()
+//
+//  Table: chat_users
+//    username  text primary key        ← lowercase key
+//    data      jsonb not null          ← { username, passwordHash, token, friends, ... }
+//
+//  Table: chat_dms
+//    pair_key  text primary key        ← "alice|bob" (sorted)
+//    messages  jsonb not null          ← array of message objects
+//
+//  Set these env vars on Render:
+//    SUPABASE_URL   = https://xxxx.supabase.co
+//    SUPABASE_KEY   = your service_role (secret) key   ← NOT the anon key
+// ════════════════════════════════════════════════════════════════════════════
+
+const SUPABASE_URL = process.env.SUPABASE_URL?.replace(/\/$/, "");
+const SUPABASE_KEY = process.env.SUPABASE_KEY;
+const USE_SUPABASE = !!(SUPABASE_URL && SUPABASE_KEY);
+
+if (USE_SUPABASE) {
+  console.log("chat: Supabase persistence enabled →", SUPABASE_URL);
+} else {
+  console.log(
+    "chat: SUPABASE_URL / SUPABASE_KEY not set — using local JSON files.\n" +
+      "      Data will be lost on Render redeploy. Set the env vars to persist.",
+  );
+}
+
+// ── Thin Supabase REST helper (no extra npm package needed) ──────────────────
+async function sbFetch(path, opts = {}) {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
+    ...opts,
+    headers: {
+      "Content-Type": "application/json",
+      apikey: SUPABASE_KEY,
+      Authorization: `Bearer ${SUPABASE_KEY}`,
+      Prefer: opts.prefer || "return=representation",
+      ...(opts.headers || {}),
+    },
+  });
+  if (!res.ok) {
+    const txt = await res.text().catch(() => "");
+    throw new Error(`Supabase ${path} → ${res.status}: ${txt}`);
+  }
+  const text = await res.text();
+  return text ? JSON.parse(text) : null;
+}
+
+// ── Local JSON file fallback ──────────────────────────────────────────────────
 const CHAT_FILE = join(publicPath, "chat-history.json");
 const USERS_FILE = join(publicPath, "chat-users.json");
-const MAX_HISTORY = 100;
+const DM_FILE = join(publicPath, "chat-dms.json");
 
-// ── Persistent chat history ──
-const chatHistory = (() => {
+function readJsonFile(path, fallback) {
   try {
-    if (existsSync(CHAT_FILE))
-      return JSON.parse(readFileSync(CHAT_FILE, "utf8"));
+    if (existsSync(path)) return JSON.parse(readFileSync(path, "utf8"));
   } catch {
-    /* start fresh */
+    /* ignore */
   }
-  return [];
-})();
+  return fallback;
+}
 
-let saveTimer = null;
+// ── In-memory caches (always kept up-to-date; Supabase is the source of truth) ─
+const MAX_HISTORY = 200;
+const MAX_DM = 200;
+
+const chatHistory = readJsonFile(CHAT_FILE, []);
+const users = readJsonFile(USERS_FILE, {});
+const dmHistory = readJsonFile(DM_FILE, {});
+
+// ── Load from Supabase into memory at startup ────────────────────────────────
+async function loadFromSupabase() {
+  if (!USE_SUPABASE) return;
+  try {
+    // chat messages — newest MAX_HISTORY rows
+    const msgs = await sbFetch(
+      `chat_messages?select=data&order=id.asc&limit=${MAX_HISTORY}`,
+      { prefer: "return=representation" },
+    );
+    chatHistory.length = 0;
+    msgs.forEach((r) => chatHistory.push(r.data));
+
+    // users
+    const userRows = await sbFetch("chat_users?select=username,data");
+    Object.keys(users).forEach((k) => delete users[k]);
+    userRows.forEach((r) => {
+      users[r.username] = r.data;
+    });
+
+    // DMs
+    const dmRows = await sbFetch("chat_dms?select=pair_key,messages");
+    Object.keys(dmHistory).forEach((k) => delete dmHistory[k]);
+    dmRows.forEach((r) => {
+      dmHistory[r.pair_key] = r.messages;
+    });
+
+    // GCs
+    try {
+      const gcRows = await sbFetch("chat_gcs?select=id,data");
+      Object.keys(groupChatsData).forEach((k) => delete groupChatsData[k]);
+      gcRows.forEach((r) => {
+        groupChatsData[r.id] = r.data;
+      });
+    } catch (e) {
+      console.warn("chat: loadFromSupabase GCs failed (table might not exist yet)");
+    }
+
+    console.log(
+      `chat: loaded from Supabase — ${chatHistory.length} msgs, ` +
+        `${Object.keys(users).length} users, ${Object.keys(dmHistory).length} DM threads, ` +
+        `${Object.keys(groupChatsData).length} GCs`,
+    );
+  } catch (e) {
+    console.error(
+      "chat: Supabase load failed, falling back to local data:",
+      e.message,
+    );
+  }
+}
+
+// ── Write helpers ────────────────────────────────────────────────────────────
+
+// Chat messages — insert one row; trim old rows if over limit
+async function sbPushMsg(msg) {
+  if (!USE_SUPABASE) return;
+  try {
+    await sbFetch("chat_messages", {
+      method: "POST",
+      prefer: "return=minimal",
+      body: JSON.stringify({ data: msg }),
+    });
+  } catch (e) {
+    console.error("chat: sbPushMsg failed:", e.message);
+  }
+}
+
+let _saveHistoryTimer = null;
 function saveHistory() {
-  clearTimeout(saveTimer);
-  saveTimer = setTimeout(async () => {
+  // Always write local file (no-op on read-only FS, won't crash)
+  clearTimeout(_saveHistoryTimer);
+  _saveHistoryTimer = setTimeout(async () => {
     try {
       await writeFile(CHAT_FILE, JSON.stringify(chatHistory), "utf8");
-    } catch (err) {
-      console.error("chat: failed to save history:", err);
-    }
+    } catch {}
   }, 2000);
 }
 
@@ -405,10 +534,69 @@ function pushMsg(msg) {
   chatHistory.push(msg);
   if (chatHistory.length > MAX_HISTORY) chatHistory.shift();
   saveHistory();
+  sbPushMsg(msg); // fire-and-forget
 }
 
-// ── User accounts: { username → { passwordHash, token } } ──
-// Simple SHA-256 hash — no bcrypt dependency needed
+// Users — upsert one row
+async function saveUsers() {
+  // Local file
+  try {
+    await writeFile(USERS_FILE, JSON.stringify(users), "utf8");
+  } catch {}
+  if (!USE_SUPABASE) return;
+  // Upsert all dirty users — we just upsert everything; it's a small table
+  try {
+    const rows = Object.entries(users).map(([username, data]) => ({
+      username,
+      data,
+    }));
+    if (!rows.length) return;
+    await sbFetch("chat_users", {
+      method: "POST",
+      prefer: "resolution=merge-duplicates,return=minimal",
+      headers: { Prefer: "resolution=merge-duplicates,return=minimal" },
+      body: JSON.stringify(rows),
+    });
+  } catch (e) {
+    console.error("chat: saveUsers failed:", e.message);
+  }
+}
+
+// DMs — upsert one pair_key row
+function dmKey(a, b) {
+  return [a, b].sort().join("|");
+}
+
+let _dmTimers = {};
+function saveDMs(key) {
+  clearTimeout(_dmTimers[key]);
+  _dmTimers[key] = setTimeout(async () => {
+    try {
+      await writeFile(DM_FILE, JSON.stringify(dmHistory), "utf8");
+    } catch {}
+    if (!USE_SUPABASE) return;
+    try {
+      await sbFetch("chat_dms", {
+        method: "POST",
+        prefer: "resolution=merge-duplicates,return=minimal",
+        headers: { Prefer: "resolution=merge-duplicates,return=minimal" },
+        body: JSON.stringify({ pair_key: key, messages: dmHistory[key] }),
+      });
+    } catch (e) {
+      console.error("chat: saveDMs failed:", e.message);
+    }
+  }, 2000);
+}
+
+function pushDM(a, b, msg) {
+  const k = dmKey(a, b);
+  if (!dmHistory[k]) dmHistory[k] = [];
+  dmHistory[k].push(msg);
+  if (dmHistory[k].length > MAX_DM) dmHistory[k].shift();
+  saveDMs(k);
+}
+
+// ── Auth helpers ─────────────────────────────────────────────────────────────
 function hashPassword(pw) {
   return createHash("sha256")
     .update("welkin-salt-" + pw)
@@ -418,51 +606,6 @@ function makeToken() {
   return createHash("sha256")
     .update(Math.random().toString() + Date.now())
     .digest("hex");
-}
-
-const DM_FILE = join(publicPath, "chat-dms.json");
-const MAX_DM = 200;
-const dmHistory = (() => {
-  try {
-    if (existsSync(DM_FILE)) return JSON.parse(readFileSync(DM_FILE, "utf8"));
-  } catch {}
-  return {};
-})();
-let dmSaveTimer = null;
-function saveDMs() {
-  clearTimeout(dmSaveTimer);
-  dmSaveTimer = setTimeout(async () => {
-    try {
-      await writeFile(DM_FILE, JSON.stringify(dmHistory), "utf8");
-    } catch (e) {}
-  }, 2000);
-}
-function dmKey(a, b) {
-  return [a, b].sort().join("|");
-}
-function pushDM(a, b, msg) {
-  const k = dmKey(a, b);
-  if (!dmHistory[k]) dmHistory[k] = [];
-  dmHistory[k].push(msg);
-  if (dmHistory[k].length > MAX_DM) dmHistory[k].shift();
-  saveDMs();
-}
-const users = (() => {
-  try {
-    if (existsSync(USERS_FILE))
-      return JSON.parse(readFileSync(USERS_FILE, "utf8"));
-  } catch {
-    /* start fresh */
-  }
-  return {};
-})();
-
-async function saveUsers() {
-  try {
-    await writeFile(USERS_FILE, JSON.stringify(users), "utf8");
-  } catch (err) {
-    console.error("chat: failed to save users:", err);
-  }
 }
 
 // ── Auth REST endpoints (called by the login form before WS connect) ──
@@ -510,6 +653,7 @@ fastify.post("/api/chat/login", async (req, reply) => {
     ok: true,
     username: record.username,
     token: record.token,
+    picture: record.picture || null,
   });
 });
 
@@ -519,7 +663,89 @@ fastify.post("/api/chat/resume", async (req, reply) => {
   const record = Object.values(users).find((u) => u.token === token);
   if (!record)
     return reply.code(401).send({ ok: false, error: "Invalid session" });
-  return reply.send({ ok: true, username: record.username });
+  return reply.send({
+    ok: true,
+    username: record.username,
+    picture: record.picture || null,
+  });
+});
+
+// ── Profile update endpoint ──
+fastify.post("/api/chat/profile", async (req, reply) => {
+  const { token, username, password, picture } = req.body || {};
+  if (!token) return reply.code(400).send({ ok: false, error: "No token" });
+  const record = Object.values(users).find((u) => u.token === token);
+  if (!record)
+    return reply.code(401).send({ ok: false, error: "Unauthorized" });
+
+  const oldKey = record.username.toLowerCase();
+  let newName = record.username;
+
+  // Update display name
+  if (username && typeof username === "string") {
+    const name = username.trim().slice(0, 24);
+    if (name.length < 2)
+      return reply.code(400).send({ ok: false, error: "Username too short" });
+    const newKey = name.toLowerCase();
+    if (newKey !== oldKey && users[newKey])
+      return reply.code(409).send({ ok: false, error: "Username taken" });
+    if (newKey !== oldKey) {
+      users[newKey] = record;
+      delete users[oldKey];
+      // Update friends lists, DMs, etc. to reference new name
+      for (const u of Object.values(users)) {
+        if (u.friends)
+          u.friends = u.friends.map((n) => (n === record.username ? name : n));
+        if (u.incoming)
+          u.incoming = u.incoming.map((n) =>
+            n === record.username ? name : n,
+          );
+        if (u.outgoing)
+          u.outgoing = u.outgoing.map((n) =>
+            n === record.username ? name : n,
+          );
+      }
+    }
+    record.username = name;
+    newName = name;
+  }
+
+  // Update password
+  if (password && typeof password === "string" && password.length >= 4) {
+    record.passwordHash = hashPassword(password);
+  }
+
+  // Update profile picture
+  if (picture !== undefined) {
+    if (
+      picture &&
+      typeof picture === "string" &&
+      picture.startsWith("data:image/") &&
+      picture.length < 2_500_000
+    ) {
+      record.picture = picture;
+    } else if (picture === null || picture === "") {
+      delete record.picture;
+    }
+  }
+
+  // Rotate token
+  record.token = makeToken();
+  await saveUsers();
+
+  // Broadcast profile change to all connected sockets
+  if (io)
+    io.emit("profile:update", {
+      username: newName,
+      picture: record.picture || null,
+    });
+
+  return reply.send({
+    ok: true,
+    username: newName,
+    token: record.token,
+    picture: record.picture || null,
+  });
 });
 
 // ── Friends endpoints ──
@@ -568,6 +794,11 @@ fastify.post("/api/chat/friends/request", async (req, reply) => {
       ([, n]) => n === them.username,
     )?.[0];
     if (sid && io) io.to(sid).emit("friends:request", { from: me.username });
+    // Sitewide notification
+    if (io)
+      io.to("notif-" + them.username).emit("friends:request", {
+        from: me.username,
+      });
   }
   await saveUsers();
   return reply.send({ ok: true });
@@ -630,13 +861,12 @@ fastify.get("/api/chat/dm/:other", async (req, reply) => {
 // ── Live members map: socketId → username ──
 const liveMembers = new Map();
 const lastJoinMsg = new Map(); // name → timestamp, debounce join/left spam
-const serverId = Math.random().toString(36).substring(2, 10); // unique ID per server start
 
 function broadcastMembers() {
   const list = [...new Set(liveMembers.values())].sort();
   io.emit("members:update", list);
   // "online-count" = every open socket (any page), so all pages show real visitor count
-  io.emit("online-count", io.engine.clientsCount);
+  io.emit("online-count", { count: io.engine.clientsCount, members: list });
   io.emit("raw-count", io.engine.clientsCount);
 }
 
@@ -647,10 +877,11 @@ function initSocketIO() {
   });
 
   io.on("connection", (socket) => {
-    // Send server ID so client can detect restarts
-    socket.emit("server:id", serverId);
     // Broadcast updated visitor count to ALL connected sockets (raw = any page)
-    io.emit("online-count", io.engine.clientsCount);
+    io.emit("online-count", {
+      count: io.engine.clientsCount,
+      members: [...new Set(liveMembers.values())].sort(),
+    });
     socket.emit("raw-count", io.engine.clientsCount);
 
     socket.on("disconnect", () => {
@@ -690,6 +921,9 @@ function initSocketIO() {
       liveMembers.set(socket.id, name);
 
       socket.emit("chat:history", chatHistory);
+      socket.emit("gc:list", getGCsForUser(name));
+      socket.emit("voice:members", getVoiceMembers());
+      socket.join("notif-" + name);
       broadcastMembers();
 
       if (!alreadyOnline) {
@@ -705,27 +939,124 @@ function initSocketIO() {
     });
 
     // ── Chat: send message ──
-    socket.on("chat:send", ({ text }) => {
+    socket.on("chat:send", ({ text, image, channel }) => {
       if (!socket.chatName) return;
-      if (!text || typeof text !== "string") return;
-      text = text.trim().slice(0, 500);
-      if (!text) return;
-      const msg = { name: socket.chatName, text, ts: Date.now() };
+      const ch =
+        typeof channel === "string" &&
+        ["general", "unblocked-links"].includes(channel)
+          ? channel
+          : "general";
+      let cleanText = null;
+      let cleanImage = null;
+      if (text !== undefined && text !== null)
+        cleanText = String(text).trim().slice(0, 500) || null;
+      if (image !== undefined && image !== null) {
+        if (
+          typeof image === "string" &&
+          image.startsWith("data:image/") &&
+          image.length <= 2_200_000
+        ) {
+          cleanImage = image;
+        }
+      }
+      if (!cleanText && !cleanImage) return;
+      const msg = {
+        name: socket.chatName,
+        ts: Date.now(),
+        channel: ch,
+        id: Date.now() + "-" + Math.random().toString(36).slice(2, 8),
+      };
+      if (cleanText) msg.text = cleanText;
+      if (cleanImage) msg.image = cleanImage;
+      msg.reactions = {};
       pushMsg(msg);
       io.emit("chat:message", msg);
     });
 
+    // ── Edit / Delete ──
+    socket.on("chat:edit", ({ id, text }) => {
+      if (!socket.chatName || !id || !text) return;
+      const cleanText = String(text).trim().slice(0, 500);
+      if (!cleanText) return;
+      const msg = chatHistory.find((m) => m.id === id);
+      if (msg && msg.name === socket.chatName) {
+        msg.text = cleanText;
+        saveHistory();
+        io.emit("chat:edited", { id, text: cleanText });
+      } else {
+        // Might be a DM or GC message
+        // Simplified: only global chat messages are editable for now to save time
+      }
+    });
+
+    socket.on("chat:delete", ({ id }) => {
+      if (!socket.chatName || !id) return;
+      const idx = chatHistory.findIndex((m) => m.id === id);
+      if (idx !== -1 && chatHistory[idx].name === socket.chatName) {
+        chatHistory.splice(idx, 1);
+        saveHistory();
+        io.emit("chat:deleted", { id });
+      }
+    });
+
+    // ── Reactions ──
+    socket.on("react:add", ({ msgId, emoji }) => {
+      if (!socket.chatName || !msgId || !emoji) return;
+      const e = String(emoji).slice(0, 4);
+      // Find message in chatHistory
+      const msg = chatHistory.find((m) => m.id === msgId);
+      if (msg) {
+        if (!msg.reactions) msg.reactions = {};
+        if (!msg.reactions[e]) msg.reactions[e] = [];
+        if (!msg.reactions[e].includes(socket.chatName)) {
+          msg.reactions[e].push(socket.chatName);
+          saveHistory();
+          io.emit("react:update", { msgId, reactions: msg.reactions });
+        }
+      }
+    });
+
+    socket.on("react:remove", ({ msgId, emoji }) => {
+      if (!socket.chatName || !msgId || !emoji) return;
+      const e = String(emoji).slice(0, 4);
+      const msg = chatHistory.find((m) => m.id === msgId);
+      if (msg && msg.reactions && msg.reactions[e]) {
+        msg.reactions[e] = msg.reactions[e].filter(
+          (n) => n !== socket.chatName,
+        );
+        if (msg.reactions[e].length === 0) delete msg.reactions[e];
+        saveHistory();
+        io.emit("react:update", { msgId, reactions: msg.reactions });
+      }
+    });
+
     // ── DM: send direct message ──
-    socket.on("dm:send", ({ to, text }) => {
-      if (!socket.chatName || !to || !text) return;
-      text = String(text).trim().slice(0, 500);
-      if (!text) return;
-      const msg = { from: socket.chatName, to, text, ts: Date.now() };
+    socket.on("dm:send", ({ to, text, image }) => {
+      if (!socket.chatName || !to) return;
+      let cleanText = null;
+      let cleanImage = null;
+      if (text !== undefined && text !== null)
+        cleanText = String(text).trim().slice(0, 500) || null;
+      if (image !== undefined && image !== null) {
+        if (
+          typeof image === "string" &&
+          image.startsWith("data:image/") &&
+          image.length <= 2_200_000
+        ) {
+          cleanImage = image;
+        }
+      }
+      if (!cleanText && !cleanImage) return;
+      const msg = { from: socket.chatName, to, ts: Date.now() };
+      if (cleanText) msg.text = cleanText;
+      if (cleanImage) msg.image = cleanImage;
       pushDM(socket.chatName, to, msg);
       socket.emit("dm:message", msg);
       [...liveMembers.entries()]
         .filter(([, n]) => n === to)
         .forEach(([sid]) => io.to(sid).emit("dm:message", msg));
+      // Sitewide notification for non-chat pages
+      io.to("notif-" + to).emit("dm:message", msg);
     });
 
     // ── Friends: push current data to this socket ──
@@ -742,16 +1073,18 @@ function initSocketIO() {
     });
     // ── Voice: WebRTC signaling ──
     // Each socket can join a voice room; we relay offer/answer/ice between peers
-    socket.on("voice:join", () => {
+    socket.on("voice:join", (data) => {
       if (!socket.chatName) return;
-      socket.join("voice");
-      // Tell everyone else a new peer joined so they can initiate offer
-      socket.to("voice").emit("voice:peer-joined", {
+      const room = (data && data.room) || "voice";
+      socket.voiceRoom = room;
+      socket.join(room);
+      // Tell everyone else in the room a new peer joined so they can initiate offer
+      socket.to(room).emit("voice:peer-joined", {
         peerId: socket.id,
         name: socket.chatName,
       });
       // Send this peer the list of existing voice members so it can show the UI
-      const voicePeers = [...(io.sockets.adapter.rooms.get("voice") || [])]
+      const voicePeers = [...(io.sockets.adapter.rooms.get(room) || [])]
         .filter((id) => id !== socket.id)
         .map((id) => ({ peerId: id, name: liveMembers.get(id) || "?" }));
       socket.emit("voice:peers", voicePeers);
@@ -759,8 +1092,10 @@ function initSocketIO() {
     });
 
     socket.on("voice:leave", () => {
-      socket.leave("voice");
-      socket.to("voice").emit("voice:peer-left", { peerId: socket.id });
+      const room = socket.voiceRoom || "voice";
+      socket.leave(room);
+      socket.to(room).emit("voice:peer-left", { peerId: socket.id });
+      delete socket.voiceRoom;
       io.emit("voice:members", getVoiceMembers());
     });
 
@@ -775,7 +1110,134 @@ function initSocketIO() {
     socket.on("voice:ice", ({ to, candidate }) =>
       io.to(to).emit("voice:ice", { from: socket.id, candidate }),
     );
-  });
+    socket.on("voice:video-state", (payload) => {
+      const room = socket.voiceRoom || "voice";
+      socket.to(room).emit("voice:peer-video", {
+        peerId: socket.id,
+        name: socket.chatName,
+        ...payload,
+      });
+    });
+    socket.on("voice:screen-state", (payload) => {
+      const room = socket.voiceRoom || "voice";
+      socket.to(room).emit("voice:peer-screen", {
+        peerId: socket.id,
+        name: socket.chatName,
+        ...payload,
+      });
+    });
+
+    // ── Call signaling (1:1 and group calls) ──
+    socket.on("call:start", ({ to, roomId, gcName }) => {
+      if (!socket.chatName || !to) return;
+      const targetSids = [...liveMembers.entries()].filter(([, n]) => n === to);
+      const payload = { from: socket.chatName };
+      if (roomId) payload.roomId = roomId;
+      if (gcName) payload.gcName = gcName;
+      targetSids.forEach(([sid]) => io.to(sid).emit("call:incoming", payload));
+      // Sitewide notification
+      io.to("notif-" + to).emit("call:incoming", payload);
+    });
+    socket.on("call:accept", ({ to }) => {
+      if (!socket.chatName || !to) return;
+      const targetSids = [...liveMembers.entries()].filter(([, n]) => n === to);
+      targetSids.forEach(([sid]) =>
+        io.to(sid).emit("call:accepted", { from: socket.chatName }),
+      );
+    });
+    socket.on("call:decline", ({ to }) => {
+      if (!socket.chatName || !to) return;
+      const targetSids = [...liveMembers.entries()].filter(([, n]) => n === to);
+      targetSids.forEach(([sid]) =>
+        io.to(sid).emit("call:declined", { from: socket.chatName }),
+      );
+    });
+
+    // ── Group Chats ──
+    socket.on("gc:create", ({ name, members }) => {
+      if (!socket.chatName || !name || !members || !members.length) return;
+      const gcName = String(name).trim().slice(0, 32);
+      if (!gcName) return;
+      const gcId =
+        "gc-" + Date.now() + "-" + Math.random().toString(36).slice(2, 6);
+      const allMembers = [
+        socket.chatName,
+        ...members.filter((m) => m !== socket.chatName),
+      ];
+      const gc = {
+        id: gcId,
+        name: gcName,
+        members: allMembers,
+        messages: [],
+        creator: socket.chatName,
+      };
+      groupChatsData[gcId] = gc;
+      saveGroupChats();
+      // Notify all members
+      allMembers.forEach((memberName) => {
+        [...liveMembers.entries()]
+          .filter(([, n]) => n === memberName)
+          .forEach(([sid]) => {
+            io.to(sid).emit("gc:created", gc);
+            io.to(sid).emit("gc:list", getGCsForUser(memberName));
+          });
+      });
+    });
+
+    socket.on("gc:send", ({ gcId, text, image }) => {
+      if (!socket.chatName || !gcId) return;
+      const gc = groupChatsData[gcId];
+      if (!gc || !gc.members.includes(socket.chatName)) return;
+      let cleanText = null;
+      let cleanImage = null;
+      if (text !== undefined && text !== null)
+        cleanText = String(text).trim().slice(0, 500) || null;
+      if (image !== undefined && image !== null) {
+        if (
+          typeof image === "string" &&
+          image.startsWith("data:image/") &&
+          image.length <= 2_200_000
+        ) {
+          cleanImage = image;
+        }
+      }
+      if (!cleanText && !cleanImage) return;
+      const msg = {
+        gcId,
+        from: socket.chatName,
+        name: socket.chatName,
+        ts: Date.now(),
+      };
+      if (cleanText) msg.text = cleanText;
+      if (cleanImage) msg.image = cleanImage;
+      if (!gc.messages) gc.messages = [];
+      gc.messages.push(msg);
+      if (gc.messages.length > MAX_DM) gc.messages.shift();
+      saveGroupChats();
+      gc.members.forEach((memberName) => {
+        [...liveMembers.entries()]
+          .filter(([, n]) => n === memberName)
+          .forEach(([sid]) => {
+            io.to(sid).emit("gc:message", msg);
+          });
+      });
+    });
+
+    // Send GC list on join
+    if (socket.chatName) {
+      socket.emit("gc:list", getGCsForUser(socket.chatName));
+    }
+
+    // ── Sitewide notification: relay chat notifications to non-chat pages ──
+    socket.on("notif:subscribe", ({ token }) => {
+      // Allow non-chat sockets to get notifications
+      const record = Object.values(users).find((u) => u.token === token);
+      if (record) {
+        socket.notifName = record.username;
+        socket.join("notif-" + record.username);
+      }
+    });
+  }); // end io.on("connection")
 
   console.log("Socket.io attached to server");
 }
@@ -788,12 +1250,72 @@ function getVoiceMembers() {
     name: liveMembers.get(id) || "?",
   }));
 }
+
+// ── Group Chats data ──
+const GC_FILE = join(publicPath, "chat-gcs.json");
+const groupChatsData = readJsonFile(GC_FILE, {});
+
+function getGCsForUser(username) {
+  return Object.values(groupChatsData).filter((gc) =>
+    gc.members.includes(username),
+  );
+}
+
+let _gcTimer = null;
+function saveGroupChats() {
+  clearTimeout(_gcTimer);
+  _gcTimer = setTimeout(async () => {
+    if (USE_SUPABASE) {
+      try {
+        const rows = Object.entries(groupChatsData).map(([id, data]) => ({
+          id,
+          data,
+        }));
+        await sbFetch("chat_gcs", {
+          method: "POST",
+          headers: { Prefer: "resolution=merge-duplicates,return=minimal" },
+          body: JSON.stringify(rows),
+        });
+      } catch (e) {
+        console.error("chat: saveGroupChats Supabase failed:", e.message);
+      }
+    }
+    try {
+      await writeFile(GC_FILE, JSON.stringify(groupChatsData), "utf8");
+    } catch {}
+  }, 2000);
+}
 async function startServer() {
   for (let i = 0; i < 20; i++) {
     const port = startPort + i;
     try {
       await fastify.listen({ port, host: "0.0.0.0" });
       initSocketIO();
+
+      if (process.argv.includes("--share")) {
+        const token = process.env.NGROK_AUTHTOKEN;
+        if (!token) {
+          console.warn("\n⚠️  NGROK_AUTHTOKEN not found in .env file.");
+          console.warn(
+            "Please get your token from https://dashboard.ngrok.com/get-started/your-authtoken\n",
+          );
+        } else {
+          ngrok
+            .forward({ addr: port, authtoken: token })
+            .then((listener) => {
+              console.log(`\n🚀 Ngrok tunnel established!`);
+              console.log(`Public URL: ${listener.url()}`);
+              console.log(`Forwarding to: http://localhost:${port}\n`);
+            })
+            .catch((err) => {
+              console.error(
+                "\n❌ Failed to establish ngrok tunnel:",
+                err.message,
+              );
+            });
+        }
+      }
+
       return;
     } catch (err) {
       if (err && err.code === "EADDRINUSE") continue;
@@ -802,7 +1324,9 @@ async function startServer() {
   }
 }
 
-startServer().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
+loadFromSupabase()
+  .then(() => startServer())
+  .catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });

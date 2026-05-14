@@ -5,10 +5,7 @@ const scramjet = new ScramjetServiceWorker();
 
 let configErrorLogged = false;
 
-const BYPASS_HOSTS = [
-  "api.themoviedb.org",
-  "image.tmdb.org",
-];
+const BYPASS_HOSTS = ["api.themoviedb.org", "image.tmdb.org"];
 
 const BYPASS_PATHS = ["/proxy", "/baremux/", "/scram/", "/libcurl/"];
 

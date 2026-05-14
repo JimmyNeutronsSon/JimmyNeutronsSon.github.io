@@ -1,14 +1,14 @@
-<!DOCTYPE html>
+<!doctype html>
 
-
-<!-- Ultimate Game Stash file--> 
+<!-- Ultimate Game Stash file-->
 <!-- For the regularly updating doc go to https://docs.google.com/document/d/1_FmH3BlSBQI7FGgAQL59-ZPe8eCxs35wel6JUyVaG8Q/ -->
- 
 
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
-    <base href="https://cdn.jsdelivr.net/gh/genizy/web-port@main/minesweeperplus/">
+    <base
+      href="https://cdn.jsdelivr.net/gh/genizy/web-port@main/minesweeperplus/"
+    />
     <meta charset="utf-8" />
     <meta
       name="viewport"
@@ -107,7 +107,11 @@
         z-index: 1;
       }
     </style>
-    <link rel="icon" type="image/x-icon" href="/warning-hazard-sign-on-transparent-background-free-png.ico" />
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="/warning-hazard-sign-on-transparent-background-free-png.ico"
+    />
     <link rel="apple-touch-icon" href="MinesweeperPlus.apple-touch-icon.png" />
   </head>
   <body>
@@ -219,7 +223,7 @@
                 navigator.serviceWorker.getRegistration();
             } catch (err) {
               serviceWorkerRegistrationPromise = Promise.reject(
-                new Error("Service worker registration failed.")
+                new Error("Service worker registration failed."),
               );
             }
             // There's a chance that installing the service worker would fix the issue
@@ -228,7 +232,7 @@
                 .then((registration) => {
                   if (registration != null) {
                     return Promise.reject(
-                      new Error("Service worker already exists.")
+                      new Error("Service worker already exists."),
                     );
                   }
                   return registration;

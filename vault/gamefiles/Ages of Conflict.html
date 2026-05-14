@@ -1,12 +1,17 @@
-
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en-us">
   <head>
-    <base href="https://rawcdn.githack.com/genizy/assets/ff73bc4b150bcc3d18fe719bdb50e4338742e4f9/ages-of-conflict/">
+    <base
+      href="https://rawcdn.githack.com/genizy/assets/ff73bc4b150bcc3d18fe719bdb50e4338742e4f9/ages-of-conflict/"
+    />
     <meta charset="utf-8" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>Ages of Conflict</title>
-    <link rel="icon" type="image/x-icon" href="/warning-hazard-sign-on-transparent-background-free-png.ico" />
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="/warning-hazard-sign-on-transparent-background-free-png.ico"
+    />
     <link rel="stylesheet" href="TemplateData/style.css" />
   </head>
   <body>
@@ -41,14 +46,17 @@
       // user.
       function unityShowBanner(msg, type) {
         function updateBannerVisibility() {
-          warningBanner.style.display = warningBanner.children.length ? "block" : "none";
+          warningBanner.style.display = warningBanner.children.length
+            ? "block"
+            : "none";
         }
         var div = document.createElement("div");
         div.innerHTML = msg;
         warningBanner.appendChild(div);
         if (type == "error") div.style = "background: red; padding: 10px;";
         else {
-          if (type == "warning") div.style = "background: yellow; padding: 10px;";
+          if (type == "warning")
+            div.style = "background: yellow; padding: 10px;";
           setTimeout(function () {
             warningBanner.removeChild(div);
             updateBannerVisibility();
@@ -82,7 +90,8 @@
 
         var meta = document.createElement("meta");
         meta.name = "viewport";
-        meta.content = "width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes";
+        meta.content =
+          "width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes";
         document.getElementsByTagName("head")[0].appendChild(meta);
         container.className = "unity-mobile";
 
