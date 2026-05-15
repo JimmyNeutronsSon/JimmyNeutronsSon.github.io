@@ -26,14 +26,22 @@ document.addEventListener("DOMContentLoaded", () => {
     "Rishab inspired this tab",
     "Shiven is chicken",
   ];
-  let currentPhraseIndex = 0;
+  let currentPhraseIndex = Math.floor(Math.random() * phrases.length);
   const heroSub = document.getElementById("hero-sub");
 
   if (heroSub && heroSub.classList.contains("landing-phrases")) {
+    // Set initial phrase
+    heroSub.textContent = phrases[currentPhraseIndex];
+
     setInterval(() => {
       heroSub.style.opacity = "0";
       setTimeout(() => {
-        currentPhraseIndex = (currentPhraseIndex + 1) % phrases.length;
+        let nextIndex;
+        do {
+          nextIndex = Math.floor(Math.random() * phrases.length);
+        } while (nextIndex === currentPhraseIndex && phrases.length > 1);
+        
+        currentPhraseIndex = nextIndex;
         heroSub.textContent = phrases[currentPhraseIndex];
         heroSub.style.opacity = "1";
       }, 500); // Wait for transition fade out
