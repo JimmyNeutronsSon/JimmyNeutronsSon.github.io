@@ -90,7 +90,7 @@ const TMDB_IMG_SIZES = new Set([
 
 function needsCrossOriginIsolation(urlPath) {
   const path = urlPath.split("?")[0];
-  return path === "/browse.html";
+  return path === "/browse.html" || path === "/mog.html";
 }
 
 logging.set_level(logging.NONE);

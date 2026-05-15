@@ -26,10 +26,17 @@ async function handleRequest(event) {
     await scramjet.loadConfig();
   } catch (e) {
     if (!configErrorLogged) {
-      console.error("Scram config load error, bypassing proxy:", e);
+      console.error("Scram config load error, providing default config:", e);
       configErrorLogged = true;
     }
-    return fetch(event.request);
+  }
+
+  // Ensure config exists even if IDB load failed
+  if (!scramjet.config) {
+    scramjet.config = {
+      prefix: "/scramjet/",
+      codec: "plain", // Default codec for this project
+    };
   }
 
   if (scramjet.route(event)) {
