@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
     "Prateek peeks at cheeks",
     "Sujay is gay",
     "Rishab inspired this tab",
-    "Shiven is daddy",
+    "Shiven is chicken",
   ];
   let currentPhraseIndex = 0;
   const heroSub = document.getElementById("hero-sub");

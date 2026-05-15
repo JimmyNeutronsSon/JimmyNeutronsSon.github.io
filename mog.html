@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MOG</title>
+    <script src="cloak.js"></script>
+    <script src="/scram/scramjet.all.js"></script>
+    <script src="/baremux/index.js"></script>
+    <script src="register-sw.js"></script>
+    <script src="search.js"></script>
+    <link rel="icon" type="image/x-icon" href="/warning-hazard-sign-on-transparent-background-free-png.ico" />
+    <style>
+      body, html {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: #000;
+        font-family: 'Inter', sans-serif;
+      }
+      #status {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: #fff;
+        text-align: center;
+        z-index: 10;
+        transition: opacity 0.5s ease;
+      }
+      .loader {
+        border: 4px solid rgba(255, 255, 255, 0.1);
+        border-top: 4px solid #3a8fe0;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 20px;
+      }
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      iframe {
+        width: 100%;
+        height: 100%;
+        border: none;
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="status">
+      <div class="loader"></div>
+      <div id="status-text">Initialising Proxy...</div>
+    </div>
+
+    <script>
+      async function launch() {
+        const statusText = document.getElementById('status-text');
+        
+        try {
+          statusText.innerText = "Registering Service Worker...";
+          await registerSW();
+          
+          statusText.innerText = "Connecting to Proxy...";
+          const connection = new BareMux.BareMuxConnection("/baremux/worker.js");
+          
+          let wispUrl = (location.protocol === "https:" ? "wss" : "ws") + "://" + location.host + "/wisp/";
+          
+          if ((await connection.getTransport()) !== "/libcurl/index.mjs") {
+            await connection.setTransport("/libcurl/index.mjs", [
+              {
+                wisp: wispUrl,
+                wasm: "/libcurl/libcurl.wasm",
+              },
+            ]);
+          }
+
+          statusText.innerText = "Loading MOG...";
+          const { ScramjetController } = $scramjetLoadController();
+          const scramjet = new ScramjetController({
+            files: {
+              wasm: "/scram/scramjet.wasm.wasm",
+              all: "/scram/scramjet.all.js",
+              sync: "/scram/scramjet.sync.js",
+            },
+          });
+          await scramjet.init();
+
+          const frame = scramjet.createFrame();
+          frame.frame.style.width = "100%";
+          frame.frame.style.height = "100%";
+          frame.frame.style.border = "none";
+          document.body.appendChild(frame.frame);
+
+          const target = "https://omoggle.com/";
+          const searchUrl = search(target, "https://duckduckgo.com/?q=%s");
+          frame.go(searchUrl);
+
+          frame.frame.onload = () => {
+            document.getElementById('status').style.opacity = "0";
+            setTimeout(() => document.getElementById('status').remove(), 500);
+          };
+
+        } catch (err) {
+          statusText.innerHTML = `<span style="color:#ff6b6b">Error: ${err.message}</span><br>Please refresh the page.`;
+          console.error(err);
+        }
+      }
+
+      document.addEventListener('DOMContentLoaded', launch);
+    </script>
+    <script src="sidebar.js"></script>
+  </body>
+</html>

@@ -113,6 +113,7 @@ window.initSidebar = function () {
         <a href="/retro-bowl.html" class="sidebar-link">Retro Bowl</a>
         <a href="/movies.html" class="sidebar-link">Movies</a>
         <a href="/hacks.html" class="sidebar-link">Hacks</a>
+        <a href="/mog.html" class="sidebar-link">MOG</a>
       </nav>
     </aside>
     <div id="sidebar-overlay" class="sidebar-overlay"></div>
