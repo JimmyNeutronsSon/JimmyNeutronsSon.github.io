@@ -5,7 +5,7 @@ const swAllowedHostnames = ["localhost", "127.0.0.1"];
 
 async function registerSW() {
   const path = window.location.pathname;
-  if (!path.endsWith("/browse.html") && !path.endsWith("/movies.html")) {
+  if (!path.endsWith("/browse.html") && !path.endsWith("/movies.html") && !path.endsWith("/mog.html")) {
     return;
   }
 

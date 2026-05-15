@@ -88,7 +88,24 @@
               sync: "/scram/scramjet.sync.js",
             },
           });
-          await scramjet.init();
+          
+          try {
+            await scramjet.init();
+          } catch (e) {
+            if (e.name === 'NotFoundError' || e.message.includes('object stores')) {
+              statusText.innerText = "Repairing Proxy Database...";
+              // Delete the likely corrupt/stale database
+              await new Promise((resolve) => {
+                const req = indexedDB.deleteDatabase('__scramjet');
+                req.onsuccess = resolve;
+                req.onerror = resolve;
+              });
+              // Try init again
+              await scramjet.init();
+            } else {
+              throw e;
+            }
+          }
 
           const frame = scramjet.createFrame();
           frame.frame.style.width = "100%";
@@ -106,7 +123,7 @@
           };
 
         } catch (err) {
-          statusText.innerHTML = `<span style="color:#ff6b6b">Error: ${err.message}</span><br>Please refresh the page.`;
+          statusText.innerHTML = `<span style="color:#ff6b6b">Error: ${err.message}</span><br>Try refreshing or clearing your browser data.`;
           console.error(err);
         }
       }
