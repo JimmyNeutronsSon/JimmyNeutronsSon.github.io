@@ -21,25 +21,25 @@
     }
 
     :root {
-      --indigo: #5b6bdf;
+      --blue: #1537F4;
       --white: #ffffff;
-      --off: #f7f8fc;
-      --border: #e4e8f0;
-      --text: #1a2333;
-      --muted: #6b7a99;
-      --card: #243a50;
+      --off: #fcfcfc;
+      --border: #e8e8e8;
+      --text: #000000;
+      --muted: #666666;
+      --pill-bg: #f0f0f0;
       --green: #27ae60;
-      --bottom: 72px;
+      --bottom: 76px;
     }
 
     html,
     body {
       height: 100%;
+      background: var(--off);
     }
 
     body {
-      font-family: 'Nunito Sans', sans-serif;
-      background: var(--off);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       color: var(--text);
       display: flex;
       flex-direction: column;
@@ -49,13 +49,12 @@
     /* TOP NAV */
     .topnav {
       background: var(--white);
-      border-bottom: 1px solid var(--border);
       height: 64px;
       display: flex;
       align-items: center;
-      padding: 0 24px;
+      padding: 0 40px;
       justify-content: flex-end;
-      gap: 12px;
+      gap: 16px;
       position: sticky;
       top: 0;
       z-index: 100;
@@ -111,26 +110,26 @@
     }
 
     .content {
-      max-width: 860px;
+      max-width: 1200px;
       margin: 0 auto;
-      padding: 28px 20px 0;
+      padding: 40px 40px 0;
     }
 
     .page-title {
-      font-family: 'Nunito', sans-serif;
-      font-size: 30px;
-      font-weight: 900;
+      font-size: 36px;
+      font-weight: 800;
       margin-bottom: 4px;
+      letter-spacing: -0.02em;
     }
 
     .district {
       display: flex;
       align-items: center;
-      gap: 5px;
-      font-size: 14px;
-      color: var(--muted);
-      font-weight: 600;
-      margin-bottom: 18px;
+      gap: 6px;
+      font-size: 15px;
+      color: #333;
+      font-weight: 500;
+      margin-bottom: 24px;
       cursor: pointer;
     }
 
@@ -227,7 +226,7 @@
       width: 20px;
       height: 20px;
       border-radius: 50%;
-      background: var(--indigo);
+      background: var(--blue);
       color: var(--white);
       font-size: 11px;
       font-weight: 800;
@@ -238,38 +237,30 @@
 
     /* FEATURED CARD */
     .featured {
-      background: var(--card);
-      border-radius: 16px;
-      padding: 32px 28px;
+      background: linear-gradient(135deg, #D8628E 0%, #C9722C 100%);
+      border-radius: 20px;
+      padding: 48px 40px;
       display: flex;
       align-items: center;
-      gap: 28px;
-      margin-bottom: 24px;
+      gap: 40px;
+      margin-bottom: 32px;
       overflow: hidden;
       position: relative;
-    }
-
-    .featured::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(ellipse 400px 300px at 75% 50%, rgba(74, 144, 217, .14) 0%, transparent 70%);
-      pointer-events: none;
+      color: var(--white);
     }
 
     .feat-text {
-      flex: 0 0 190px;
+      flex: 0 0 240px;
       position: relative;
       z-index: 1;
     }
 
     .feat-text h2 {
-      font-family: 'Nunito', sans-serif;
-      font-size: 19px;
-      font-weight: 900;
+      font-size: 24px;
+      font-weight: 800;
       color: var(--white);
-      margin-bottom: 7px;
-      line-height: 1.25;
+      margin-bottom: 12px;
+      line-height: 1.2;
     }
 
     .feat-text p {
@@ -343,7 +334,7 @@
     .see-all {
       font-size: 13px;
       font-weight: 700;
-      color: var(--indigo);
+      color: var(--blue);
       text-decoration: none;
     }
 
@@ -488,24 +479,24 @@
     }
 
     .nav-item.on svg {
-      stroke: var(--indigo);
+      stroke: var(--blue);
       fill: none;
     }
 
     .nav-item.on .nav-label {
-      color: var(--indigo);
+      color: var(--blue);
     }
 
-    .nav-item.on::after {
+    .nav-item.on::before {
       content: '';
       position: absolute;
-      bottom: 0;
+      top: -1px;
       left: 50%;
       transform: translateX(-50%);
-      width: 24px;
+      width: 48px;
       height: 3px;
-      border-radius: 2px;
-      background: var(--indigo);
+      border-radius: 0 0 2px 2px;
+      background: var(--blue);
     }
 
     /* SEARCH MODAL */
@@ -651,6 +642,62 @@
       }
     }
 
+    /* Viewer Overlay */
+    #viewer {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 300;
+      background: var(--white);
+      flex-direction: column;
+    }
+
+    #viewer.open {
+      display: flex;
+    }
+
+    .viewer-top {
+      height: 56px;
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      border-bottom: 1px solid var(--border);
+      background: var(--white);
+      justify-content: space-between;
+    }
+
+    .btn-back {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      color: var(--indigo);
+      transition: opacity .15s;
+    }
+
+    .btn-back:hover {
+      opacity: 0.8;
+    }
+
+    .viewer-external {
+      font-size: 13px;
+      color: var(--muted);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .viewer-external:hover {
+      color: var(--indigo);
+    }
+
+    #viewer-frame {
+      flex: 1;
+      border: none;
+      background: #f0f0f0;
+    }
+
     /* Hide Sidebar Trigger */
     #sidebar-trigger,
     .sidebar-trigger {
@@ -664,24 +711,14 @@
   <!-- TOP NAV -->
   <nav class="topnav">
     <div class="btn-search" onclick="openSearch()">
-      <svg class="i" width="20" height="20" viewBox="0 0 24 24">
-        <circle cx="11" cy="11" r="8" />
-        <path d="m21 21-4.35-4.35" />
-      </svg>
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
       Search
     </div>
     <div class="icon-btn">
-      <svg class="i" width="18" height="18" viewBox="0 0 24 24">
-        <line x1="12" y1="5" x2="12" y2="19" />
-        <line x1="5" y1="12" x2="19" y2="12" />
-      </svg>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
     </div>
     <div class="icon-btn">
-      <svg class="i" width="18" height="18" viewBox="0 0 24 24">
-        <line x1="3" y1="6" x2="21" y2="6" />
-        <line x1="3" y1="12" x2="21" y2="12" />
-        <line x1="3" y1="18" x2="21" y2="18" />
-      </svg>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
     </div>
   </nav>
 
@@ -691,16 +728,14 @@
       <h1 class="page-title">Explore</h1>
       <div class="district">
         Lake Washington School District 414
-        <svg class="i" width="14" height="14" viewBox="0 0 24 24">
-          <path d="m6 9 6 6 6-6" />
-        </svg>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
       </div>
 
       <div class="pills">
-        <span class="pill pill-out">Ebooks</span>
-        <span class="pill pill-fill">Available books <span class="pill-x"
+        <span class="pill pill-out" style="background:#eee;border:none;color:#555">Ebooks</span>
+        <span class="pill pill-fill" style="background:#000;border:none">Available books <span class="pill-x"
             onclick="this.parentElement.remove()">✕</span></span>
-        <span class="pill pill-fill">English <span class="pill-x" onclick="this.parentElement.remove()">✕</span></span>
+        <span class="pill pill-fill" style="background:#000;border:none">Spanish; Castilian <span class="pill-x" onclick="this.parentElement.remove()">✕</span></span>
       </div>
 
       <div class="coll-row">
@@ -732,7 +767,7 @@
         <div class="feat-text">
           <h2>Try Me! Always Available Titles</h2>
           <p>New to Sora? These titles have unlimited checkouts!</p>
-          <a class="feat-link" href="#">
+          <a class="feat-link" href="#" onclick="openBook('Always Available')">
             Over 70 titles
             <svg class="i" width="14" height="14" viewBox="0 0 24 24">
               <path d="m9 18 6-6-6-6" />
@@ -744,13 +779,13 @@
 
       <div class="sec-head">
         <h3>New Arrivals</h3>
-        <a class="see-all" href="#">See all</a>
+        <a class="see-all" href="#" onclick="openBook('New Arrivals')">See all</a>
       </div>
       <div class="books-row" id="newRow"></div>
 
       <div class="sec-head">
         <h3>Popular This Week</h3>
-        <a class="see-all" href="#">See all</a>
+        <a class="see-all" href="#" onclick="openBook('Popular This Week')">See all</a>
       </div>
       <div class="books-row" id="popRow"></div>
 
@@ -760,32 +795,20 @@
 
   <!-- Bottom Nav -->
   <nav class="bottom-nav">
-    <a class="nav-item off" href="#">
-      <svg class="i" viewBox="0 0 24 24">
-        <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-        <polyline points="9 22 9 12 15 12 15 22" />
-      </svg>
+    <a class="nav-item off" href="https://soraapp.com/home">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
       <span class="nav-label">Home</span>
     </a>
     <a class="nav-item on" href="#">
-      <svg class="i" viewBox="0 0 24 24">
-        <circle cx="11" cy="11" r="8" />
-        <path d="m21 21-4.35-4.35" />
-      </svg>
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
       <span class="nav-label">Explore</span>
     </a>
-    <a class="nav-item off" href="#">
-      <svg class="i" viewBox="0 0 24 24">
-        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
-      </svg>
+    <a class="nav-item off" href="https://soraapp.com/library/lwsdwa">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
       <span class="nav-label">Shelf</span>
     </a>
-    <a class="nav-item off" href="#">
-      <svg class="i" viewBox="0 0 24 24">
-        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-        <circle cx="12" cy="7" r="4" />
-      </svg>
+    <a class="nav-item off" href="https://soraapp.com/shelf/loans">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"></circle><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path></svg>
       <span class="nav-label">Me</span>
     </a>
   </nav>
@@ -822,6 +845,20 @@
     </div>
   </div>
 
+  <!-- Viewer Overlay -->
+  <div id="viewer">
+    <div class="viewer-top">
+      <div class="btn-back" onclick="closeViewer()">
+        <svg class="i" width="20" height="20" viewBox="0 0 24 24">
+          <path d="m15 18-6-6 6-6" />
+        </svg>
+        Back to Explore
+      </div>
+      <a id="viewer-link" class="viewer-external" href="#" target="_blank">Open in New Tab</a>
+    </div>
+    <iframe id="viewer-frame" src=""></iframe>
+  </div>
+
   <script>
     // Real book data: title, author, Open Library Work ID (for cover), ISBN fallback
     const BOOKS = {
@@ -852,7 +889,6 @@
     };
 
     function coverUrl(isbn) {
-      // Open Library free cover CDN — no API key needed
       return `https://covers.openlibrary.org/b/isbn/${isbn}-M.jpg`;
     }
 
@@ -878,6 +914,7 @@
     BOOKS.featured.forEach(b => {
       const wrap = document.createElement('div');
       wrap.className = 'feat-cover';
+      wrap.onclick = () => openBook(b.title);
       const { img, sh } = buildImg(b.isbn, true);
       img.alt = b.title; img.title = b.title;
       wrap.appendChild(sh);
@@ -891,6 +928,7 @@
       books.forEach(b => {
         const item = document.createElement('div');
         item.className = 'book';
+        item.onclick = () => openBook(b.title);
         const coverDiv = document.createElement('div');
         coverDiv.className = 'cover';
         const { img, sh } = buildImg(b.isbn, false);
@@ -922,7 +960,46 @@
       setTimeout(() => document.getElementById('si').focus(), 80);
     }
     function closeSearch() { document.getElementById('ov').classList.remove('open'); }
-    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSearch(); });
+
+    // Functional Search
+    const si = document.getElementById('si');
+    si.addEventListener('keydown', e => {
+      if (e.key === 'Enter') {
+        const q = si.value.trim();
+        if (q) openBook(q);
+      }
+    });
+
+    // Suggestion Clicks
+    document.querySelectorAll('.sugg-item').forEach(item => {
+      item.onclick = () => {
+        const q = item.querySelector('span').textContent;
+        openBook(q);
+      };
+    });
+
+    function openBook(query) {
+      const url = `https://libcats.org/s/?q=${encodeURIComponent(query)}&t=0`;
+      document.getElementById('viewer-frame').src = url;
+      document.getElementById('viewer-link').href = url;
+      document.getElementById('viewer').classList.add('open');
+      closeSearch();
+    }
+
+    function closeViewer() {
+      document.getElementById('viewer').classList.remove('open');
+      document.getElementById('viewer-frame').src = '';
+    }
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') {
+        if (document.getElementById('viewer').classList.contains('open')) {
+          closeViewer();
+        } else {
+          closeSearch();
+        }
+      }
+    });
   </script>
 </body>
 
