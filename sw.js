@@ -31,15 +31,13 @@ async function handleRequest(event) {
     }
   }
 
-  // Ensure config exists even if IDB load failed
+  // Ensure config exists
   if (!scramjet.config) {
     scramjet.config = {
       prefix: "/scramjet/",
       codec: "plain",
       wisp: (url.protocol === "https:" ? "wss" : "ws") + "://" + url.host + "/wisp/",
     };
-  } else if (!scramjet.config.wisp) {
-    scramjet.config.wisp = (url.protocol === "https:" ? "wss" : "ws") + "://" + url.host + "/wisp/";
   }
 
   if (scramjet.route(event)) {
