@@ -35,8 +35,11 @@ async function handleRequest(event) {
   if (!scramjet.config) {
     scramjet.config = {
       prefix: "/scramjet/",
-      codec: "plain", // Default codec for this project
+      codec: "plain",
+      wisp: (url.protocol === "https:" ? "wss" : "ws") + "://" + url.host + "/wisp/",
     };
+  } else if (!scramjet.config.wisp) {
+    scramjet.config.wisp = (url.protocol === "https:" ? "wss" : "ws") + "://" + url.host + "/wisp/";
   }
 
   if (scramjet.route(event)) {

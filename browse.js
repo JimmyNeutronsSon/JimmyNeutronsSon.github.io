@@ -70,19 +70,17 @@ form.addEventListener("submit", async (event) => {
 
   const url = search(address.value, searchEngine.value);
 
-  let wispUrl =
-    (location.protocol === "https:" ? "wss" : "ws") +
-    "://" +
-    location.host +
-    "/wisp/";
-
-  if ((await connection.getTransport()) !== "/libcurl/index.mjs") {
-    await connection.setTransport("/libcurl/index.mjs", [
-      {
+  let wispUrl = (location.protocol === "https:" ? "wss" : "ws") + "://" + location.host + "/wisp/";
+  
+  try {
+    if (await connection.getTransport() !== "/libcurl/index.mjs") {
+      await connection.setTransport("/libcurl/index.mjs", [{
         wisp: wispUrl,
-        wasm: "/libcurl/libcurl.wasm", // Make sure this path points exactly to your libcurl.wasm file
-      },
-    ]);
+        wasm: "/libcurl/libcurl.wasm"
+      }]);
+    }
+  } catch (e) {
+    console.error("Failed to set transport:", e);
   }
 
   showLoading();
