@@ -407,7 +407,7 @@ if (USE_SUPABASE) {
 } else {
   console.log(
     "chat: SUPABASE_URL / SUPABASE_KEY not set — using local JSON files.\n" +
-      "      Data will be lost on Render redeploy. Set the env vars to persist.",
+    "      Data will be lost on Render redeploy. Set the env vars to persist.",
   );
 }
 
@@ -455,51 +455,99 @@ const dmHistory = readJsonFile(DM_FILE, {});
 
 // ── Load from Supabase into memory at startup ────────────────────────────────
 async function loadFromSupabase() {
-  if (!USE_SUPABASE) return;
+  if (!USE_SUPABASE) {
+    console.log("⚠️  Supabase not configured — using local JSON files only.");
+    console.log("   Set SUPABASE_URL + SUPABASE_KEY env vars to persist data.\n");
+    return;
+  }
+
+  console.log("━".repeat(60));
+  console.log("☁️  Loading data from Supabase...");
+  console.log(`   URL: ${SUPABASE_URL}`);
+  console.log("━".repeat(60));
+
   try {
-    // chat messages — newest MAX_HISTORY rows
-    const msgs = await sbFetch(
-      `chat_messages?select=data&order=id.asc&limit=${MAX_HISTORY}`,
-      { prefer: "return=representation" },
-    );
-    chatHistory.length = 0;
-    msgs.forEach((r) => chatHistory.push(r.data));
-
-    // users
-    const userRows = await sbFetch("chat_users?select=username,data");
-    Object.keys(users).forEach((k) => delete users[k]);
-    userRows.forEach((r) => {
-      users[r.username] = r.data;
-    });
-
-    // DMs
-    const dmRows = await sbFetch("chat_dms?select=pair_key,messages");
-    Object.keys(dmHistory).forEach((k) => delete dmHistory[k]);
-    dmRows.forEach((r) => {
-      dmHistory[r.pair_key] = r.messages;
-    });
-
-    // GCs
+    // ── Chat messages ────────────────────────────────────────────────────────
+    let msgCount = 0;
     try {
-      const gcRows = await sbFetch("chat_gcs?select=id,data");
-      Object.keys(groupChatsData).forEach((k) => delete groupChatsData[k]);
-      gcRows.forEach((r) => {
-        groupChatsData[r.id] = r.data;
-      });
+      // 1. Fetch the 200 newest rows from the database
+      const msgs = await sbFetch(
+        `chat_messages?select=id,data&order=id.desc&limit=200`, // Grab the id too so we can sort it
+        { prefer: "return=representation" },
+      );
+
+      chatHistory.length = 0;
+
+      if (msgs && msgs.length > 0) {
+        // 2. Sort them by ID ascending so the oldest of the 200 is at the top
+        msgs.sort((a, b) => a.id - b.id);
+
+        // 3. Push them into your live memory cache
+        msgs.forEach((r) => {
+          if (r.data) chatHistory.push(r.data);
+        });
+      }
+
+      msgCount = chatHistory.length;
+      console.log(`   ✅ Messages:  ${msgCount} loaded (Chronological: Oldest -> Newest)`);
     } catch (e) {
-      console.warn("chat: loadFromSupabase GCs failed (table might not exist yet)");
+      console.error(`   ❌ Messages:  FAILED — ${e.message}`);
     }
 
-    console.log(
-      `chat: loaded from Supabase — ${chatHistory.length} msgs, ` +
-        `${Object.keys(users).length} users, ${Object.keys(dmHistory).length} DM threads, ` +
-        `${Object.keys(groupChatsData).length} GCs`,
-    );
+    // ── Users ────────────────────────────────────────────────────────────────
+    let userCount = 0;
+    try {
+      const userRows = await sbFetch("chat_users?select=username,data");
+      Object.keys(users).forEach((k) => delete users[k]);
+      (userRows || []).forEach((r) => { if (r.username && r.data) users[r.username] = r.data; });
+      userCount = Object.keys(users).length;
+      console.log(`   ✅ Users:     ${userCount} loaded`);
+      if (userCount > 0) {
+        console.log(`              [${Object.keys(users).slice(0, 8).join(", ")}${userCount > 8 ? "…" : ""}]`);
+      }
+    } catch (e) {
+      console.error(`   ❌ Users:     FAILED — ${e.message}`);
+    }
+
+    // ── DM threads ───────────────────────────────────────────────────────────
+    let dmCount = 0;
+    try {
+      const dmRows = await sbFetch("chat_dms?select=pair_key,messages");
+      Object.keys(dmHistory).forEach((k) => delete dmHistory[k]);
+      (dmRows || []).forEach((r) => { if (r.pair_key) dmHistory[r.pair_key] = r.messages || []; });
+      dmCount = Object.keys(dmHistory).length;
+      console.log(`   ✅ DM threads:${dmCount} loaded`);
+    } catch (e) {
+      console.error(`   ❌ DM threads:FAILED — ${e.message}`);
+    }
+
+    // ── Group chats ──────────────────────────────────────────────────────────
+    let gcCount = 0;
+    try {
+      const gcRows = await sbFetch("chat_gcs?select=id,data");
+      if (typeof groupChatsData !== "undefined") {
+        Object.keys(groupChatsData).forEach((k) => delete groupChatsData[k]);
+        (gcRows || []).forEach((r) => { if (r.id && r.data) groupChatsData[r.id] = r.data; });
+        gcCount = Object.keys(groupChatsData).length;
+      }
+      console.log(`   ✅ Group chats:${gcCount} loaded`);
+    } catch (e) {
+      if (e.message.includes("42P01") || e.message.includes("does not exist")) {
+        console.log(`   ⚠️  Group chats: table not created yet (run SQL to create chat_gcs)`);
+      } else {
+        console.error(`   ❌ Group chats:FAILED — ${e.message}`);
+      }
+    }
+
+    console.log("━".repeat(60));
+    console.log(`✅ Supabase ready — ${msgCount} msgs, ${userCount} users, ${dmCount} DMs, ${gcCount} groups`);
+    console.log("━".repeat(60) + "\n");
+
   } catch (e) {
-    console.error(
-      "chat: Supabase load failed, falling back to local data:",
-      e.message,
-    );
+    console.error("━".repeat(60));
+    console.error("❌ Supabase load FAILED — falling back to local JSON files");
+    console.error(`   Error: ${e.message}`);
+    console.error("━".repeat(60) + "\n");
   }
 }
 
@@ -526,7 +574,7 @@ function saveHistory() {
   _saveHistoryTimer = setTimeout(async () => {
     try {
       await writeFile(CHAT_FILE, JSON.stringify(chatHistory), "utf8");
-    } catch {}
+    } catch { }
   }, 2000);
 }
 
@@ -542,7 +590,7 @@ async function saveUsers() {
   // Local file
   try {
     await writeFile(USERS_FILE, JSON.stringify(users), "utf8");
-  } catch {}
+  } catch { }
   if (!USE_SUPABASE) return;
   // Upsert all dirty users — we just upsert everything; it's a small table
   try {
@@ -573,7 +621,7 @@ function saveDMs(key) {
   _dmTimers[key] = setTimeout(async () => {
     try {
       await writeFile(DM_FILE, JSON.stringify(dmHistory), "utf8");
-    } catch {}
+    } catch { }
     if (!USE_SUPABASE) return;
     try {
       await sbFetch("chat_dms", {
@@ -733,12 +781,16 @@ fastify.post("/api/chat/profile", async (req, reply) => {
   record.token = makeToken();
   await saveUsers();
 
-  // Broadcast profile change to all connected sockets
-  if (io)
+  // Broadcast profile change to all connected sockets so they can
+  // immediately update avatars in messages, member lists, and DM sidebar
+  if (io) {
     io.emit("profile:update", {
       username: newName,
       picture: record.picture || null,
     });
+    // Also broadcast the full map so stale clients catch up
+    broadcastProfiles();
+  }
 
   return reply.send({
     ok: true,
@@ -865,9 +917,22 @@ const lastJoinMsg = new Map(); // name → timestamp, debounce join/left spam
 function broadcastMembers() {
   const list = [...new Set(liveMembers.values())].sort();
   io.emit("members:update", list);
-  // "online-count" = every open socket (any page), so all pages show real visitor count
-  io.emit("online-count", { count: io.engine.clientsCount, members: list });
+  // Send plain number so sidebar.js counter works correctly on all pages
+  io.emit("online-count", io.engine.clientsCount);
   io.emit("raw-count", io.engine.clientsCount);
+  // Always send the latest profile picture map alongside member updates
+  // so every page can show correct avatars without a separate request
+  broadcastProfiles();
+}
+
+// Build and broadcast a username→picture map for all currently online users.
+// Also includes ALL known users so messages sent before login can be resolved.
+function broadcastProfiles() {
+  const map = {};
+  for (const [key, record] of Object.entries(users)) {
+    if (record.picture) map[record.username] = record.picture;
+  }
+  io.emit("profiles:map", map);
 }
 
 function initSocketIO() {
@@ -877,12 +942,13 @@ function initSocketIO() {
   });
 
   io.on("connection", (socket) => {
-    // Broadcast updated visitor count to ALL connected sockets (raw = any page)
-    io.emit("online-count", {
-      count: io.engine.clientsCount,
-      members: [...new Set(liveMembers.values())].sort(),
-    });
+    // Broadcast plain socket count to all pages
+    io.emit("online-count", io.engine.clientsCount);
     socket.emit("raw-count", io.engine.clientsCount);
+    // Send visitor stats to new socket immediately
+    if (typeof getVisitorStats === "function") {
+      socket.emit("visitor-stats", getVisitorStats());
+    }
 
     socket.on("disconnect", () => {
       const name = liveMembers.get(socket.id);
@@ -924,6 +990,12 @@ function initSocketIO() {
       socket.emit("gc:list", getGCsForUser(name));
       socket.emit("voice:members", getVoiceMembers());
       socket.join("notif-" + name);
+      // Send the full profile picture map so the new user can render avatars
+      const profileMap = {};
+      for (const record of Object.values(users)) {
+        if (record.picture) profileMap[record.username] = record.picture;
+      }
+      socket.emit("profiles:map", profileMap);
       broadcastMembers();
 
       if (!alreadyOnline) {
@@ -943,7 +1015,7 @@ function initSocketIO() {
       if (!socket.chatName) return;
       const ch =
         typeof channel === "string" &&
-        ["general", "unblocked-links"].includes(channel)
+          ["general", "unblocked-links"].includes(channel)
           ? channel
           : "general";
       let cleanText = null;
@@ -1330,7 +1402,7 @@ function saveGroupChats() {
     }
     try {
       await writeFile(GC_FILE, JSON.stringify(groupChatsData), "utf8");
-    } catch {}
+    } catch { }
   }, 2000);
 }
 async function startServer() {

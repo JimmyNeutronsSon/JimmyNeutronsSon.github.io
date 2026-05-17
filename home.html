@@ -13,6 +13,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
     rel="stylesheet" />
   <link rel="stylesheet" href="styles.css?v=3" />
+  <script src="settings.js"></script>
   <script type="importmap">
       {
         "imports": {
@@ -166,17 +167,205 @@
       background: rgba(255, 255, 255, 0.1) !important;
       border-color: rgba(255, 255, 255, 0.4) !important;
     }
+
+    /* Settings Button */
+    .settings-btn {
+      position: fixed;
+      bottom: 90px;
+      left: 16px;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.5);
+      border: 1.5px solid rgba(255, 255, 255, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 150;
+      transition: all 0.2s;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(8px);
+    }
+
+    .settings-btn:hover {
+      background: rgba(0, 0, 0, 0.7);
+      transform: scale(1.05);
+    }
+
+    .settings-btn svg {
+      stroke: rgba(255, 255, 255, 0.8);
+    }
+
+    /* ───────────────────────────────────────── */
+    /* SHADER BACKGROUND                         */
+    /* ───────────────────────────────────────── */
+
+    #shader-bg {
+      position: fixed;
+      inset: 0;
+      z-index: -5;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 50% 50%, rgba(55, 120, 255, 0.18), transparent 45%),
+        radial-gradient(circle at 20% 30%, rgba(0, 153, 255, 0.12), transparent 40%),
+        radial-gradient(circle at 80% 20%, rgba(120, 200, 255, 0.1), transparent 35%),
+        linear-gradient(180deg, #08152d 0%, #0b1f4d 40%, #102d73 100%);
+    }
+
+    #shader-bg::before {
+      content: "";
+      position: absolute;
+      inset: -20%;
+      background:
+        radial-gradient(circle, rgba(130, 200, 255, 0.07) 0%, transparent 60%),
+        radial-gradient(circle, rgba(40, 130, 255, 0.05) 0%, transparent 65%);
+      filter: blur(80px);
+      animation: shaderFloat 18s ease-in-out infinite alternate;
+      mix-blend-mode: screen;
+    }
+
+    #shader-bg::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image:
+        radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+      background-size: 3px 3px;
+      opacity: 0.25;
+      animation: grainShift 8s steps(10) infinite;
+    }
+
+    @keyframes shaderFloat {
+      0% {
+        transform: translate3d(-2%, -1%, 0) scale(1);
+      }
+
+      50% {
+        transform: translate3d(2%, 2%, 0) scale(1.08);
+      }
+
+      100% {
+        transform: translate3d(-1%, 1%, 0) scale(1.12);
+      }
+    }
+
+    @keyframes grainShift {
+      0% {
+        transform: translate(0, 0);
+      }
+
+      25% {
+        transform: translate(-2%, 1%);
+      }
+
+      50% {
+        transform: translate(2%, -1%);
+      }
+
+      75% {
+        transform: translate(1%, 2%);
+      }
+
+      100% {
+        transform: translate(0, 0);
+      }
+    }
+
+    /* Clouds blend into shader */
+    .hero-bg canvas {
+      opacity: 0.72;
+      mix-blend-mode: screen;
+      filter:
+        blur(0.2px) saturate(1.25) brightness(1.05);
+    }
+
+    /* Stronger glass effect */
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at center,
+          rgba(100, 180, 255, 0.08),
+          transparent 55%);
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    /* Better heading glow */
+    .hero-heading {
+      text-shadow:
+        0 0 20px rgba(120, 190, 255, 0.25),
+        0 0 50px rgba(120, 190, 255, 0.15);
+    }
+
+    /* Cleaner buttons */
+    .btn {
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      box-shadow:
+        0 8px 30px rgba(0, 0, 0, 0.18),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    }
   </style>
 </head>
+<script>
+  const shaderBg = document.getElementById("shader-bg");
+
+  let mouseX = 50;
+  let mouseY = 50;
+
+  document.addEventListener("mousemove", (e) => {
+    mouseX = (e.clientX / window.innerWidth) * 100;
+    mouseY = (e.clientY / window.innerHeight) * 100;
+
+    shaderBg.style.background = `
+      radial-gradient(circle at ${mouseX}% ${mouseY}%, rgba(110,190,255,0.24), transparent 18%),
+      radial-gradient(circle at ${100 - mouseX}% ${100 - mouseY}%, rgba(80,130,255,0.12), transparent 25%),
+      radial-gradient(circle at 50% 50%, rgba(55,120,255,0.18), transparent 45%),
+      radial-gradient(circle at 20% 30%, rgba(0,153,255,0.12), transparent 40%),
+      radial-gradient(circle at 80% 20%, rgba(120,200,255,0.1), transparent 35%),
+      linear-gradient(180deg, #08152d 0%, #0b1f4d 40%, #102d73 100%)
+    `;
+  });
+
+  // Liquid hover effect on buttons
+  document.querySelectorAll('.btn').forEach((btn) => {
+    btn.addEventListener('mousemove', (e) => {
+      const rect = btn.getBoundingClientRect();
+
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+
+      const moveX = (x / rect.width - 0.5) * 40;
+      const moveY = (y / rect.height - 0.5) * 40;
+
+      btn.style.setProperty('--mx', `${moveX}px`);
+      btn.style.setProperty('--my', `${moveY}px`);
+    });
+
+    btn.addEventListener('mouseleave', () => {
+      btn.style.setProperty('--mx', `0px`);
+      btn.style.setProperty('--my', `0px`);
+    });
+  });
+</script>
 
 <body>
   <!-- ═══════════════════════════════════════════════ -->
   <!-- HERO SECTION (HOME PAGE CONTENT)              -->
   <!-- ═══════════════════════════════════════════════ -->
   <section class="hero" id="hero">
+    <div id="shader-bg"></div>
     <div class="hero-bg" id="canvas-container"></div>
-    <div class="hero-content"
-      style="text-align: center; display: flex; flex-direction: column; align-items: center; width: 100%;">
+    <div class="hero-content" style="
+          text-align: center;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          width: 100%;
+        ">
       <div class="hero-badge" id="hero-badge" style="position: relative">
         <span class="badge-dot"></span>
         <span id="online-counter">Currently Online: 🐻</span>
@@ -201,7 +390,7 @@
                 transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
               white-space: nowrap;
               z-index: 100;
-              box-shadow: 
+              box-shadow:
                 0 10px 40px -10px rgba(0, 0, 0, 0.5),
                 inset 0 0 0 1px rgba(255, 255, 255, 0.1);
               text-align: center;
@@ -220,26 +409,37 @@
       <p class="hero-sub landing-phrases" id="hero-sub" style="transition: opacity 0.5s ease; min-height: 2em">
         Kanye the GOAT
       </p>
-      <div class="hero-ctas" id="hero-ctas"
-        style="display: flex; flex-direction: column; align-items: center; gap: 1.5rem; width: 100%;">
-        <!-- Top Short Line -->
+      <div class="hero-ctas" id="hero-ctas" style="
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+            width: 100%;
+          ">
+        <!-- Top Short Line 
         <a href="/mog.html" class="btn btn-outline" id="btn-mog" style="
-          background: rgba(255, 255, 255, 0.1); 
-          backdrop-filter: blur(12px); 
-          -webkit-backdrop-filter: blur(12px); 
-          border: 1px solid rgba(255, 255, 255, 0.3); 
-          width: 160px; 
-          font-weight: 800; 
-          text-align: center;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: #fff;
-        ">MOG</a>
+              background: rgba(255, 255, 255, 0.1);
+              backdrop-filter: blur(12px);
+              -webkit-backdrop-filter: blur(12px);
+              border: 1px solid rgba(255, 255, 255, 0.3);
+              width: 160px;
+              font-weight: 800;
+              text-align: center;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              color: #fff;
+            ">MOG</a>-->
 
         <!-- Middle Long Line -->
-        <div
-          style="display: flex; gap: 0.75rem; justify-content: center; flex-wrap: nowrap; width: 100%; max-width: 1200px;">
+        <div style="
+              display: flex;
+              gap: 0.75rem;
+              justify-content: center;
+              flex-wrap: nowrap;
+              width: 100%;
+              max-width: 1200px;
+            ">
           <a href="/chat.html" class="btn btn-outline" id="btn-chat">Chat</a>
           <a href="/browse.html" class="btn btn-primary" id="btn-surf">
             <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -247,7 +447,7 @@
               <line x1="7" y1="17" x2="17" y2="7" />
               <polyline points="7 7 17 7 17 17" />
             </svg>
-            Surf the Web
+            Surf the Web(Broken)
           </a>
           <a href="https://cdn.jsdelivr.net/gh/JimmyNeutronsSon/JimmyNeutronsSon.github.io@main/games_dashboard.html"
             class="btn btn-outline" id="btn-games">Play Games</a>
@@ -308,8 +508,7 @@
             So to prevent that from happening again, here are the new features to save this link<br>
             <strong>Alt+Q --> Class Link</strong><br>
             <strong>You can now send pictures in chat like Snapchat👻</strong><br>
-            <strong>MOG people</strong><br>
-          </p>
+            Unfortunately the <strong>Proxy is broken</strong>
           <button class="update-btn" id="update-close">Got it!</button>
         </div>
       `;
@@ -337,6 +536,18 @@
   <script src="sidebar.js"></script>
   <script src="youtube.js"></script>
   <script src="/ai.js"></script>
+
+  <!-- Settings Button 
+  <div class="settings-btn" onclick="toggleSettings()">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+      stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="3"></circle>
+      <path
+        d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+      </path>
+    </svg>
+  </div>
+  -->
 </body>
 
 </html>
