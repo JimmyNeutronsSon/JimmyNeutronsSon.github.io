@@ -73,7 +73,7 @@
           if ((await connection.getTransport()) !== "/libcurl/index.mjs") {
             await connection.setTransport("/libcurl/index.mjs", [
               {
-                wisp: wispUrl,
+                websocket: wispUrl,
                 wasm: "/libcurl/libcurl.wasm",
               },
             ]);

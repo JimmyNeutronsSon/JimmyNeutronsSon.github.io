@@ -111,7 +111,8 @@ const fastify = Fastify({
         handler(req, res);
       })
       .on("upgrade", (req, socket, head) => {
-        if (req.url.endsWith("/wisp/")) wisp.routeRequest(req, socket, head);
+        const path = (req.url || "").split("?")[0];
+        if (path === "/wisp/") wisp.routeRequest(req, socket, head);
         else if (!req.url.startsWith("/socket.io/")) socket.end();
       });
   },
@@ -297,12 +298,17 @@ fastify.get("/proxy", async (request, reply) => {
   }
 });
 
+function getVisitorStats() {
+  const count = io?.engine?.clientsCount || 0;
+  return { ok: true, daily: count, weekly: count };
+}
+
+fastify.get("/api/stats", async () => getVisitorStats());
+
 fastify.get("/health", async (request, reply) => {
   const checks = {
     tmdb: !!process.env.TMDB_API_KEY,
-    scramjet: require("fs").existsSync(
-      require("@mercuryworkshop/scramjet/path").scramjetPath,
-    ),
+    scramjet: existsSync(scramjetPath),
   };
   const ok = Object.values(checks).every(Boolean);
   return reply.code(ok ? 200 : 503).send({ ok, checks });
