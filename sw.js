@@ -88,8 +88,17 @@ async function handleRequest(event) {
     }
   }
 
-  // Not routed by scram, fallback to network
-  return fetch(event.request);
+  // Not routed by scram, fallback to network.
+  try {
+    return await fetch(event.request);
+  } catch (err) {
+    console.error("Network fetch failed:", err);
+    return new Response("Network request failed.", {
+      status: 502,
+      statusText: "Network Error",
+      headers: { "Content-Type": "text/plain" },
+    });
+  }
 }
 
 self.addEventListener("fetch", (e) => {

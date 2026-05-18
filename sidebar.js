@@ -188,11 +188,11 @@ window.initSidebar = function () {
     .sidebar-link {
       display: flex;
       align-items: center;
-      padding: 15px 14px;
+      padding: 18px 16px;
       text-decoration: none;
       color: var(--sb-link-color, #c5d8f0);
       font-weight: 500;
-      font-size: 15px;
+      font-size: 20px;
       border-radius: 10px;
       transition: all var(--sb-link-dur, 0.22s) cubic-bezier(0.4,0,0.2,1);
       position: relative;
@@ -437,39 +437,105 @@ window.initSidebar = function () {
     r.addEventListener("animationend", () => r.remove());
   });
 
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", window.initSidebar);
-  } else {
-    window.initSidebar();
-  }
+}; // end window.initSidebar
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", window.initSidebar);
+} else {
+  window.initSidebar();
 }
 
-  // ── Online counter: single socket, every page ────────────────────────────────
-  // One socket per page for the visitor counter. chat.html reuses this socket
-  // (window._welkinCounterSocket) for its counter so it never opens a second
-  // connection just for the count. The authenticated chat socket is separate.
-  (function () {
-    function updateCounter(data) {
-      const el = document.getElementById("online-counter");
-      if (el) {
-        const count = typeof data === "object" ? data.count : data;
-        el.textContent = "Currently Online: " + count;
-        const tooltip = document.getElementById("online-tooltip");
-        if (tooltip && typeof data === "object") {
-          tooltip.textContent =
-            data.members && data.members.length > 0
-              ? "In chat: " + data.members.join(", ")
-              : "No one in chat";
-        }
-      }
-    }
+// ── Online counter + visitor stats — single socket, every page ────────────────
+// One socket per page for the visitor counter. chat.html reuses this socket
+// (window._welkinCounterSocket) for its counter so it never opens a second
+// connection just for the count. The authenticated chat socket is separate.
+;(function () {
 
-    // ── Sitewide notification toast ──
-    function showSitewideToast(msg) {
-      let toast = document.getElementById("welkin-notif-toast");
-      if (!toast) {
-        const css = document.createElement("style");
-        css.textContent = `
+  // ── Stats widget CSS — injected once ──────────────────────────────────────
+  // Controls the Today / Week visitor pill badges near #online-counter.
+  // To disable entirely, remove the injectStatsWidget() call below.
+  (function injectStatsCSS() {
+    const s = document.createElement("style");
+    s.textContent = `
+      /* Stats pill bar — sits right after #online-counter */
+      #welkin-stats-bar {
+        display: inline-flex; align-items: center; gap: 8px;
+        font-size: 12px; font-family: 'Inter', sans-serif;
+        color: rgba(255,255,255,0.7); margin-left: 10px; vertical-align: middle;
+      }
+      .wstat {
+        display: inline-flex; align-items: center; gap: 4px;
+        /* Glass pill matching sidebar style */
+        background: rgba(255,255,255,0.08);
+        border: 1px solid rgba(108,180,240,0.18);
+        border-radius: 20px; padding: 2px 9px 2px 6px;
+        backdrop-filter: blur(8px); white-space: nowrap;
+        transition: background 0.2s;
+      }
+      .wstat:hover { background: rgba(255,255,255,0.13); }
+      .wstat-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+      .wstat-dot.day  { background: #43c99b; box-shadow: 0 0 5px #43c99b88; }
+      .wstat-dot.week { background: #6CB4F0; box-shadow: 0 0 5px #6CB4F088; }
+      .wstat-label { font-size: 10px; opacity: 0.60; text-transform: uppercase; letter-spacing: 0.7px; }
+      .wstat-val   { font-weight: 700; color: #fff; font-size: 12px; }
+    `;
+    document.head.appendChild(s);
+  })();
+
+  // Inject the stats pill bar next to #online-counter (idempotent)
+  function injectStatsWidget() {
+    const counterEl = document.getElementById("online-counter");
+    if (!counterEl || document.getElementById("welkin-stats-bar")) return;
+    const bar = document.createElement("span");
+    bar.id = "welkin-stats-bar";
+    bar.innerHTML =
+      '<span class="wstat" title="Unique visitors today">' +
+      '<span class="wstat-dot day"></span>' +
+      '<span class="wstat-label">Today</span>' +
+      '<span class="wstat-val" id="wstat-daily">—</span>' +
+      '</span>' +
+      '<span class="wstat" title="Unique visitors this week">' +
+      '<span class="wstat-dot week"></span>' +
+      '<span class="wstat-label">Week</span>' +
+      '<span class="wstat-val" id="wstat-weekly">—</span>' +
+      '</span>';
+    counterEl.parentNode.insertBefore(bar, counterEl.nextSibling);
+  }
+
+  function updateCounter(data) {
+    const el = document.getElementById("online-counter");
+    if (el) {
+      const count = typeof data === "object" ? (data.count ?? data) : data;
+      el.textContent = "Currently Online: " + count;
+    }
+  }
+
+  function updateStats(stats) {
+    injectStatsWidget(); // safe to call repeatedly — only injects once
+    const d = document.getElementById("wstat-daily");
+    const w = document.getElementById("wstat-weekly");
+    if (d) d.textContent = stats.daily != null ? stats.daily : "—";
+    if (w) w.textContent = stats.weekly != null ? stats.weekly : "—";
+  }
+
+  // Updates the #online-tooltip element with who's currently in chat
+  function updateMemberTooltip(names) {
+    const tip = document.getElementById("online-tooltip");
+    if (!tip) return;
+    if (!names || !names.length) {
+      tip.textContent = "No one in chat right now";
+      return;
+    }
+    const preview = names.slice(0, 6).join(", ");
+    tip.textContent = "In chat: " + preview + (names.length > 6 ? ` +${names.length - 6} more` : "");
+  }
+
+  // ── Sitewide notification toast ──────────────────────────────────────────
+  function showSitewideToast(msg) {
+    let toast = document.getElementById("welkin-notif-toast");
+    if (!toast) {
+      const css = document.createElement("style");
+      css.textContent = `
         #welkin-notif-toast {
           position: fixed; bottom: 24px; right: 24px; z-index: 2147483647;
           background: linear-gradient(135deg, #1E6CC7, #3A8FE0);
@@ -481,136 +547,113 @@ window.initSidebar = function () {
         }
         #welkin-notif-toast.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
       `;
-        document.head.appendChild(css);
-        toast = document.createElement("div");
-        toast.id = "welkin-notif-toast";
-        document.body.appendChild(toast);
-        toast.addEventListener("click", () => {
-          window.location.href = "/chat.html";
-        });
-      }
-      toast.textContent = msg;
-      toast.classList.add("show");
-      clearTimeout(toast._timer);
-      toast._timer = setTimeout(() => toast.classList.remove("show"), 5000);
+      document.head.appendChild(css);
+      toast = document.createElement("div");
+      toast.id = "welkin-notif-toast";
+      document.body.appendChild(toast);
+      toast.addEventListener("click", () => { window.location.href = "/chat.html"; });
+    }
+    toast.textContent = msg;
+    toast.classList.add("show");
+    clearTimeout(toast._timer);
+    toast._timer = setTimeout(() => toast.classList.remove("show"), 5000);
+  }
+
+  // ── Notification sound ───────────────────────────────────────────────────
+  let notifAudio = null;
+  function playSitewideNotif() {
+    if (localStorage.getItem("welkin-notif-muted") === "true") return;
+    try {
+      if (!notifAudio)
+        notifAudio = new Audio("/dragon-studio-new-notification-3-398649.mp3");
+      notifAudio.volume = 0.5;
+      notifAudio.currentTime = 0;
+      notifAudio.play().catch(() => { });
+    } catch (e) { }
+  }
+
+  // ── Unread title badge ───────────────────────────────────────────────────
+  let _swUnread = 0;
+  const _origSiteTitle = document.title;
+  function bumpSitewideUnread(msg) {
+    _swUnread++;
+    document.title = "(" + _swUnread + ") " + _origSiteTitle;
+    playSitewideNotif();
+    showSitewideToast(msg);
+  }
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden) { _swUnread = 0; document.title = _origSiteTitle; }
+  });
+
+  // ── Socket connection ────────────────────────────────────────────────────
+  function connectCounter() {
+    if (typeof io === "undefined") { setTimeout(connectCounter, 200); return; }
+
+    const isChat =
+      window.location.pathname.endsWith("/chat.html") ||
+      window.location.pathname.endsWith("/chat");
+
+    if (isChat) {
+      // chat.html opens its own authenticated socket — piggyback on it
+      window._welkinCounterReady = function (sock) {
+        sock.on("online-count", updateCounter);
+        sock.on("visitor-stats", updateStats);
+        sock.on("members:update", updateMemberTooltip);
+      };
+      // Fetch stats immediately via REST so the widget shows before first broadcast
+      fetch("/api/stats").then(r => r.json()).then(d => { if (d.ok) updateStats(d); }).catch(() => { });
+      return;
     }
 
-    // ── Notification sound ──
-    let notifAudio = null;
-    function playSitewideNotif() {
-      const isMuted = localStorage.getItem("welkin-notif-muted") === "true";
-      if (isMuted) return;
-      try {
-        if (!notifAudio)
-          notifAudio = new Audio("/dragon-studio-new-notification-3-398649.mp3");
-        notifAudio.volume = 0.5;
-        notifAudio.currentTime = 0;
-        notifAudio.play().catch(() => { });
-      } catch (e) { }
-    }
+    const socket = io(window.location.origin, { path: "/socket.io/" });
+    window._welkinCounterSocket = socket;
 
-    // ── Unread title badge ──
-    let _swUnread = 0;
-    const _origSiteTitle = document.title;
-    function bumpSitewideUnread(msg) {
-      _swUnread++;
-      document.title = "(" + _swUnread + ") " + _origSiteTitle;
-      playSitewideNotif();
-      showSitewideToast(msg);
-    }
-    document.addEventListener("visibilitychange", () => {
-      if (!document.hidden) {
-        _swUnread = 0;
-        document.title = _origSiteTitle;
-      }
+    socket.on("online-count", updateCounter);
+    socket.on("visitor-stats", updateStats);
+    socket.on("members:update", updateMemberTooltip);
+    socket.on("disconnect", () => {
+      const el = document.getElementById("online-counter");
+      if (el) el.textContent = "Currently Online: —";
     });
 
-    function connectCounter() {
-      if (typeof io === "undefined") {
-        setTimeout(connectCounter, 200);
-        return;
-      }
+    fetch("/api/stats").then(r => r.json()).then(d => { if (d.ok) updateStats(d); }).catch(() => { });
 
-      const isChat =
-        window.location.pathname.endsWith("/chat.html") ||
-        window.location.pathname.endsWith("/chat");
+    // ── Sitewide notifications for non-chat pages ────────────────────────
+    const chatToken = localStorage.getItem("welkin-chat-token");
+    if (chatToken) {
+      socket.on("connect", () => socket.emit("notif:subscribe", { token: chatToken }));
 
-      if (isChat) {
-        // chat.html opens its own authenticated socket.
-        // We hook into it once it's ready via the callback below.
-        // chat.html must call window._welkinCounterReady(socket) after connectSocket().
-        window._welkinCounterReady = function (sock) {
-          sock.on("online-count", updateCounter);
-        };
-        return;
-      }
-
-      const socket = io(window.location.origin, { path: "/socket.io/" });
-      window._welkinCounterSocket = socket;
-
-      socket.on("online-count", updateCounter);
-      socket.on("disconnect", () => updateCounter("—"));
-
-      // ── Sitewide notifications for non-chat pages ──
-      const chatToken = localStorage.getItem("welkin-chat-token");
-      if (chatToken) {
-        socket.on("connect", () => {
-          socket.emit("notif:subscribe", { token: chatToken });
-        });
-
-        function updateChatBadge() {
-          const chatLinks = document.querySelectorAll(
-            '.sidebar-link[href="/chat.html"], .sidebar-link[href="/chat"]',
-          );
-          chatLinks.forEach((link) => {
-            let dot = link.querySelector(".chat-unread-dot");
-            if (!dot) {
-              dot = document.createElement("span");
-              dot.className = "chat-unread-dot";
-              dot.style.cssText =
-                "display:inline-block; width:8px; height:8px; background-color:#f04747; border-radius:50%; margin-left:8px; box-shadow:0 0 8px rgba(240,71,71,0.6);";
-              link.appendChild(dot);
-            }
+      function updateChatBadge() {
+        document.querySelectorAll('.sidebar-link[href="/chat.html"], .sidebar-link[href="/chat"]')
+          .forEach((link) => {
+            if (link.querySelector(".chat-unread-dot")) return;
+            const dot = document.createElement("span");
+            dot.className = "chat-unread-dot";
+            dot.style.cssText =
+              "display:inline-block;width:8px;height:8px;background:#f04747;" +
+              "border-radius:50%;margin-left:8px;box-shadow:0 0 8px rgba(240,71,71,0.6);";
+            link.appendChild(dot);
           });
-        }
-
-        socket.on("dm:message", (msg) => {
-          const myName = localStorage.getItem("welkin-chat-name");
-          if (msg.from !== myName) {
-            bumpSitewideUnread("📩 DM from " + msg.from);
-            updateChatBadge();
-          }
-        });
-
-        socket.on("friends:request", ({ from }) => {
-          bumpSitewideUnread("👋 Friend request from " + from);
-          updateChatBadge();
-        });
-
-        socket.on("friends:accepted", ({ from }) => {
-          bumpSitewideUnread("✅ " + from + " accepted your request!");
-          updateChatBadge();
-        });
-
-        socket.on("call:incoming", ({ from }) => {
-          bumpSitewideUnread("📞 Incoming call from " + from);
-          updateChatBadge();
-        });
-
-        socket.on("gc:message", (msg) => {
-          const myName = localStorage.getItem("welkin-chat-name");
-          if (msg.name !== myName) {
-            bumpSitewideUnread("💬 " + msg.name + " in group chat");
-            updateChatBadge();
-          }
-        });
       }
-    }
 
-    if (
-      typeof io === "undefined" &&
-      !document.querySelector('script[src*="socket.io"]')
-    ) {
+      socket.on("dm:message", (msg) => {
+        const myName = localStorage.getItem("welkin-chat-name");
+        if (msg.from !== myName) { bumpSitewideUnread("📩 DM from " + msg.from); updateChatBadge(); }
+      });
+      socket.on("friends:request", ({ from }) => { bumpSitewideUnread("👋 Friend request from " + from); updateChatBadge(); });
+      socket.on("friends:accepted", ({ from }) => { bumpSitewideUnread("✅ " + from + " accepted your request!"); updateChatBadge(); });
+      socket.on("call:incoming", ({ from }) => { bumpSitewideUnread("📞 Incoming call from " + from); updateChatBadge(); });
+      socket.on("gc:message", (msg) => {
+        const myName = localStorage.getItem("welkin-chat-name");
+        if (msg.name !== myName) { bumpSitewideUnread("💬 " + msg.name + " in group chat"); updateChatBadge(); }
+      });
+    }
+  }
+
+  // Init: inject socket.io if not already on the page, then connect
+  function init() {
+    injectStatsWidget();
+    if (typeof io === "undefined" && !document.querySelector('script[src*="socket.io"]')) {
       const s = document.createElement("script");
       s.src = "https://cdn.socket.io/4.7.5/socket.io.min.js";
       s.onload = connectCounter;
@@ -618,4 +661,12 @@ window.initSidebar = function () {
     } else {
       connectCounter();
     }
-  })();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+
+})();

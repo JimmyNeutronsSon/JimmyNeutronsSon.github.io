@@ -74,12 +74,11 @@ form.addEventListener("submit", async (event) => {
   let wispUrl = (location.protocol === "https:" ? "wss" : "ws") + "://" + location.host + "/wisp/";
   
   try {
-    if (await connection.getTransport() !== "/libcurl/index.mjs") {
-      await connection.setTransport("/libcurl/index.mjs", [{
-        websocket: wispUrl,
-        wasm: "/libcurl/libcurl.wasm"
-      }]);
-    }
+    await connection.setTransport("/libcurl/index.mjs", [{
+      websocket: wispUrl,
+      wisp: wispUrl,
+      wasm: "/libcurl/libcurl.wasm"
+    }]);
   } catch (e) {
     console.error("Failed to set transport:", e);
   }
