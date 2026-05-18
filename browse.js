@@ -33,7 +33,7 @@ const scramjet = new ScramjetController({
   },
 });
 
-scramjet.init();
+const scramjetReady = scramjet.init();
 
 const connection = new BareMux.BareMuxConnection("/baremux/worker.js");
 
@@ -61,9 +61,10 @@ form.addEventListener("submit", async (event) => {
   errorCode.textContent = "";
 
   try {
+    await scramjetReady;
     await registerSW();
   } catch (err) {
-    error.textContent = "Failed to register service worker.";
+    error.textContent = "Failed to initialize proxy.";
     errorCode.textContent = err.toString();
     throw err;
   }
@@ -75,7 +76,7 @@ form.addEventListener("submit", async (event) => {
   try {
     if (await connection.getTransport() !== "/libcurl/index.mjs") {
       await connection.setTransport("/libcurl/index.mjs", [{
-        wisp: wispUrl,
+        websocket: wispUrl,
         wasm: "/libcurl/libcurl.wasm"
       }]);
     }
