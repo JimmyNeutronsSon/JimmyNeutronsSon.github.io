@@ -17,8 +17,7 @@
       {
         "imports": {
           "three": "/lib/three.module.js",
-          "three/examples/jsm/loaders/OBJLoader.js": "/lib/OBJLoader.js",
-          "shaders/js": "https://esm.sh/shaders/js"
+          "three/examples/jsm/loaders/OBJLoader.js": "/lib/OBJLoader.js"
         }
       }
     </script>
@@ -789,85 +788,7 @@
     </svg>
   </div>
   -->
-  <script type="module">
-    // ─── Shaders.com GPU Effects ───────────────────────────────────────────────
-    import { createShader } from 'shaders/js';
-
-    // 1. Full-page animated background: FlowingGradient + FloatingParticles + CursorRipples
-    (async () => {
-      const bgContainer = document.getElementById('shaders-canvas-bg');
-      if (!bgContainer) return;
-
-      // Create a canvas that fills the viewport
-      const canvas = document.createElement('canvas');
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-      canvas.style.cssText = 'width:100%;height:100%;display:block;';
-      bgContainer.appendChild(canvas);
-
-      try {
-        const shader = await createShader(canvas, {
-          components: [
-            // Deep blue flowing gradient base — matches the existing palette
-            {
-              type: 'FlowingGradient',
-              props: {
-                colorA: '#081535',
-                colorB: '#0d2260',
-                colorC: '#1a4aaa',
-                colorD: '#0a3080',
-                speed: 12,
-                scale: 1.6,
-                angle: 200,
-              }
-            },
-            // Subtle floating light orbs like stars/particles
-            {
-              type: 'FloatingParticles',
-              props: {
-                color: '#6cb4ff',
-                count: 55,
-                size: 1.4,
-                speed: 0.6,
-                opacity: 0.28,
-                blending: 'additive',
-              }
-            },
-            // Interactive ripples on cursor movement
-            {
-              type: 'CursorRipples',
-              props: {
-                color: '#4a9eff',
-                strength: 0.22,
-                radius: 0.18,
-                speed: 1.4,
-                opacity: 0.5,
-              }
-            },
-            // Subtle vignette to focus the center
-            {
-              type: 'Vignette',
-              props: {
-                strength: 0.45,
-                color: '#020d24',
-              }
-            }
-          ]
-        });
-
-        // Resize handler
-        window.addEventListener('resize', () => {
-          canvas.width = window.innerWidth;
-          canvas.height = window.innerHeight;
-        });
-
-      } catch (err) {
-        // Graceful fallback — the CSS base background still shows
-        console.warn('Shaders background unavailable:', err);
-      }
-    })();
-  </script>
-
+  <script src="/home-shaders.js"></script>
 </body>
 
 </html>
