@@ -18,7 +18,8 @@
       {
         "imports": {
           "three": "/lib/three.module.js",
-          "three/examples/jsm/loaders/OBJLoader.js": "/lib/OBJLoader.js"
+          "three/examples/jsm/loaders/OBJLoader.js": "/lib/OBJLoader.js",
+          "shaders/js": "https://esm.sh/shaders/js"
         }
       }
     </script>
@@ -206,166 +207,420 @@
       inset: 0;
       z-index: -5;
       overflow: hidden;
-      background:
-        radial-gradient(circle at 50% 50%, rgba(55, 120, 255, 0.18), transparent 45%),
-        radial-gradient(circle at 20% 30%, rgba(0, 153, 255, 0.12), transparent 40%),
-        radial-gradient(circle at 80% 20%, rgba(120, 200, 255, 0.1), transparent 35%),
-        linear-gradient(180deg, #08152d 0%, #0b1f4d 40%, #102d73 100%);
+      background: linear-gradient(180deg, #08152d 0%, #0b1f4d 40%, #102d73 100%);
     }
 
-    #shader-bg::before {
-      content: "";
-      position: absolute;
-      inset: -20%;
-      background:
-        radial-gradient(circle, rgba(130, 200, 255, 0.07) 0%, transparent 60%),
-        radial-gradient(circle, rgba(40, 130, 255, 0.05) 0%, transparent 65%);
-      filter: blur(80px);
-      animation: shaderFloat 18s ease-in-out infinite alternate;
-      mix-blend-mode: screen;
-    }
-
-    #shader-bg::after {
-      content: "";
-      position: absolute;
+    /* Full-page shaders canvas layer */
+    #shaders-canvas-bg {
+      position: fixed;
       inset: 0;
-      background-image:
-        radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-      background-size: 3px 3px;
-      opacity: 0.25;
-      animation: grainShift 8s steps(10) infinite;
+      z-index: -4;
+      pointer-events: none;
     }
 
-    @keyframes shaderFloat {
-      0% {
-        transform: translate3d(-2%, -1%, 0) scale(1);
-      }
-
-      50% {
-        transform: translate3d(2%, 2%, 0) scale(1.08);
-      }
-
-      100% {
-        transform: translate3d(-1%, 1%, 0) scale(1.12);
-      }
-    }
-
-    @keyframes grainShift {
-      0% {
-        transform: translate(0, 0);
-      }
-
-      25% {
-        transform: translate(-2%, 1%);
-      }
-
-      50% {
-        transform: translate(2%, -1%);
-      }
-
-      75% {
-        transform: translate(1%, 2%);
-      }
-
-      100% {
-        transform: translate(0, 0);
-      }
+    #shaders-canvas-bg canvas {
+      width: 100% !important;
+      height: 100% !important;
     }
 
     /* Clouds blend into shader */
     .hero-bg canvas {
       opacity: 0.72;
       mix-blend-mode: screen;
-      filter:
-        blur(0.2px) saturate(1.25) brightness(1.05);
+      filter: blur(0.2px) saturate(1.25) brightness(1.05);
     }
 
-    /* Stronger glass effect */
-    .hero::before {
+    /* ── Fix heading: keep fadeUp from styles.css, ADD glow after it finishes ── */
+    .hero-heading {
+      /* Don't override animation — styles.css fadeUp runs first.
+         We chain a glow via filter after opacity is 1. */
+      animation:
+        fadeUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.4s forwards,
+        headingGlow 4s ease-in-out 1.3s infinite alternate;
+    }
+
+    @keyframes headingGlow {
+      from {
+        text-shadow:
+          0 0 20px rgba(120, 190, 255, 0.3),
+          0 0 50px rgba(100, 160, 255, 0.15);
+      }
+
+      to {
+        text-shadow:
+          0 0 30px rgba(140, 210, 255, 0.55),
+          0 0 70px rgba(100, 175, 255, 0.28),
+          0 0 110px rgba(60, 130, 255, 0.12);
+      }
+    }
+
+    /* ══════════════════════════════════════════════
+       LIQUID GLASS BUTTON SYSTEM
+       Inspired by Apple Vision Pro / iOS liquid glass
+    ══════════════════════════════════════════════ */
+
+    .btn {
+      position: relative;
+      overflow: hidden;
+      /* Frosted glass base */
+      background: rgba(255, 255, 255, 0.08) !important;
+      border: 1px solid rgba(255, 255, 255, 0.22) !important;
+      backdrop-filter: blur(24px) saturate(180%) brightness(1.05) !important;
+      -webkit-backdrop-filter: blur(24px) saturate(180%) brightness(1.05) !important;
+      color: rgba(255, 255, 255, 0.95) !important;
+      /* Layered glass shadows */
+      box-shadow:
+        /* Outer ambient shadow */
+        0 8px 32px rgba(0, 0, 0, 0.28),
+        /* Top specular rim (light catches the top edge) */
+        inset 0 1.5px 0 rgba(255, 255, 255, 0.35),
+        /* Bottom inner shadow (depth) */
+        inset 0 -1px 0 rgba(0, 0, 0, 0.18),
+        /* Left refraction highlight */
+        inset 1.5px 0 0 rgba(255, 255, 255, 0.12),
+        /* Subtle inner glow */
+        inset 0 0 20px rgba(255, 255, 255, 0.04) !important;
+      transition:
+        transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1),
+        box-shadow 0.22s ease,
+        border-color 0.22s ease,
+        background 0.22s ease !important;
+    }
+
+    /* Top gloss sweep — the signature liquid glass sheen */
+    .btn::before {
       content: "";
       position: absolute;
-      inset: 0;
-      background:
-        radial-gradient(circle at center,
-          rgba(100, 180, 255, 0.08),
-          transparent 55%);
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 50%;
+      background: linear-gradient(180deg,
+          rgba(255, 255, 255, 0.18) 0%,
+          rgba(255, 255, 255, 0.05) 60%,
+          transparent 100%);
+      border-radius: inherit;
       pointer-events: none;
-      z-index: -1;
+      z-index: 1;
     }
 
-    /* Better heading glow */
-    .hero-heading {
-      text-shadow:
-        0 0 20px rgba(120, 190, 255, 0.25),
-        0 0 50px rgba(120, 190, 255, 0.15);
+    /* Refraction edge line along the top */
+    .btn::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 8%;
+      right: 8%;
+      height: 1px;
+      background: linear-gradient(90deg,
+          transparent 0%,
+          rgba(255, 255, 255, 0.6) 30%,
+          rgba(255, 255, 255, 0.8) 50%,
+          rgba(255, 255, 255, 0.6) 70%,
+          transparent 100%);
+      pointer-events: none;
+      z-index: 2;
     }
 
-    /* Cleaner buttons */
-    .btn {
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
+    /* Ensure button text sits above pseudo-elements */
+    .btn>* {
+      position: relative;
+      z-index: 3;
+    }
+
+    .btn>svg,
+    .btn>.btn-icon {
+      position: relative;
+      z-index: 3;
+    }
+
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.13) !important;
+      border-color: rgba(255, 255, 255, 0.38) !important;
+      transform: translateY(-3px) scale(1.025) !important;
       box-shadow:
-        0 8px 30px rgba(0, 0, 0, 0.18),
-        inset 0 1px 0 rgba(255, 255, 255, 0.06);
+        0 16px 40px rgba(0, 0, 0, 0.32),
+        0 0 0 1px rgba(255, 255, 255, 0.1),
+        inset 0 1.5px 0 rgba(255, 255, 255, 0.45),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.12),
+        inset 1.5px 0 0 rgba(255, 255, 255, 0.18),
+        inset 0 0 24px rgba(255, 255, 255, 0.06) !important;
+    }
+
+    .btn:active {
+      transform: translateY(0) scale(0.97) !important;
+      box-shadow:
+        0 4px 12px rgba(0, 0, 0, 0.25),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2),
+        inset 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+    }
+
+    /* ── Primary (Surf) — tinted blue glass ── */
+    .btn-primary {
+      background: rgba(30, 80, 200, 0.22) !important;
+      border-color: rgba(100, 170, 255, 0.4) !important;
+      box-shadow:
+        0 8px 32px rgba(20, 80, 220, 0.3),
+        inset 0 1.5px 0 rgba(140, 200, 255, 0.5),
+        inset 0 -1px 0 rgba(0, 20, 80, 0.25),
+        inset 1.5px 0 0 rgba(100, 170, 255, 0.15),
+        inset 0 0 20px rgba(60, 130, 255, 0.06) !important;
+    }
+
+    .btn-primary::before {
+      background: linear-gradient(180deg,
+          rgba(140, 200, 255, 0.25) 0%,
+          rgba(80, 150, 255, 0.08) 60%,
+          transparent 100%);
+    }
+
+    .btn-primary::after {
+      background: linear-gradient(90deg,
+          transparent 0%,
+          rgba(140, 210, 255, 0.7) 30%,
+          rgba(180, 225, 255, 0.9) 50%,
+          rgba(140, 210, 255, 0.7) 70%,
+          transparent 100%);
+    }
+
+    .btn-primary:hover {
+      background: rgba(40, 100, 230, 0.28) !important;
+      border-color: rgba(120, 190, 255, 0.55) !important;
+      box-shadow:
+        0 18px 45px rgba(20, 80, 220, 0.4),
+        0 0 0 1px rgba(100, 170, 255, 0.15),
+        inset 0 1.5px 0 rgba(160, 215, 255, 0.6),
+        inset 0 -1px 0 rgba(0, 20, 80, 0.2),
+        inset 0 0 28px rgba(60, 140, 255, 0.08) !important;
+    }
+
+    /* Shimmer sweep on primary */
+    .shimmer-line {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 35%;
+      background: linear-gradient(90deg,
+          transparent 0%,
+          rgba(255, 255, 255, 0.12) 50%,
+          transparent 100%);
+      animation: shimmerSlide 3s ease-in-out infinite;
+      z-index: 4;
+      pointer-events: none;
+      border-radius: inherit;
+    }
+
+    @keyframes shimmerSlide {
+      0% {
+        transform: translateX(-200%) skewX(-12deg);
+      }
+
+      100% {
+        transform: translateX(500%) skewX(-12deg);
+      }
+    }
+
+    /* ── Music button — iridescent purple glass ── */
+    .btn-music-flash {
+      background: rgba(80, 20, 160, 0.2) !important;
+      border: 1px solid rgba(180, 120, 255, 0.35) !important;
+      color: rgba(255, 255, 255, 0.95) !important;
+      font-weight: 700 !important;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      box-shadow:
+        0 8px 32px rgba(100, 40, 200, 0.28),
+        inset 0 1.5px 0 rgba(210, 170, 255, 0.5),
+        inset 0 -1px 0 rgba(40, 0, 100, 0.3),
+        inset 0 0 20px rgba(140, 60, 255, 0.06) !important;
+    }
+
+    .btn-music-flash::before {
+      background: linear-gradient(180deg,
+          rgba(210, 170, 255, 0.22) 0%,
+          rgba(140, 80, 255, 0.06) 60%,
+          transparent 100%);
+    }
+
+    .btn-music-flash::after {
+      background: linear-gradient(90deg,
+          transparent 0%,
+          rgba(200, 160, 255, 0.65) 30%,
+          rgba(225, 195, 255, 0.85) 50%,
+          rgba(200, 160, 255, 0.65) 70%,
+          transparent 100%);
+    }
+
+    .btn-music-flash:hover {
+      background: rgba(100, 30, 200, 0.28) !important;
+      border-color: rgba(200, 150, 255, 0.5) !important;
+    }
+
+    /* ── Badge glass ── */
+    .hero-badge {
+      background: rgba(255, 255, 255, 0.07) !important;
+      backdrop-filter: blur(20px) saturate(160%) !important;
+      -webkit-backdrop-filter: blur(20px) saturate(160%) !important;
+      border: 1px solid rgba(255, 255, 255, 0.16) !important;
+      box-shadow:
+        0 4px 20px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.18),
+        inset 0 0 12px rgba(255, 255, 255, 0.03) !important;
+    }
+
+    /* ── Bookmarklet gentle float ── */
+    #btn-bookmarklet {
+      animation:
+        fadeUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.8s forwards,
+        cloudFloat 3.5s ease-in-out 1.7s infinite alternate !important;
+    }
+
+    @keyframes cloudFloat {
+      from {
+        transform: translateY(0px);
+      }
+
+      to {
+        transform: translateY(-6px);
+      }
+    }
+
+    /* ── Sun-ray glow from below — "light behind the horizon" ── */
+    #sun-glow {
+      position: fixed;
+      inset: 0;
+      z-index: -3;
+      pointer-events: none;
+      background:
+        /* Main sun core: bright white-gold at the very bottom */
+        radial-gradient(ellipse 60% 28% at 50% 108%,
+          rgba(255, 255, 255, 0.55) 0%,
+          rgba(220, 240, 255, 0.35) 25%,
+          rgba(140, 200, 255, 0.18) 50%,
+          transparent 75%),
+        /* Secondary halo, wider and softer */
+        radial-gradient(ellipse 90% 40% at 50% 112%,
+          rgba(180, 220, 255, 0.22) 0%,
+          rgba(80, 160, 255, 0.1) 45%,
+          transparent 70%),
+        /* Subtle corona rays spreading upward */
+        radial-gradient(ellipse 40% 55% at 50% 100%,
+          rgba(255, 255, 255, 0.12) 0%,
+          transparent 60%);
+      /* Only visible from 80% down */
+      -webkit-mask-image: linear-gradient(to bottom,
+          transparent 0%,
+          transparent 72%,
+          rgba(0, 0, 0, 0.15) 78%,
+          rgba(0, 0, 0, 0.6) 84%,
+          black 92%,
+          black 100%);
+      mask-image: linear-gradient(to bottom,
+          transparent 0%,
+          transparent 72%,
+          rgba(0, 0, 0, 0.15) 78%,
+          rgba(0, 0, 0, 0.6) 84%,
+          black 92%,
+          black 100%);
+      animation: sunPulse 6s ease-in-out infinite alternate;
+    }
+
+    @keyframes sunPulse {
+      from {
+        opacity: 0.85;
+        transform: scaleX(1);
+      }
+
+      to {
+        opacity: 1;
+        transform: scaleX(1.06);
+      }
+    }
+
+    /* ── Footer glass ── */
+    #footer {
+      background: rgba(5, 12, 40, 0.55) !important;
+      backdrop-filter: blur(16px) !important;
+      border-top: 1px solid rgba(100, 160, 255, 0.1) !important;
+    }
+
+    /* ── Perfect centering fix ── */
+    /* The sidebar tab is fixed-positioned so it doesn't affect layout.
+       The off-center look comes from hero-content not being truly centered
+       in the viewport. Force it. */
+    #hero {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+    }
+
+    .hero-content {
+      margin: 0 auto !important;
+      left: unset !important;
+      transform: none !important;
+      text-align: center !important;
+    }
+
+    #hero-ctas {
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: center !important;
+      justify-content: center !important;
+      width: 100% !important;
+    }
+
+    #hero-ctas>div {
+      display: flex !important;
+      justify-content: center !important;
+      align-items: center !important;
+      flex-wrap: wrap !important;
+      gap: 0.75rem !important;
+      width: auto !important;
+      max-width: none !important;
     }
   </style>
 </head>
 <script>
-  const shaderBg = document.getElementById("shader-bg");
-
-  let mouseX = 50;
-  let mouseY = 50;
-
-  document.addEventListener("mousemove", (e) => {
-    mouseX = (e.clientX / window.innerWidth) * 100;
-    mouseY = (e.clientY / window.innerHeight) * 100;
-
-    shaderBg.style.background = `
-      radial-gradient(circle at ${mouseX}% ${mouseY}%, rgba(110,190,255,0.24), transparent 18%),
-      radial-gradient(circle at ${100 - mouseX}% ${100 - mouseY}%, rgba(80,130,255,0.12), transparent 25%),
-      radial-gradient(circle at 50% 50%, rgba(55,120,255,0.18), transparent 45%),
-      radial-gradient(circle at 20% 30%, rgba(0,153,255,0.12), transparent 40%),
-      radial-gradient(circle at 80% 20%, rgba(120,200,255,0.1), transparent 35%),
-      linear-gradient(180deg, #08152d 0%, #0b1f4d 40%, #102d73 100%)
-    `;
-  });
-
-  // Liquid hover effect on buttons
-  document.querySelectorAll('.btn').forEach((btn) => {
-    btn.addEventListener('mousemove', (e) => {
-      const rect = btn.getBoundingClientRect();
-
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-
-      const moveX = (x / rect.width - 0.5) * 40;
-      const moveY = (y / rect.height - 0.5) * 40;
-
-      btn.style.setProperty('--mx', `${moveX}px`);
-      btn.style.setProperty('--my', `${moveY}px`);
+  // Liquid hover effect on buttons (kept for CSS var tracking)
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.btn').forEach((btn) => {
+      btn.addEventListener('mousemove', (e) => {
+        const rect = btn.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        btn.style.setProperty('--mx', `${(x / rect.width - 0.5) * 40}px`);
+        btn.style.setProperty('--my', `${(y / rect.height - 0.5) * 40}px`);
+      });
+      btn.addEventListener('mouseleave', () => {
+        btn.style.setProperty('--mx', `0px`);
+        btn.style.setProperty('--my', `0px`);
+      });
     });
 
-    btn.addEventListener('mouseleave', () => {
-      btn.style.setProperty('--mx', `0px`);
-      btn.style.setProperty('--my', `0px`);
-    });
+    // Add shimmer span to primary button
+    const primaryBtn = document.getElementById('btn-surf');
+    if (primaryBtn) {
+      const shimmer = document.createElement('span');
+      shimmer.className = 'shimmer-line';
+      primaryBtn.appendChild(shimmer);
+    }
   });
 </script>
 
 <body>
+  <!-- Shaders.com full-page GPU background -->
+  <div id="shaders-canvas-bg"></div>
+  <!-- Sun-glow effect: light shining from below the horizon -->
+  <div id="sun-glow"></div>
+
   <!-- ═══════════════════════════════════════════════ -->
   <!-- HERO SECTION (HOME PAGE CONTENT)              -->
   <!-- ═══════════════════════════════════════════════ -->
   <section class="hero" id="hero">
     <div id="shader-bg"></div>
     <div class="hero-bg" id="canvas-container"></div>
-    <div class="hero-content" style="
-          text-align: center;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          width: 100%;
-        ">
+    <div class="hero-content"
+      style="text-align:center;display:flex;flex-direction:column;align-items:center;width:100%;max-width:900px;margin:0 auto;">
       <div class="hero-badge" id="hero-badge" style="position: relative">
         <span class="badge-dot"></span>
         <span id="online-counter">Currently Online: 🐻</span>
@@ -409,13 +664,8 @@
       <p class="hero-sub landing-phrases" id="hero-sub" style="transition: opacity 0.5s ease; min-height: 2em">
         Kanye the GOAT
       </p>
-      <div class="hero-ctas" id="hero-ctas" style="
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 1.5rem;
-            width: 100%;
-          ">
+      <div class="hero-ctas" id="hero-ctas"
+        style="display:flex;flex-direction:column;align-items:center;gap:1.5rem;width:100%;">
         <!-- Top Short Line 
         <a href="/mog.html" class="btn btn-outline" id="btn-mog" style="
               background: rgba(255, 255, 255, 0.1);
@@ -432,14 +682,7 @@
             ">MOG</a>-->
 
         <!-- Middle Long Line -->
-        <div style="
-              display: flex;
-              gap: 0.75rem;
-              justify-content: center;
-              flex-wrap: nowrap;
-              width: 100%;
-              max-width: 1200px;
-            ">
+        <div style="display:flex;gap:0.75rem;justify-content:center;align-items:center;flex-wrap:wrap;">
           <a href="/chat.html" class="btn btn-outline" id="btn-chat">Chat</a>
           <a href="/browse.html" class="btn btn-primary" id="btn-surf">
             <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -449,8 +692,7 @@
             </svg>
             Surf the Web(Broken)
           </a>
-          <a href="https://cdn.jsdelivr.net/gh/JimmyNeutronsSon/JimmyNeutronsSon.github.io@main/games_dashboard.html"
-            class="btn btn-outline" id="btn-games">Play Games</a>
+          <a href="/games_dashboard.html" class="btn btn-outline" id="btn-games">Play Games</a>
           <a href="/memusic-webplayer/dist/index.html" class="btn btn-music-flash" id="btn-music">Listen to Music</a>
           <a href="/hacks.html" class="btn btn-outline" id="btn-hacks">Hacks</a>
         </div>
@@ -548,6 +790,85 @@
     </svg>
   </div>
   -->
+  <script type="module">
+    // ─── Shaders.com GPU Effects ───────────────────────────────────────────────
+    import { createShader } from 'shaders/js';
+
+    // 1. Full-page animated background: FlowingGradient + FloatingParticles + CursorRipples
+    (async () => {
+      const bgContainer = document.getElementById('shaders-canvas-bg');
+      if (!bgContainer) return;
+
+      // Create a canvas that fills the viewport
+      const canvas = document.createElement('canvas');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      canvas.style.cssText = 'width:100%;height:100%;display:block;';
+      bgContainer.appendChild(canvas);
+
+      try {
+        const shader = await createShader(canvas, {
+          components: [
+            // Deep blue flowing gradient base — matches the existing palette
+            {
+              type: 'FlowingGradient',
+              props: {
+                colorA: '#081535',
+                colorB: '#0d2260',
+                colorC: '#1a4aaa',
+                colorD: '#0a3080',
+                speed: 12,
+                scale: 1.6,
+                angle: 200,
+              }
+            },
+            // Subtle floating light orbs like stars/particles
+            {
+              type: 'FloatingParticles',
+              props: {
+                color: '#6cb4ff',
+                count: 55,
+                size: 1.4,
+                speed: 0.6,
+                opacity: 0.28,
+                blending: 'additive',
+              }
+            },
+            // Interactive ripples on cursor movement
+            {
+              type: 'CursorRipples',
+              props: {
+                color: '#4a9eff',
+                strength: 0.22,
+                radius: 0.18,
+                speed: 1.4,
+                opacity: 0.5,
+              }
+            },
+            // Subtle vignette to focus the center
+            {
+              type: 'Vignette',
+              props: {
+                strength: 0.45,
+                color: '#020d24',
+              }
+            }
+          ]
+        });
+
+        // Resize handler
+        window.addEventListener('resize', () => {
+          canvas.width = window.innerWidth;
+          canvas.height = window.innerHeight;
+        });
+
+      } catch (err) {
+        // Graceful fallback — the CSS base background still shows
+        console.warn('Shaders background unavailable:', err);
+      }
+    })();
+  </script>
+
 </body>
 
 </html>
