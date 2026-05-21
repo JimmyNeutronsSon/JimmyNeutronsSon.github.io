@@ -60,7 +60,7 @@
 
   // Secret Key Listener
   let inputBuffer = "";
-  const SECRET_CODE = "iboss";
+  const SECRET_CODE = "dame0";
 
   window.addEventListener("keydown", (e) => {
     // Only capture single characters
