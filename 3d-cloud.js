@@ -5,6 +5,7 @@ console.log("3D Cloud Module Loading...");
 
 let scene, camera, renderer, cloudField;
 let clouds = [];
+let cloudMaterial = null;
 let mouseX = 0,
   mouseY = 0;
 let windowHalfX = window.innerWidth / 2;
@@ -60,7 +61,7 @@ function init() {
       const baseScale = 600 / maxDim;
 
       // Shared material
-      const cloudMaterial = new THREE.MeshPhongMaterial({
+      cloudMaterial = new THREE.MeshPhongMaterial({
         color: 0x1e6cc7, // --accent
         transparent: true,
         opacity: 0.12,
@@ -164,3 +165,16 @@ function render() {
 
   renderer.render(scene, camera);
 }
+
+// ══════════════════════════════════════════════════════════════════════════
+//  PUBLIC API — used by themes.js for live theme switching
+// ══════════════════════════════════════════════════════════════════════════
+
+window.welkinCloud = {
+  /** Update cloud material color and opacity live */
+  updateMaterial(color, opacity) {
+    if (!cloudMaterial) return;
+    if (color != null) cloudMaterial.color.set(color);
+    if (opacity != null) cloudMaterial.opacity = opacity;
+  },
+};

@@ -305,7 +305,7 @@ window.initSidebar = function () {
         <a href="/retro-bowl.html" class="sidebar-link">Retro Bowl</a>
         <a href="/movies.html" class="sidebar-link">Movies</a>
         <a href="/hacks.html" class="sidebar-link">Hacks</a>
-        <a href="/mog.html" class="sidebar-link">MOG</a>
+        <a href="/preview.html" class="sidebar-link">AI</a>
       </nav>
     </aside>
     <div id="sidebar-overlay" class="sidebar-overlay"></div>
@@ -449,7 +449,7 @@ if (document.readyState === "loading") {
 // One socket per page for the visitor counter. chat.html reuses this socket
 // (window._welkinCounterSocket) for its counter so it never opens a second
 // connection just for the count. The authenticated chat socket is separate.
-;(function () {
+; (function () {
 
   // ── Stats widget CSS — injected once ──────────────────────────────────────
   // Controls the Today / Week visitor pill badges near #online-counter.
