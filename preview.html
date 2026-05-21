@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Welkin AI</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script type="importmap">
+      {
+        "imports": {
+          "three": "/lib/three.module.js",
+          "three/examples/jsm/loaders/OBJLoader.js": "/lib/OBJLoader.js"
+        }
+      }
+    </script>
+
+  <style>
+    :root {
+      --bg-primary: #0b1e3d;
+      --bg-secondary: rgba(22, 58, 107, 0.45);
+      --glass: rgba(255, 255, 255, 0.08);
+
+      --text-primary: #f7faff;
+      --text-secondary: #d6e5f5;
+      --text-muted: #8fa4c2;
+
+      --accent: #6cb4f0;
+      --accent-hover: #3a8fe0;
+
+      --border: rgba(255, 255, 255, 0.12);
+
+      --shadow-lg: 0 8px 32px rgba(10, 45, 110, 0.25);
+      --shadow-glow: 0 0 30px rgba(58, 143, 224, 0.35);
+
+      --radius: 22px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Inter", sans-serif;
+      height: 100vh;
+      overflow: hidden;
+      background: #0b1220;
+      color: var(--text-primary);
+    }
+
+    .app {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      height: 100vh;
+      padding: 24px;
+      gap: 24px;
+    }
+
+    .sidebar {
+      width: 300px;
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-lg);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .logo-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 18px;
+      background: linear-gradient(135deg,
+          rgba(255, 255, 255, 0.35),
+          rgba(255, 255, 255, 0.08));
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 22px;
+      box-shadow: var(--shadow-glow);
+    }
+
+    .logo h1 {
+      font-size: 22px;
+      font-weight: 700;
+    }
+
+    .logo p {
+      color: var(--text-muted);
+      font-size: 13px;
+      margin-top: 4px;
+    }
+
+    .panel {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 18px;
+      padding: 18px;
+    }
+
+    .panel-title {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 14px;
+      color: var(--text-secondary);
+    }
+
+    select {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: white;
+      border-radius: 14px;
+      padding: 14px;
+      outline: none;
+      font-size: 14px;
+      cursor: pointer;
+      backdrop-filter: blur(12px);
+    }
+
+    option {
+      background: #163a6b;
+    }
+
+    .model-info {
+      margin-top: 14px;
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .chat-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(24px);
+      border-radius: var(--radius);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      overflow: hidden;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .chat-header {
+      padding: 22px 28px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .chat-header h2 {
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #6cb4f0;
+      box-shadow: 0 0 15px #6cb4f0;
+    }
+
+    .messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .message {
+      max-width: 78%;
+      padding: 18px 20px;
+      border-radius: 22px;
+      line-height: 1.7;
+      animation: fadeIn .25s ease;
+      white-space: pre-wrap;
+    }
+
+    .user {
+      align-self: flex-end;
+      background: linear-gradient(135deg,
+          rgba(58, 143, 224, 0.55),
+          rgba(108, 180, 240, 0.3));
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      box-shadow: var(--shadow-glow);
+    }
+
+    .assistant-row {
+      align-self: flex-start;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      max-width: 78%;
+    }
+
+    .ai-avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      object-fit: cover;
+      border: 2px solid rgba(108, 180, 240, 0.4);
+      box-shadow: 0 0 12px rgba(108, 180, 240, 0.25);
+      background: linear-gradient(135deg, rgba(58, 143, 224, 0.6), rgba(108, 180, 240, 0.3));
+    }
+
+    .assistant {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      max-width: 100%;
+    }
+
+    .input-area {
+      padding: 24px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .input-wrapper {
+      display: flex;
+      gap: 16px;
+      align-items: flex-end;
+    }
+
+    textarea {
+      flex: 1;
+      resize: none;
+      border: none;
+      outline: none;
+      min-height: 62px;
+      max-height: 220px;
+      padding: 18px;
+      border-radius: 18px;
+      font-family: inherit;
+      font-size: 15px;
+      color: white;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(12px);
+    }
+
+    textarea::placeholder {
+      color: var(--text-muted);
+    }
+
+    button {
+      border: none;
+      outline: none;
+      cursor: pointer;
+      border-radius: 18px;
+      padding: 18px 24px;
+      background: linear-gradient(135deg,
+          #3a8fe0,
+          #6cb4f0);
+      color: white;
+      font-weight: 600;
+      transition: .25s ease;
+      box-shadow: var(--shadow-glow);
+    }
+
+    button:hover {
+      transform: translateY(-2px) scale(1.02);
+    }
+
+    button:active {
+      transform: scale(.98);
+    }
+
+    .typing {
+      opacity: 0.7;
+      font-style: italic;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    ::-webkit-scrollbar {
+      width: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.12);
+      border-radius: 999px;
+    }
+
+    @media (max-width: 900px) {
+      .app {
+        flex-direction: column;
+      }
+
+      .sidebar {
+        width: 100%;
+      }
+
+      .message {
+        max-width: 100%;
+      }
+    }
+
+    .assistant {
+      line-height: 1.8;
+    }
+
+    .assistant h1,
+    .assistant h2,
+    .assistant h3 {
+      margin-bottom: 12px;
+      margin-top: 18px;
+      color: white;
+    }
+
+    .assistant ul {
+      padding-left: 22px;
+      margin-top: 12px;
+    }
+
+    .assistant li {
+      margin-bottom: 8px;
+    }
+
+    .assistant strong {
+      color: #ffffff;
+    }
+
+    .assistant code {
+      background: rgba(255, 255, 255, 0.08);
+      padding: 3px 8px;
+      border-radius: 8px;
+      font-family: monospace;
+    }
+
+    .custom-model-wrapper {
+      margin-top: 12px;
+      display: none;
+    }
+
+    .custom-model-wrapper input {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: white;
+      border-radius: 14px;
+      padding: 12px 14px;
+      outline: none;
+      font-size: 13px;
+      font-family: monospace;
+      backdrop-filter: blur(12px);
+      box-sizing: border-box;
+    }
+
+    .custom-model-wrapper input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .custom-model-wrapper input:focus {
+      border-color: rgba(108, 180, 240, 0.5);
+    }
+
+    .custom-model-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .attach-btn {
+      border: none;
+      outline: none;
+      cursor: pointer;
+      border-radius: 18px;
+      padding: 18px 16px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: var(--text-muted);
+      font-size: 18px;
+      transition: .25s ease;
+      box-shadow: none;
+      flex-shrink: 0;
+    }
+
+    .attach-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      color: white;
+      transform: translateY(-2px) scale(1.02);
+    }
+
+    .attach-btn.has-image {
+      background: rgba(108, 180, 240, 0.25);
+      border-color: rgba(108, 180, 240, 0.5);
+      color: #6cb4f0;
+    }
+
+    .image-preview-bar {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      background: rgba(108, 180, 240, 0.1);
+      border: 1px solid rgba(108, 180, 240, 0.25);
+      border-radius: 14px;
+      margin-bottom: 10px;
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .image-preview-bar img {
+      width: 40px;
+      height: 40px;
+      object-fit: cover;
+      border-radius: 8px;
+      flex-shrink: 0;
+    }
+
+    .image-preview-bar .remove-img {
+      margin-left: auto;
+      cursor: pointer;
+      color: var(--text-muted);
+      font-size: 16px;
+      line-height: 1;
+      padding: 2px 6px;
+      border-radius: 6px;
+      transition: .2s;
+    }
+
+    .image-preview-bar .remove-img:hover {
+      color: white;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .message.user img {
+      max-width: 220px;
+      border-radius: 12px;
+      display: block;
+      margin-bottom: 6px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <canvas id="bg-canvas" style="position:fixed;inset:0;width:100%;height:100%;z-index:0;"></canvas>
+
+  <div class="app">
+
+    <aside class="sidebar">
+
+      <div class="logo">
+        <div class="logo-icon">W</div>
+
+        <div>
+          <h1>Welkin AI</h1>
+          <p>Cloud Intelligence Interface</p>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">AI Model</div>
+
+        <select id="modelSelect">
+          <option value="meta/llama-4-maverick-17b-128e-instruct" selected>Fast</option>
+          <option value="stepfun-ai/step-3.5-flash">Smart</option>
+          <option value="nvidia/nemotron-3-nano-omni-30b-a3b-reasoning">Smarter</option>
+          <option value="__custom__">✏️ Custom model ID...</option>
+        </select>
+
+        <div class="custom-model-wrapper" id="customModelWrapper">
+          <div class="custom-model-label">Enter NIM model ID:</div>
+          <input type="text" id="customModelInput" placeholder="e.g. deepseek-ai/deepseek-r1" spellcheck="false"
+            autocomplete="off" />
+        </div>
+
+        <div class="model-info">
+          100+ free models via NVIDIA NIM. Find IDs at <a href="https://build.nvidia.com/models" target="_blank"
+            style="color: var(--accent);">build.nvidia.com</a>.
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">System Prompt</div>
+        <textarea id="systemPrompt"
+          placeholder="Give the AI a persona or instructions&#10;e.g. You are a helpful 8th grader..."
+          style="width:100%;min-height:110px;max-height:200px;resize:vertical;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);color:white;border-radius:14px;padding:12px 14px;font-family:inherit;font-size:13px;outline:none;box-sizing:border-box;line-height:1.5;"></textarea>
+        <div class="model-info" style="margin-top:10px;">Sets the AI's personality for the whole conversation.</div>
+      </div>
+
+    </aside>
+
+    <main class="chat-container">
+
+      <div class="chat-header">
+        <h2>AI Conversation</h2>
+
+        <div class="status">
+          <div class="dot"></div>
+          Online
+        </div>
+      </div>
+
+      <div class="messages" id="messages">
+        <div class="assistant-row">
+          <img class="ai-avatar" src="suje.png" alt="AI avatar" />
+          <div class="message assistant">
+            Hello. I am Welkin AI. Ask me anything.
+          </div>
+        </div>
+      </div>
+
+      <div class="input-area">
+        <div id="imagePreviewBar" class="image-preview-bar">
+          <img id="imageThumb" src="" alt="attached" />
+          <span id="imageFileName">image.png</span>
+          <span class="remove-img" id="removeImg" title="Remove image">✕</span>
+        </div>
+        <div class="input-wrapper">
+          <button class="attach-btn" id="attachBtn" title="Attach image">📎</button>
+          <input type="file" id="imageInput" accept="image/*" style="display:none;" />
+          <textarea id="prompt" placeholder="Message AI..."></textarea>
+          <button id="sendBtn">Send</button>
+        </div>
+      </div>
+
+    </main>
+
+  </div>
+
+  <script>
+    const messages = document.getElementById("messages");
+    const promptInput = document.getElementById("prompt");
+    const sendBtn = document.getElementById("sendBtn");
+    const modelSelect = document.getElementById("modelSelect");
+
+    function addMessage(text, role) {
+      const div = document.createElement("div");
+      div.className = `message ${role}`;
+      div.textContent = text;
+
+      if (role === "assistant" || role === "assistant typing") {
+        const row = document.createElement("div");
+        row.className = "assistant-row";
+        const avatar = document.createElement("img");
+        avatar.className = "ai-avatar";
+        avatar.src = "suje.png";
+        avatar.alt = "AI avatar";
+        row.appendChild(avatar);
+        row.appendChild(div);
+        messages.appendChild(row);
+      } else {
+        messages.appendChild(div);
+      }
+
+      messages.scrollTop = messages.scrollHeight;
+      return div;
+    }
+
+    function formatResponse(text) {
+
+      return text
+
+        // Escape HTML
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+
+        // Bold markdown
+        .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+
+        // Italics
+        .replace(/\*(.*?)\*/g, "<em>$1</em>")
+
+        // Inline code
+        .replace(/`(.*?)`/g, "<code>$1</code>")
+
+        // Headers
+        .replace(/^### (.*$)/gim, "<h3>$1</h3>")
+        .replace(/^## (.*$)/gim, "<h2>$1</h2>")
+        .replace(/^# (.*$)/gim, "<h1>$1</h1>")
+
+        // Bullet points
+        .replace(/^\s*[-•] (.*)$/gim, "<li>$1</li>")
+
+        // Wrap lone li tags
+        .replace(/(<li>.*<\/li>)/gs, "<ul>$1</ul>")
+
+        // Line breaks
+        .replace(/\n/g, "<br>");
+    }
+
+    const conversationHistory = [];
+    let attachedImageBase64 = null;
+    let attachedImageMime = null;
+
+    // Image attach logic
+    const attachBtn = document.getElementById("attachBtn");
+    const imageInput = document.getElementById("imageInput");
+    const imagePreviewBar = document.getElementById("imagePreviewBar");
+    const imageThumb = document.getElementById("imageThumb");
+    const imageFileName = document.getElementById("imageFileName");
+    const removeImg = document.getElementById("removeImg");
+
+    attachBtn.addEventListener("click", () => imageInput.click());
+
+    imageInput.addEventListener("change", () => {
+      const file = imageInput.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const dataUrl = e.target.result;
+        attachedImageBase64 = dataUrl.split(",")[1];
+        attachedImageMime = file.type || "image/jpeg";
+        imageThumb.src = dataUrl;
+        imageFileName.textContent = file.name;
+        imagePreviewBar.style.display = "flex";
+        attachBtn.classList.add("has-image");
+        // Auto-switch to vision model
+        modelSelect.value = "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning";
+        document.getElementById("customModelWrapper").style.display = "none";
+      };
+      reader.readAsDataURL(file);
+      imageInput.value = "";
+    });
+
+    removeImg.addEventListener("click", () => {
+      attachedImageBase64 = null;
+      attachedImageMime = null;
+      imagePreviewBar.style.display = "none";
+      attachBtn.classList.remove("has-image");
+    });
+
+    async function sendMessage() {
+      const prompt = promptInput.value.trim();
+      if (!prompt && !attachedImageBase64) return;
+
+      // Build user message display
+      const userDiv = document.createElement("div");
+      userDiv.className = "message user";
+      if (attachedImageBase64) {
+        const img = document.createElement("img");
+        img.src = `data:${attachedImageMime};base64,${attachedImageBase64}`;
+        userDiv.appendChild(img);
+      }
+      if (prompt) {
+        const txt = document.createTextNode(prompt);
+        userDiv.appendChild(txt);
+      }
+      messages.appendChild(userDiv);
+      messages.scrollTop = messages.scrollHeight;
+
+      // Build message content for API
+      let userContent;
+      if (attachedImageBase64) {
+        userContent = [
+          { type: "image_url", image_url: { url: `data:${attachedImageMime};base64,${attachedImageBase64}` } },
+          { type: "text", text: prompt || "What's in this image?" }
+        ];
+      } else {
+        userContent = prompt;
+      }
+      conversationHistory.push({ role: "user", content: userContent });
+
+      // Clear inputs
+      promptInput.value = "";
+      attachedImageBase64 = null;
+      attachedImageMime = null;
+      imagePreviewBar.style.display = "none";
+      attachBtn.classList.remove("has-image");
+
+      const typing = addMessage("Thinking...", "assistant typing");
+
+      try {
+        const rawModel = modelSelect.value;
+        const model = rawModel === "__custom__"
+          ? (document.getElementById("customModelInput").value.trim() || "meta/llama-4-maverick-17b-128e-instruct")
+          : rawModel;
+
+        const systemPrompt = document.getElementById("systemPrompt").value.trim() || DEFAULT_SYSTEM_PROMPT;
+
+        const res = await fetch("/api/nim", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            model,
+            messages: conversationHistory,
+            max_tokens: 1024,
+            temperature: 0.7,
+            ...(systemPrompt ? { system: systemPrompt } : {}),
+          }),
+        });
+
+        const response = await res.json();
+
+        if (!res.ok) {
+          throw new Error(response.detail || response.error || `Server error ${res.status}`);
+        }
+
+        const text = response.choices?.[0]?.message?.content || JSON.stringify(response);
+
+        conversationHistory.push({ role: "assistant", content: text });
+
+        typing.classList.remove("typing");
+        typing.innerHTML = formatResponse(text);
+
+      } catch (err) {
+        typing.classList.remove("typing");
+        typing.textContent = "Error: " + err.message;
+        console.error(err);
+      }
+    }
+
+    document.getElementById("modelSelect").addEventListener("change", function () {
+      const wrapper = document.getElementById("customModelWrapper");
+      wrapper.style.display = this.value === "__custom__" ? "block" : "none";
+      if (this.value === "__custom__") {
+        document.getElementById("customModelInput").focus();
+      }
+    });
+
+    // Store default system prompt in a variable — don't show it in the textarea
+    const DEFAULT_SYSTEM_PROMPT = "You respond like a nerdy 8th grader attending Mrs.McFarland's Geometry class (You guys just had a test about triangle midpoints like centroid, orthocenters, and stuff)- casual, annoyingm, be a dick, simple words, smart, add a little joke to the end";
+    const sysEl = document.getElementById("systemPrompt");
+
+    sendBtn.addEventListener("click", sendMessage);
+
+    promptInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+
+    // Paste image from clipboard
+    promptInput.addEventListener("paste", (e) => {
+      const items = e.clipboardData?.items;
+      if (!items) return;
+      for (const item of items) {
+        if (item.type.startsWith("image/")) {
+          const file = item.getAsFile();
+          const reader = new FileReader();
+          reader.onload = (ev) => {
+            const dataUrl = ev.target.result;
+            attachedImageBase64 = dataUrl.split(",")[1];
+            attachedImageMime = item.type;
+            imageThumb.src = dataUrl;
+            imageFileName.textContent = "pasted image";
+            imagePreviewBar.style.display = "flex";
+            attachBtn.classList.add("has-image");
+            // Auto-switch to vision model
+            modelSelect.value = "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning";
+            document.getElementById("customModelWrapper").style.display = "none";
+          };
+          reader.readAsDataURL(file);
+          break;
+        }
+      }
+    });
+
+  </script>
+  <script type="module">
+    try {
+      const { createPreview } = await import('https://esm.sh/shaders/js');
+      await createPreview(
+        document.getElementById("bg-canvas"),
+        { presetId: "25227b58-b042-49ae-9c80-255237ad0dde" }
+      );
+    } catch (e) {
+      console.warn("Shader failed to load:", e);
+    }
+  </script>
+  <script src="sidebar.js"></script>
+
+</body>
+
+</html>

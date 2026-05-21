@@ -314,36 +314,55 @@ fastify.get("/health", async (request, reply) => {
   return reply.code(ok ? 200 : 503).send({ ok, checks });
 });
 
-const DEFAULT_NVIDIA_API_KEY =
-  "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";
 const NVIDIA_API_URL = "https://integrate.api.nvidia.com/v1/chat/completions";
 
 fastify.post("/api/nim", async (request, reply) => {
   try {
+    const nimKey = process.env.NVIDIA_API_KEY?.trim();
+    if (!nimKey) return reply.code(503).send({ error: "NVIDIA_API_KEY is not set in .env" });
     const userApiKey = request.headers.authorization;
-    const apiKey = userApiKey || `Bearer ${DEFAULT_NVIDIA_API_KEY}`;
+    const apiKey = userApiKey || `Bearer ${nimKey}`;
+
+    // Build a clean body — force stream:false so we get a normal JSON response
+    const { model, messages, max_tokens, temperature, system } = request.body || {};
+    const nimBody = {
+      model: model || "meta/llama-4-maverick-17b-128e-instruct",
+      messages: messages || [],
+      max_tokens: max_tokens || 1024,
+      temperature: temperature ?? 0.7,
+      stream: false,
+    };
+    if (system) nimBody.messages = [{ role: "system", content: system }, ...nimBody.messages];
+
     const res = await fetch(NVIDIA_API_URL, {
       method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: apiKey },
-      body: JSON.stringify(request.body),
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": apiKey,
+      },
+      body: JSON.stringify(nimBody),
     });
-    const contentType = res.headers.get("content-type");
-    const data = await res.arrayBuffer();
+
+    const text = await res.text();
+    let data;
+    try { data = JSON.parse(text); } catch { data = { error: text }; }
+
     return reply
-      .code(res.status)
-      .type(contentType)
+      .code(res.ok ? 200 : res.status)
       .header("Access-Control-Allow-Origin", "*")
-      .send(Buffer.from(data));
+      .send(data);
   } catch (err) {
     console.error("NIM Proxy Error:", err);
-    return reply.code(500).send({ error: "Proxy error" });
+    return reply.code(500).send({ error: "Proxy error: " + err.message });
   }
 });
 
 fastify.post("/api/gemini", async (request, reply) => {
   try {
     const { model, key, contents } = request.body;
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`;
+    const apiKey = process.env.GEMINI_API_KEY?.trim() || key;
+    if (!apiKey) return reply.code(503).send({ error: "GEMINI_API_KEY is not set on the server." });
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
     const res = await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -354,6 +373,41 @@ fastify.post("/api/gemini", async (request, reply) => {
   } catch (err) {
     console.error("Gemini Proxy Error:", err);
     return reply.code(500).send({ error: "Proxy error" });
+  }
+});
+
+// ── Anthropic AI proxy — keeps your API key server-side ──────────────────────
+fastify.post("/api/ai", async (request, reply) => {
+  try {
+    const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY?.trim();
+    if (!ANTHROPIC_API_KEY) {
+      return reply.code(503).send({ ok: false, error: "ANTHROPIC_API_KEY is not set on the server." });
+    }
+
+    const { model, messages, max_tokens, system } = request.body || {};
+
+    if (!model || !messages) {
+      return reply.code(400).send({ ok: false, error: "Missing required fields: model, messages" });
+    }
+
+    const body = { model, messages, max_tokens: max_tokens || 1024 };
+    if (system) body.system = system;
+
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": ANTHROPIC_API_KEY,
+        "anthropic-version": "2023-06-01",
+      },
+      body: JSON.stringify(body),
+    });
+
+    const data = await res.json();
+    return reply.code(res.status).send(data);
+  } catch (err) {
+    console.error("AI Proxy Error:", err);
+    return reply.code(500).send({ ok: false, error: "Proxy error" });
   }
 });
 
