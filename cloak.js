@@ -4,7 +4,7 @@
    * Only triggers when "iboss" is typed on the keyboard.
    */
 
-  const DECOY_URL = "https://www.lwsd.org/";
+  const DECOY_URL = "https://lwsd414.instructure.com/";
   const DECOY_TITLE = "My Apps";
   const DECOY_ICON = "classlink.ico";
 

@@ -105,14 +105,14 @@ async function handleRequest(event) {
           <p>Try clearing site data: <strong>F12 → Application → Storage → Clear site data</strong></p>
           <p>Then reload the browse page.</p>
           <a href="/home.html">← Back to Welkin</a></body></html>`,
-          { status: 502, headers: { "Content-Type": "text/html" } }
+          { status: 502, headers: { "Content-Type": "text/html", "Cross-Origin-Embedder-Policy": "credentialless", "Cross-Origin-Resource-Policy": "cross-origin" } }
         );
       }
       console.error("Scram fetch error:", err);
       return new Response("Proxy request failed. Please reload and try again.", {
         status: 502,
         statusText: "Proxy Error",
-        headers: { "Content-Type": "text/plain" },
+        headers: { "Content-Type": "text/plain", "Cross-Origin-Embedder-Policy": "credentialless", "Cross-Origin-Resource-Policy": "cross-origin" },
       });
     }
   }
@@ -125,7 +125,7 @@ async function handleRequest(event) {
     return new Response("Network request failed.", {
       status: 502,
       statusText: "Network Error",
-      headers: { "Content-Type": "text/plain" },
+      headers: { "Content-Type": "text/plain", "Cross-Origin-Embedder-Policy": "credentialless", "Cross-Origin-Resource-Policy": "cross-origin" },
     });
   }
 }
