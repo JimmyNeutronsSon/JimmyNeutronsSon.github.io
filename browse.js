@@ -37,6 +37,17 @@ const scramjetReady = scramjet.init();
 
 const connection = new BareMux.BareMuxConnection("/baremux/worker.js");
 
+let wispUrl = (location.protocol === "https:" ? "wss" : "ws") + "://" + location.host + "/wisp/";
+try {
+  connection.setTransport("/libcurl/index.mjs", [{
+    websocket: wispUrl,
+    wisp: wispUrl,
+    wasm: "/libcurl/libcurl.wasm"
+  }]);
+} catch (e) {
+  console.error("Failed to set transport:", e);
+}
+
 function showLoading() {
   loadingBar.style.opacity = "1";
   loadingBar.style.width = "20%";
@@ -70,18 +81,6 @@ form.addEventListener("submit", async (event) => {
   }
 
   const url = search(address.value, searchEngine.value);
-
-  let wispUrl = (location.protocol === "https:" ? "wss" : "ws") + "://" + location.host + "/wisp/";
-  
-  try {
-    await connection.setTransport("/libcurl/index.mjs", [{
-      websocket: wispUrl,
-      wisp: wispUrl,
-      wasm: "/libcurl/libcurl.wasm"
-    }]);
-  } catch (e) {
-    console.error("Failed to set transport:", e);
-  }
 
   showLoading();
 

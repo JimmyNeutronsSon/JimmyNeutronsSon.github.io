@@ -61,9 +61,6 @@ async function handleRequest(event) {
 
   // Ensure config exists with correct transport
   if (!scramjet.config) {
-    // On Render (non-localhost), use libcurl transport which works over HTTP
-    // instead of epoxy/bare which requires raw WebSocket upgrades
-    const useLibcurl = isRenderDeployment();
     scramjet.config = {
       prefix: "/scramjet/",
       codec: "plain",
@@ -72,9 +69,7 @@ async function handleRequest(event) {
         all: "/scram/scramjet.all.js",
         sync: "/scram/scramjet.sync.js",
       },
-      transports: useLibcurl
-        ? ["/libcurl/index.js"]  // libcurl works on Render (HTTP/2 based)
-        : ["/baremux/index.js"], // bare/epoxy for local dev
+      transports: ["/baremux/index.js"], // baremux handles transport switching
     };
   }
 
@@ -86,7 +81,7 @@ async function handleRequest(event) {
         return fetch(event.request);
       }
       const headers = new Headers(res.headers);
-      headers.set("Cross-Origin-Embedder-Policy", "require-corp");
+      headers.set("Cross-Origin-Embedder-Policy", "credentialless");
       headers.set("Cross-Origin-Resource-Policy", "cross-origin");
       return new Response(res.body, {
         status: res.status,

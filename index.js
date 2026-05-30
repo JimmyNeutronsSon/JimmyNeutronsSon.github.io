@@ -118,7 +118,7 @@ const fastify = Fastify({
       .on("request", (req, res) => {
         if (needsCrossOriginIsolation(req.url || "")) {
           res.setHeader("Cross-Origin-Opener-Policy", "same-origin");
-          res.setHeader("Cross-Origin-Embedder-Policy", "require-corp");
+          res.setHeader("Cross-Origin-Embedder-Policy", "credentialless");
         }
         handler(req, res);
       })

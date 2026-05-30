@@ -298,9 +298,98 @@ fastify.get("/proxy", async (request, reply) => {
   }
 });
 
+// ── Visit counter — persists daily counts in Supabase ───────────────────────
+// Table: visit_counts
+//   day    text primary key   ← "2026-05-30"
+//   count  integer not null default 0
+//
+// Each socket connection increments today's count. Weekly = sum of last 7 days.
+// Falls back to in-memory-only when Supabase is not configured.
+
+const visitCounts = {}; // { "2026-05-30": 42, ... }
+
+function todayKey() {
+  return new Date().toISOString().slice(0, 10); // "YYYY-MM-DD"
+}
+
+function weekKeys() {
+  const keys = [];
+  for (let i = 0; i < 7; i++) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    keys.push(d.toISOString().slice(0, 10));
+  }
+  return keys;
+}
+
 function getVisitorStats() {
-  const count = io?.engine?.clientsCount || 0;
-  return { ok: true, daily: count, weekly: count };
+  const today = todayKey();
+  const daily = visitCounts[today] || 0;
+  const weekly = weekKeys().reduce((sum, k) => sum + (visitCounts[k] || 0), 0);
+  return { ok: true, daily, weekly };
+}
+
+async function loadVisitCounts() {
+  if (!USE_SUPABASE) return;
+  try {
+    const oldest = new Date();
+    oldest.setDate(oldest.getDate() - 7);
+    const oldestKey = oldest.toISOString().slice(0, 10);
+    const rows = await sbFetch(
+      `visit_counts?select=day,count&day=gte.${oldestKey}`,
+    );
+    (rows || []).forEach((r) => {
+      if (r.day) visitCounts[r.day] = r.count || 0;
+    });
+    console.log(`   ✅ Visit counts: loaded ${Object.keys(visitCounts).length} days`);
+  } catch (e) {
+    if (e.message.includes("42P01") || e.message.includes("does not exist")) {
+      console.log("   ⚠️  visit_counts table not found — create it with:");
+      console.log("      CREATE TABLE visit_counts (day text PRIMARY KEY, count integer NOT NULL DEFAULT 0);");
+    } else {
+      console.error("   ❌ Visit counts: FAILED —", e.message);
+    }
+  }
+}
+
+let _visitSaveTimer = null;
+async function bumpVisitCount() {
+  const today = todayKey();
+  visitCounts[today] = (visitCounts[today] || 0) + 1;
+
+  // Debounce Supabase writes to avoid hammering on burst traffic
+  clearTimeout(_visitSaveTimer);
+  _visitSaveTimer = setTimeout(async () => {
+    if (!USE_SUPABASE) return;
+    try {
+      await sbFetch("visit_counts", {
+        method: "POST",
+        prefer: "resolution=merge-duplicates,return=minimal",
+        headers: { Prefer: "resolution=merge-duplicates,return=minimal" },
+        body: JSON.stringify({ day: todayKey(), count: visitCounts[todayKey()] }),
+      });
+    } catch (e) {
+      console.error("visit: save failed:", e.message);
+    }
+  }, 3000);
+}
+
+// Track which session IDs have already been counted today.
+// Reset the set whenever the date rolls over.
+let _seenSessionsDay = todayKey();
+const seenSessions = new Set();
+
+function recordSession(sessionId) {
+  // If it's a new day, clear yesterday's sessions
+  const today = todayKey();
+  if (today !== _seenSessionsDay) {
+    seenSessions.clear();
+    _seenSessionsDay = today;
+  }
+  if (!sessionId || seenSessions.has(sessionId)) return false; // already counted
+  seenSessions.add(sessionId);
+  bumpVisitCount();
+  return true; // new visit
 }
 
 fastify.get("/api/stats", async () => getVisitorStats());
@@ -598,6 +687,9 @@ async function loadFromSupabase() {
         console.error(`   ❌ Group chats:FAILED — ${e.message}`);
       }
     }
+
+    // ── Visit counts ─────────────────────────────────────────────────────────
+    await loadVisitCounts();
 
     console.log("━".repeat(60));
     console.log(`✅ Supabase ready — ${msgCount} msgs, ${userCount} users, ${dmCount} DMs, ${gcCount} groups`);
@@ -1005,10 +1097,19 @@ function initSocketIO() {
     // Broadcast plain socket count to all pages
     io.emit("online-count", io.engine.clientsCount);
     socket.emit("raw-count", io.engine.clientsCount);
-    // Send visitor stats to new socket immediately
-    if (typeof getVisitorStats === "function") {
-      socket.emit("visitor-stats", getVisitorStats());
-    }
+
+    // Send current stats to the newly connected socket
+    socket.emit("visitor-stats", getVisitorStats());
+
+    // Client sends its sessionStorage-backed session ID.
+    // We only count each unique session once per day.
+    socket.on("visit:session", (sessionId) => {
+      const isNew = recordSession(String(sessionId).slice(0, 64));
+      if (isNew) {
+        // Broadcast updated counts to everyone
+        io.emit("visitor-stats", getVisitorStats());
+      }
+    });
 
     socket.on("disconnect", () => {
       const name = liveMembers.get(socket.id);

@@ -489,12 +489,12 @@ if (document.readyState === "loading") {
     const bar = document.createElement("span");
     bar.id = "welkin-stats-bar";
     bar.innerHTML =
-      '<span class="wstat" title="Unique visitors today">' +
+      '<span class="wstat" title="Visits today">' +
       '<span class="wstat-dot day"></span>' +
       '<span class="wstat-label">Today</span>' +
       '<span class="wstat-val" id="wstat-daily">—</span>' +
       '</span>' +
-      '<span class="wstat" title="Unique visitors this week">' +
+      '<span class="wstat" title="Visits this week">' +
       '<span class="wstat-dot week"></span>' +
       '<span class="wstat-label">Week</span>' +
       '<span class="wstat-val" id="wstat-weekly">—</span>' +
@@ -559,6 +559,18 @@ if (document.readyState === "loading") {
     toast._timer = setTimeout(() => toast.classList.remove("show"), 5000);
   }
 
+  // ── Session ID — one ID per browser session (tab) ─────────────────────────
+  // sessionStorage resets when the tab is closed, so each new tab/window
+  // counts as a fresh visit. Navigating between pages keeps the same ID.
+  function getOrCreateSessionId() {
+    let sid = sessionStorage.getItem("welkin-vsid");
+    if (!sid) {
+      sid = Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
+      sessionStorage.setItem("welkin-vsid", sid);
+    }
+    return sid;
+  }
+
   // ── Notification sound ───────────────────────────────────────────────────
   let notifAudio = null;
   function playSitewideNotif() {
@@ -599,6 +611,8 @@ if (document.readyState === "loading") {
         sock.on("online-count", updateCounter);
         sock.on("visitor-stats", updateStats);
         sock.on("members:update", updateMemberTooltip);
+        // Report session so the visit is counted exactly once
+        sock.emit("visit:session", getOrCreateSessionId());
       };
       // Fetch stats immediately via REST so the widget shows before first broadcast
       fetch("/api/stats").then(r => r.json()).then(d => { if (d.ok) updateStats(d); }).catch(() => { });
@@ -614,6 +628,11 @@ if (document.readyState === "loading") {
     socket.on("disconnect", () => {
       const el = document.getElementById("online-counter");
       if (el) el.textContent = "Currently Online: —";
+    });
+
+    // On (re)connect send the session ID — server deduplicates
+    socket.on("connect", () => {
+      socket.emit("visit:session", getOrCreateSessionId());
     });
 
     fetch("/api/stats").then(r => r.json()).then(d => { if (d.ok) updateStats(d); }).catch(() => { });
