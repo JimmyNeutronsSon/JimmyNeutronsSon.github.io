@@ -26,11 +26,14 @@ window.loadUrlInProxy = function (urlText) {
 const { ScramjetController } = $scramjetLoadController();
 
 const scramjet = new ScramjetController({
+  prefix: "/scramjet/",
+  codec: "plain",
   files: {
     wasm: "/scram/scramjet.wasm.wasm",
     all: "/scram/scramjet.all.js",
     sync: "/scram/scramjet.sync.js",
   },
+  transports: ["/baremux/index.js"],
 });
 
 const scramjetReady = scramjet.init();
