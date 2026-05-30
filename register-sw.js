@@ -20,6 +20,12 @@ async function registerSW() {
   }
 
   await navigator.serviceWorker.register(stockSW);
+  await navigator.serviceWorker.ready;
+  if (!navigator.serviceWorker.controller) {
+    await new Promise(resolve => {
+      navigator.serviceWorker.addEventListener("controllerchange", resolve, { once: true });
+    });
+  }
 }
 
 // Expose globally for inline scripts
