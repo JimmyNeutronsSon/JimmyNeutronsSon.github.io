@@ -1,4 +1,4 @@
-importScripts("/scram/scramjet.all.js");
+importScripts("/scram/scramjet.all.js", "/baremux/index.js");
 
 const { ScramjetServiceWorker } = $scramjetLoadWorker();
 const scramjet = new ScramjetServiceWorker();
@@ -32,8 +32,7 @@ let baremuxConnection;
 async function setupBaremuxLocally() {
   if (baremuxConnection) return;
   try {
-    const { BareMuxConnection } = await import("/baremux/index.mjs");
-    baremuxConnection = new BareMuxConnection("/baremux/worker.js");
+    baremuxConnection = new BareMux.BareMuxConnection("/baremux/worker.js");
     const wispUrl = (self.location.protocol === "https:" ? "wss" : "ws") + "://" + self.location.host + "/wisp/";
     await baremuxConnection.setTransport("/libcurl/index.mjs", [{
       websocket: wispUrl,
