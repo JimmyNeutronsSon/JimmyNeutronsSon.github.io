@@ -60,7 +60,7 @@
 
   // Secret Key Listener
   let inputBuffer = "";
-  const SECRET_CODE = "dame0";
+  const SECRET_CODE = "ww3";
 
   window.addEventListener("keydown", (e) => {
     // Only capture single characters
